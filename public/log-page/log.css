@@ -1,16 +1,15 @@
 #button-bar
-{
-    display: flex;
+{   display: flex;
     flex-direction: row;
-    align-content: right;
+    /* align-items: flex-end; */
+    justify-content: flex-end;
     height: 20px;
     width: 98vw;
     margin: 0px auto;
 }
 
 #button-bar button
-{
-    border: 1 solid var(--color);
+{   border: 1 solid var(--color);
     border-radius: 3px;
     flex-grow: 0;
     margin-left: 5px;
@@ -23,17 +22,15 @@
 }
 
 #sort-bar
-{
-    display: flex;
+{   display: flex;
     flex-direction: row;
-    align-content: space-between;
+    justify-content: space-between;
     width: 50vw;
     max-width: 800px;
     margin: 0px auto;
 }
 .sort-icon
-{
-    height: auto;
+{   height: auto;
     width: 20vw;
     max-width: 200px;
 }
