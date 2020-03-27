@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css?family=Fredoka+One');
+
+*
+{   box-sizing: border-box;
+}
+
+:root
+{   --color: skyblue;
+    --hover: blue;
+
+}
+
+body
+{   color: var(--color);
+    font-family: sans-serif;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px;
+}
+
+header
+{   
+    /* background: rgba(255, 0, 0, 0.5); */
+    font-family: "Fredoka One", cursive;
+    font-size: 36px;
+    margin: 0px;
+    /* padding: 25px; */
+    padding-top: 10px;
+    text-align: center;
+}
+
+main
+{   
+    /* background: rgba(0, 255, 0, 0.5); */
+    padding: 25px;
+}
+
+main a:link
+{   color: var(--color);
+
+}
+
+main a:hover
+{   color: var(--hover);
+
+}
+
+main a:visited
+{   color: var(--color);
+
+}
+
+/*                                         */
+/* style specific to sticky footer         */
+/*                                         */
+
+body, html
+{   height: 100%;
+}
+
+.wrapper
+{   
+    /* background: rgba(0, 255, 255, 0.5); */
+    height: auto;
+    margin-bottom: -30px;
+    min-height: 100%;
+    padding: 10px;
+}
+
+.push
+{   
+    /* background: yellow; */
+    height: 30px;
+}
+
+footer
+{   background: var(--color);
+    color: white;
+    align-content: space-between;
+    display: flex;
+    flex-direction: row;
+    font-size: 10px;
+    height: 30px;
+    padding: 10px;
+}
+
+footer div
+{   flex-grow:  1;
+}
+
+footer .right
+{   text-align: right;
+}
+
+/*                                         */
+/* media queries for responsive design     */
+/*                                         */
+
+@media screen and (max-width: 572px)
+{
+}

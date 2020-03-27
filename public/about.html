@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title></title>
+
+    <link href="master.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<div class="wrapper">
+    <header>About PAWS...</header>
+
+    <main>
+        <p>PAWS is an application demo inspired by my time at the <a href="https://www.summithumane.org">Humane Society of Summit County</a>.  It's a web-based application using NodeJS to replace a manual system used to track volunteer interaction with the animals.  It includes administration pages to manage volunteers and animals (for only the purposes of this application).  The application serves static pages that use client side scripts to load data from server APIs.
+        </p>
+
+        <p>Because this application is implemented using NodeJS, I'm able to use WebSockets to keep client pages updated in real-time.  I'm using the Node module sockets.io to push changes from the server to client.
+        </p>
+
+        <p>There is no confidential information in the database, and other than names and email addresses, there is no personally identifiable information.  But it is likely this application would be hosted on some public cloud-based service (something like AWS), and I do require users to authenticate to access those function that would allow them to change data.  It's not the data itself that needs to be protected, but the integrity of the data.
+        </p>
+
+        <p>If you're interested in examining the application, try one of these User IDs:
+        </p>
+        user    password
+        admin   admin
+        animals animals
+        walker  walker
+
+        <p>"admin" can be used to manage people: add users, remove users, change passwords, and the like.
+        <br>
+        "animals" can be used to manage the animals in the database.
+        <br>
+        "walker" represents the volunteers and can only input data representing their interaction with animals.  "walker" is permitted to hang out with "green", "orange" and "blue" dogs.
+        </p>
+
+        <p>I don't think you'll have any problems experimenting with the application, I've tried to make it as intuitive as possible.  Mostly functionality is accessed by context sensitive buttons that change as users interact with the system and reflects the actions and data the application is expecting at any given moment.
+        </p>
+
+        <p>The home page is the activity log for dogs.  A number of icons above the log allow you to sort the data in numerous ways or to switch to the cat data.  Clicking on any of the sort icons will sort the list in reverse order.  The activity log is updated in real-time as administrators and walkers interact with the application.
+        </p>
+
+        <p>Most of the time, walkers will be using "cagepage".  Cagepage allows users to sign animals out of and back into their cages and to enter any notes they think another volunteer might like to know about that animal.
+        </p>
+    </main>
+    <div class="push"></div>
+</div>
+<footer><div class="left">About PAWS</div><div class="right">&copy All Rights Reserved</div></footer>
+</body>
+
+<script language="JavaScript" src="assets/javascript/app.js"></script>
+</html>
