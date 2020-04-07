@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="250"
+   height="250"
+   viewBox="0 0 66.145833 66.145835"
+   version="1.1"
+   id="svg54904"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="color.svg">
+  <title
+     id="title1072">colors v1.0</title>
+  <defs
+     id="defs54898">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient8597">
+      <stop
+         style="stop-color:#404040;stop-opacity:1;"
+         offset="0"
+         id="stop8593" />
+      <stop
+         style="stop-color:#c4c4c4;stop-opacity:1"
+         offset="1"
+         id="stop8595" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient7571">
+      <stop
+         style="stop-color:#404040;stop-opacity:1;"
+         offset="0"
+         id="stop7567" />
+      <stop
+         style="stop-color:#404040;stop-opacity:0;"
+         offset="1"
+         id="stop7569" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient7571"
+       id="linearGradient7575"
+       x1="-31.45418"
+       y1="314.81302"
+       x2="-31.41428"
+       y2="288.1828"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-0.323705,-35.490331)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient8597"
+       id="linearGradient8749"
+       gradientUnits="userSpaceOnUse"
+       x1="-53.526844"
+       y1="283.96008"
+       x2="-53.30695"
+       y2="257.41086" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="122.5"
+     inkscape:cy="133.00643"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:showpageshadow="false"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:window-width="1366"
+     inkscape:window-height="715"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata54901">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>colors v1.0</dc:title>
+        <dc:date>4/7/2020</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Bill McCutchan</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title />
+          </cc:Agent>
+        </dc:rights>
+        <dc:description>This image was created for use on a promotional website I created in April 2020.  Please consider it copyrighted.  You may use or distribute this image free of charge as long as you make no charge for it and as long as you properly attribute it to me.</dc:description>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-230.85415)">
+    <g
+       id="g55616" />
+    <rect
+       style="opacity:1;fill:#80ff80;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect1019"
+       width="52.717087"
+       height="7.7379203"
+       x="6.7143736"
+       y="237.56853"
+       ry="0.98335266" />
+    <rect
+       style="opacity:1;fill:#ff9349;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect1019-7"
+       width="52.717087"
+       height="7.7379198"
+       x="6.7143745"
+       y="246.56436"
+       ry="0.98335266" />
+    <rect
+       style="opacity:1;fill:#8080ff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect1019-9"
+       width="52.717087"
+       height="7.7379198"
+       x="6.7143745"
+       y="255.5602"
+       ry="0.98335266" />
+    <rect
+       style="opacity:1;fill:#ff80ff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect1019-8"
+       width="52.717087"
+       height="7.7379198"
+       x="6.7143745"
+       y="264.55603"
+       ry="0.98335266" />
+    <rect
+       style="opacity:1;fill:#808080;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect1019-84"
+       width="52.717087"
+       height="7.7379198"
+       x="6.7143745"
+       y="273.55188"
+       ry="0.98335266" />
+    <rect
+       style="opacity:1;fill:#ff8080;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect1019-1"
+       width="52.717087"
+       height="7.7379198"
+       x="6.7143736"
+       y="282.5477"
+       ry="0.98335266" />
+  </g>
+</svg>
