@@ -16,9 +16,9 @@
    version="1.1"
    id="svg54904"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="color.svg">
+   sodipodi:docname="color-selected.svg">
   <title
-     id="title1072">colors v1.1</title>
+     id="title1072">colors selected v1.0</title>
   <defs
      id="defs54898">
     <linearGradient
@@ -64,6 +64,19 @@
        y1="283.96008"
        x2="-53.30695"
        y2="257.41086" />
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter3478"
+       x="-0.11999999"
+       width="1.24"
+       y="-0.12000001"
+       height="1.24">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.3110941"
+         id="feGaussianBlur3480" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -72,9 +85,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.4592062"
-     inkscape:cx="61.445926"
-     inkscape:cy="61.445934"
+     inkscape:zoom="1"
+     inkscape:cx="-183.55407"
+     inkscape:cy="67.479915"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -100,8 +113,8 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>colors v1.1</dc:title>
-        <dc:date>4/8/2020</dc:date>
+        <dc:title>colors selected v1.0</dc:title>
+        <dc:date>4/7/2020</dc:date>
         <dc:creator>
           <cc:Agent>
             <dc:title>Bill McCutchan</dc:title>
@@ -123,6 +136,59 @@
      transform="translate(-43.140572,-221.34428)">
     <g
        id="g55616" />
+    <g
+       id="g3443"
+       style="fill:none;stroke:#0000ff;stroke-width:1.32291663;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3478)"
+       transform="translate(64.822915,0.00899824)">
+      <rect
+         ry="0.44047746"
+         y="224.4819"
+         x="-18.535717"
+         height="3.4660807"
+         width="26.221884"
+         id="rect1019-97"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#0000ff;stroke-width:1.32291663;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
+      <rect
+         ry="0.44047749"
+         y="229.03307"
+         x="-18.535717"
+         height="3.4660804"
+         width="26.221884"
+         id="rect1019-7-9"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#0000ff;stroke-width:1.32291663;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
+      <rect
+         ry="0.44047749"
+         y="233.58423"
+         x="-18.535717"
+         height="3.4660804"
+         width="26.221884"
+         id="rect1019-9-7"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#0000ff;stroke-width:1.32291663;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
+      <rect
+         ry="0.44047749"
+         y="238.13538"
+         x="-18.535717"
+         height="3.4660804"
+         width="26.221884"
+         id="rect1019-8-5"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#0000ff;stroke-width:1.32291663;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
+      <rect
+         ry="0.44047749"
+         y="242.68654"
+         x="-18.535717"
+         height="3.4660804"
+         width="26.221884"
+         id="rect1019-84-0"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#0000ff;stroke-width:1.32291663;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
+      <rect
+         ry="0.44047749"
+         y="247.2377"
+         x="-18.535717"
+         height="3.4660804"
+         width="26.221884"
+         id="rect1019-1-8"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#0000ff;stroke-width:1.32291663;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
+    </g>
     <g
        transform="translate(64.822916,0.00899804)"
        id="g3443-2">

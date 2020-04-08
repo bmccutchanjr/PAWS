@@ -16,11 +16,19 @@
             <button>log in</button>
         </div>
         <div id="sort-bar">
-            <img src="kitty.svg" class="sort-icon" id="switch-animal" name="cat-button" title="Switch to cat data">
-            <img src="puppy.svg" class="sort-icon" name="name-button" title="Sort list by name (reverse order)">
-            <img src="color.svg" class="sort-icon" name="color-button" title="Sort list by color">
-            <img src="calendar.svg" class="sort-icon" name="days-button" title="Sort list by total enrichment time">
-            <img src="clock.svg" class="sort-icon" name="time-button" title="Sort list by most recent date">
+            <img src="kitty.svg" class="sort-icon" id="switch-animal" name="cat-button" title="Switch to cat data"
+                 onmouseover="this.src='kitty-selected.svg';"
+                 onmouseout="this.src='kitty.svg';">
+            <img src="puppy.svg" class="sort-icon" name="name-button" title="Sort list by name (reverse order)"
+                 onmouseover="this.src='puppy-selected.svg';"
+                 onmouseout="this.src='puppy.svg';">
+            <img src="color.svg" class="sort-icon" name="color-button" title="Sort list by color"
+                 onmouseover="this.src='color-selected.svg';"
+                 onmouseout="this.src='color.svg';">
+            <img src="clock.svg" class="sort-icon" id="clock-button" title="Sort list by total enrichment time"
+                 onmouseover="this.src='clock-selected.svg';"
+                 onmouseout="this.src='clock.svg';">
+            <img src="calendar.svg" class="sort-icon" name="calendar-button" title="Sort list by most recent date">
             <img src="cage.svg" class="sort-icon" name="cage-button">
         </div>
     </header>
