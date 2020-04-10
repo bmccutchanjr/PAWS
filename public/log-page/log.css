@@ -1,7 +1,6 @@
 #button-bar
 {   display: flex;
     flex-direction: row;
-    /* align-items: flex-end; */
     justify-content: flex-end;
     height: 20px;
     width: 98vw;
@@ -22,9 +21,7 @@
 }
 
 #sort-bar
-{   
-    /* background: rgba(255,0,0,.5); */
-    display: flex;
+{   display: flex;
     flex-direction: row;
     justify-content: space-between;
     width: 75vw;
@@ -33,18 +30,6 @@
 }
 
 .sort-icon
-{   
-    /* background: rgba(255, 0, 0, .5); */
-    height: auto;
+{   height: auto;
     width: auto;
-    /* max-width: 200px; */
-}
-
-.sort-icon:hover
-{   
-    /* background: lightblue; */
-    /* box-shadow: 0px 0px 10px lightblue; */
-    /* height: auto; */
-    /* width: auto; */
-    /* max-width: 200px; */
 }
