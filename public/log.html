@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title></title>
+
+    <link href="css/common.css" rel="stylesheet" type="text/css">
+    <link href="css/log.css" rel="stylesheet" type="text/css">
+</head>
+<div class="wrapper">
+    <header>
+        <div id="sort-bar">
+            <img src="images/kitty.svg" class="sort-icon" id="switch-animal" name="cat-button" title="Switch to cat data"
+                 onmouseover="this.src='images/kitty-selected.svg';"
+                 onmouseout="this.src='images/kitty.svg';">
+            <img src="images/puppy.svg" class="sort-icon" name="name-button" title="Sort list by name (reverse order)"
+                 onmouseover="this.src='images/puppy-selected.svg';"
+                 onmouseout="this.src='images/puppy.svg';">
+            <img src="images/color.svg" class="sort-icon" name="color-button" title="Sort list by color"
+                 onmouseover="this.src='images/color-selected.svg';"
+                 onmouseout="this.src='images/color.svg';">
+            <img src="images/clock.svg" class="sort-icon" id="clock-button" title="Sort list by total enrichment time"
+                 onmouseover="this.src='images/clock-selected.svg';"
+                 onmouseout="this.src='images/clock.svg';">
+            <img src="images/calendar.svg" class="sort-icon" name="calendar-button" title="Sort list by most recent date"
+                 onmouseover="this.src='images/calendar-selected.svg';"
+                 onmouseout="this.src='images/calendar.svg';">
+        </div>
+    </header>
+
+    <main id="main"></main>
+    <div class="push"></div>
+</div>
+
+<footer><div class="left">PAWS Interaction Log</div><div class="right">&copy All Rights Reserved</div></footer>
+<body>
+
+</body>
+
+<script language="JavaScript" src="scripts/common.js"></script>
+<script language="JavaScript" src="scripts/log.js"></script>
+</html>

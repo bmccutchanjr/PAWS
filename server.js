@@ -9,16 +9,16 @@
 // First, require the Node modules the server.js needs.  Note that because I'm using socket.io to push
 // data to the client, this is not a typical Express configuration.
 
-chalk = require("chalk");
-HTTP = require("http");
-express = require("express")(HTTP);
-io = require("socket.io");
-passport = require("passport");
+const chalk = require("chalk");
+const HTTP = require("http");
+const express = require("express")(HTTP);
+const io = require("socket.io");
+const passport = require("passport");
 
-// Next we'll require the custom modules that make up this application
+// Next we'll require the custom modules used by server.js
 
-api = require("routes/api.js");
-routes = require("routes/routes.js");
+const api = require("routes/api.js");
+const routes = require("routes/routes.js");
 
 // Next we'll configure Express.
 
@@ -29,12 +29,12 @@ express.use (passport);
 
 // And finally let's get the server started...
 
-var PORT = process.env ? process.env.PORT : 80;
+const PORT = process.env ? process.env.PORT : 80;
 
 HTTP.listen (PORT, 0, function ()
 {   // If this application is hosted on the cloud, we'll listen on whatever port is assigned to it,
     // otherwise we'll listen to port 80 and any address configured on the host machine
 
     console.log (chalk.green("The PAWS server is up and running"));
-    console.log (chalk.green("Listen on port " + PORT));
+    console.log (chalk.green("Listening on port " + PORT));
 })

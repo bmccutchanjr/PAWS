@@ -1,0 +1,153 @@
+/********************************************************************/
+/* This code sets default style and is common to several pages      */
+/*                                                                  */
+
+*
+{   box-sizing: border-box;
+}
+
+:root
+{
+    --bg-color: black;
+    --fg-color: black;
+}
+
+body
+{   font-family: sans-serif;
+}
+
+/********************************************************************/
+/* style settings for the menu                                      */
+/*                                                                  */
+
+.menu-icon
+{   background: lightgrey;
+    border: 3px solid grey;
+    border-radius: 5px;
+    color: grey;
+    font-weight: bold;
+    height: 35px;
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    padding-bottom: 5px;
+    padding-top: 6px;
+    text-align: center;
+    width: 35px;
+    z-index: 100;
+}
+
+.menu
+{
+    background: lightgrey;
+    border-right: 3px solid grey;
+    display: none;
+    height: 100%;
+    min-height: 100%;
+    padding: 5px;
+    padding-top: 50px;
+    position: fixed;
+    left: 0px;
+    top: -17px;
+    width: 0px;
+    z-index: 50;
+}
+
+@keyframes showmenu
+{
+    from
+    {   width: 0px;
+        background: grey;
+    }
+    to
+    {   width: 200px;
+        background: lightgrey;
+    }
+}
+
+.menu-show
+{   animation-name: showmenu;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+}
+
+
+.menu-option-div
+{   display: inline-block;
+    height: 20px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.menu-option
+{   color: grey;
+    text-decoration: none;
+}
+
+.menu-option:visited
+{   color: grey;
+    text-decoration: none;
+}
+
+.menu-option:hover
+{   color: red;
+    text-decoration: none;
+}
+
+.menu-option:active
+{   color: white;
+    text-decoration: none;
+}
+
+/********************************************************************/
+/* style settings for sticky footer                                 */
+/*                                                                  */
+
+body,
+html
+{   height: 100%;
+    min-height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+.wrapper
+{   height: auto;
+    min-height: 100%;
+    margin: 0px auto;
+    margin-bottom: -30px;
+    width: 95vw;
+}
+
+.push
+{   height: 30px;
+}
+
+footer
+{   background: grey;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: inherit;
+    height: 25px;
+    margin: 0px;
+    margin-top: 5px;
+    padding: 5px;
+    padding-left: 2.5vw;
+    padding-right: 2.5vw;
+    width: 100vw;
+}
+
+footer .left
+{   flex-grow: 1;
+    text-align: left;
+    width: 30%;
+}
+
+footer .right
+{   flex-grow: 1;
+    text-align: right;
+    width: 30%;
+}
