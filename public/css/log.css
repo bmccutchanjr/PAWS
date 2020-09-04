@@ -71,9 +71,10 @@
     display: inline-block;
     flex-grow: 0;
     flex-shrink: 0;
-    /* margin-left: 1px; */
-    /* margin-right: 1px; */
+    margin-left: 1px;
+    margin-right: 1px;
     padding: 2px;
+    text-align: center;
     width: 18px;
 }
 

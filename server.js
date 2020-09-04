@@ -6,7 +6,7 @@
 // and Socket.IO.  This module is the entry point to the application and is used to configure the server
 // with Express and Socket.IO.
 
-// First, require the Node modules the server.js needs.  Note that because I'm using socket.io to push
+// First, require the Node modules tha server.js needs.  Note that because I'm using socket.io to push
 // data to the client, this is not a typical Express configuration.
 
 const chalk = require("chalk");
