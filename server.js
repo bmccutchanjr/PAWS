@@ -10,28 +10,29 @@
 // data to the client, this is not a typical Express configuration.
 
 const chalk = require("chalk");
-const HTTP = require("http");
-const express = require("express")(HTTP);
-const io = require("socket.io");
+const express = require("express");
+const http = require ("http").Server (express); 
+const io = require("socket.io")(http);
 const passport = require("passport");
 
 // Next we'll require the custom modules used by server.js
 
-const api = require("routes/api.js");
-const routes = require("routes/routes.js");
+const api = require("./routes/api.js");
+const routes = require("./routes/routes.js");
 
 // Next we'll configure Express.
 
-express.use(express.urlencoded({ extended: true }));
-express.use (api);
-express.use (routes);
-express.use (passport);
+const app = express();
+app.use(express.urlencoded({ extended: true }));
+//  01  app.use (api);
+//  01  app.use (routes);
+//  01  app.use (passport);
 
 // And finally let's get the server started...
 
 const PORT = process.env ? process.env.PORT : 80;
 
-HTTP.listen (PORT, 0, function ()
+http.listen (PORT, 0, () =>
 {   // If this application is hosted on the cloud, we'll listen on whatever port is assigned to it,
     // otherwise we'll listen to port 80 and any address configured on the host machine
 
