@@ -115,6 +115,18 @@ function createMenu ()
     configureElement ("a",
         {   "class": "menu-option",
             "href": "#",
+            "innerText": "My Profile"
+        },
+        div);
+
+    div = configureElement ("div",
+        {   "class": "menu-option-div"
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "#",
             "innerText": "Admin Functions"
         },
         div);

@@ -21,7 +21,7 @@ router
     {   // This always happens -- whenever any route is served in this module.  At the moment, all 
         // I use it for is to debug routes, but it could be something more useful.
 
-        console.log(chalk.blue("html.js"));
+        // console.log(chalk.blue("html.js"));
         console.log(chalk.blue("requesting: ", request.url));
 
         next();
