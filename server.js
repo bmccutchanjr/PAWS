@@ -6,36 +6,39 @@
 // and Socket.IO.  This module is the entry point to the application and is used to configure the server
 // with Express and Socket.IO.
 
-// First, require the Node modules tha server.js needs.  Note that because I'm using socket.io to push
+// First, require the Node modules that server.js needs.  Note that because I'm using socket.io to push
 // data to the client, this is not a typical Express configuration.
 
 const chalk = require("chalk");
 const express = require("express");
-const http = require ("http").Server (express); 
-const io = require("socket.io")(http);
+const app = express();
+const http = require ("http");
+const server = http.createServer (app);
+const io = require("socket.io");
+const socket = io.listen(server);
 const passport = require("passport");
-
-// Next we'll require the custom modules used by server.js
-
-const api = require("./routes/api.js");
-const routes = require("./routes/routes.js");
 
 // Next we'll configure Express.
 
-const app = express();
 app.use(express.urlencoded({ extended: true }));
-//  01  app.use (api);
-//  01  app.use (routes);
+app.use (require("./routes/api.js"));
+app.use (require("./routes/html.js"));
 //  01  app.use (passport);
 
-// And finally let's get the server started...
+const PORT = process.env.PORT ? process.env.PORT : 80;
 
-const PORT = process.env ? process.env.PORT : 80;
-
-http.listen (PORT, 0, () =>
+server.listen (PORT, () =>
 {   // If this application is hosted on the cloud, we'll listen on whatever port is assigned to it,
     // otherwise we'll listen to port 80 and any address configured on the host machine
 
-    console.log (chalk.green("The PAWS server is up and running"));
-    console.log (chalk.green("Listening on port " + PORT));
-})
+    if (server.listening)
+    {
+        console.log (chalk.green("The PAWS server is up and running"));
+        console.log (chalk.green("Listening on port " + PORT));
+        console.log (chalk.green (JSON.stringify(server.address(), null, 2)));
+    }
+});
+
+socket.on ("connection", () =>
+{   //  Connection event is triggered when a new client connects
+});
