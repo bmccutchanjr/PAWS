@@ -22,7 +22,7 @@ router
         // I use it for is to debug routes, but it could be something more useful.
 
         // console.log(chalk.blue("html.js"));
-        console.log(chalk.blue("requesting: ", request.url));
+        console.log(chalk.blue("html.js says client is requesting ", request.url));
 
         next();
     })
