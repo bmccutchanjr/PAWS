@@ -21,11 +21,11 @@ const passport = require("passport");
 // Next we'll configure Express.
 
 app.use(express.urlencoded({ extended: true }));
-app.use (require("./routes/api.js"));
-app.use (require("./routes/html.js"));
+app.use ("/api", require("./end-points/api.js"));
+app.use ("/", require("./end-points/html.js"));
 //  01  app.use (passport);
 
-const PORT = process.env.PORT ? process.env.PORT : 80;
+const PORT = process.env.PORT ? process.env.PORT : 8080;
 
 server.listen (PORT, () =>
 {   // If this application is hosted on the cloud, we'll listen on whatever port is assigned to it,
@@ -35,7 +35,7 @@ server.listen (PORT, () =>
     {
         console.log (chalk.green("The PAWS server is up and running"));
         console.log (chalk.green("Listening on port " + PORT));
-        console.log (chalk.green (JSON.stringify(server.address(), null, 2)));
+        // console.log (chalk.green (JSON.stringify(server.address(), null, 2)));
     }
 });
 
