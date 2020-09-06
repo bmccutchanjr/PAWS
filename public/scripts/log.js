@@ -98,14 +98,19 @@ window.addEventListener ("load", (event) =>
 //  On the other hand, there's no need to wait for the DOM in order to request the data from the server
 //  as long as we make sure not to use the results before the page is loaded and ready.
 
-function getEnrichmentData (species)
+function getAnimalData (species)
 {
-//
-//  And of course, there is no API call here at all...this is just a mock-up of the page so I can
-//  see how much room I have to play with.
-//
-    status.data = true;
-    showAnimals ();
+    const xml = new XMLHttpRequest();
+    xml.onreadystatechange = () =>
+    {
+        if (xml.readyState == 4 && xml.status == 200)
+        {   status.data = true;
+            showAnimals ();
+        }
+    }
+
+    xml.open ("GET", "/api/animals/allactive/" + species, true);
+    xml.send();
 }
 
-getEnrichmentData ("dogs");
+getAnimalData ("dogs");

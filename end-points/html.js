@@ -1,20 +1,20 @@
-//  html.js is the middleware used to serve static routes and their auxillary files.  It's pretty
-//  much just a standard, no-frills module.  It uses Express.JS and Path.js to serve end points,
-//  and Passport.js to verify authorization.
+//  This module is the middleware used to serve static routes and their auxillary files.  It's
+//  pretty much just a standard, no-frills module that uses Express.JS to serve the application's
+//  static end points and Passport.js for authorization.
 //  
 
-//  01  There is no security in the page right now.  Need to require and configure Passport.js...
+//  01  Passport is not implemented.  There is no security in the page right now.
+//      Need to require and configure Passport.js...
 
-// Require the dependencies
+//  The required npm modules
 const chalk = require("chalk");
 const express = require("express");
 const path = require("path");
 
 // Configure express
-const app = express();
+const server = express();
 const router = express.Router ();
-
-app.use ("/", router);
+server.use ("/", router);
 
 router
 .use ((request, response, next) =>

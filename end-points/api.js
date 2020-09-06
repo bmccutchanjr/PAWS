@@ -1,16 +1,22 @@
-//  This module implements the routes for the applications api's.
+//  This module is the middleware used to serve the applications api's.
+
+//  Require npm modules
 
 const chalk = require("chalk");
 const express = require("express");
-const http = require ("http").Server (express); 
-const io = require("socket.io")(http);
+//  02  I shouldn't need http.js or socket.io in this module...
+//  02  const http = require ("http").Server (express); 
+//  02  const io = require("socket.io")(http);
 
-const app = express();
-const router = express.Router ();
+//  Require custom middleware
 
 const animals = require("./database/animals.js");
 
-app.use ("/api", router);
+//  Configure express
+
+const server = express();
+const router = express.Router ();
+server.use ("/api", router);
 
 router
 .use ((request, response, next) =>
@@ -25,14 +31,18 @@ router
 	{	// Get all of the animals currently in the shelter for the specified animal type.  This is
         // displayed on the browser as the Enrichment Log.
 
-		animals.getAllActive (request.params.group, (status, data) =>
-        {   // serve data returned from animals.getAll()
-
-            if (status != 200)
-                response.status(status).send(data);
-            else
-                response.status(200).json(data);
-        })
+//  03  		animals.getAllActive (request.params.group, (status, data) =>
+//  03          {   // serve data returned from animals.getAll()
+//  03  
+//  03              if (status != 200)
+//  03                  response.status(status).send(data);
+//  03              else
+//  03                  response.status(200).json(data);
+//  03          })
+//  03  begins
+console.log (chalk.red("api.js: responding"));
+response.status(200).send("all good!")
+//  03  ends
     });
 
 module.exports = router;
