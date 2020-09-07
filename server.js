@@ -11,6 +11,9 @@
 //  configuration.
 
 const chalk = require("chalk");
+//  03  begins
+const dotenv = require("dotenv").config();
+//  03 ends
 const express = require("express");
 const app = express();
 const http = require ("http");

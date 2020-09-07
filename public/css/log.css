@@ -32,7 +32,33 @@
     display: flex;
     flex-direction: row;
     height: 24px;
+    margin-bottom: 1px;
+    margin-top: 1px;
     width: 100%;
+}
+
+.animal.black
+{   background: black;
+}
+
+.animal.blue
+{   background: blue;
+}
+
+.animal.green
+{   background: green;
+}
+
+.animal.orange
+{   background: orange;
+}
+
+.animal.purple
+{   background: purple;
+}
+
+.animal.red
+{   background: red;
 }
 
 .animal-name

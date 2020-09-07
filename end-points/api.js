@@ -31,18 +31,14 @@ router
 	{	// Get all of the animals currently in the shelter for the specified animal type.  This is
         // displayed on the browser as the Enrichment Log.
 
-//  03  		animals.getAllActive (request.params.group, (status, data) =>
-//  03          {   // serve data returned from animals.getAll()
-//  03  
-//  03              if (status != 200)
-//  03                  response.status(status).send(data);
-//  03              else
-//  03                  response.status(200).json(data);
-//  03          })
-//  03  begins
-console.log (chalk.red("api.js: responding"));
-response.status(200).send("all good!")
-//  03  ends
+		animals.getAllActive (request.params.group, (status, data) =>
+        {   // serve data returned from animals.getAll()
+
+            if (status != 200)
+                response.status(status).send(data);
+            else
+                response.status(200).json(data);
+        })
     });
 
 module.exports = router;
