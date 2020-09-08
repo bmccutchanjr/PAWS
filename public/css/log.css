@@ -93,7 +93,7 @@
 
 .interaction-day
 {   
-    /* border: 1px solid black; */
+    border: 1px solid black;
     display: inline-block;
     flex-grow: 0;
     flex-shrink: 0;

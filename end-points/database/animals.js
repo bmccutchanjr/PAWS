@@ -32,7 +32,9 @@ const db =
         {   returnData (200, data);
         })
         .catch(error =>
-        {   returnData (500, error);
+        {   
+            console.log (chalk.red(error));
+            returnData (500, error);
         })
     }
 }

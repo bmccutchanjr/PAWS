@@ -175,10 +175,12 @@ function animalHandler (event)
                             ascend: current.sort.name == "ascending" ? false : true
                         },
                         {   property: "color",
+                            ascend: current.sort.name == "ascending" ? false : true,
+                            casesensitive: true,
                             transform: value =>
                                 {
                                     const colors = ["GREEN", "ORANGE", "BLUE", "PURPLE", "RED", "BLACK"];
-                                    return colors.indexOf (value.toUpperCase ());
+                                    return colors.indexOf (value.toUpperCase ()).toString ();
                                 }
                         }
                     ])
@@ -196,10 +198,11 @@ function sortByColor (event)
     index = sort (index,
                     [   {   property: "color",
                             ascend: current.sort.color == "ascending" ? false : true,
+                            casesensitive: true,
                             transform: value =>
                                 {
                                     const colors = ["GREEN", "ORANGE", "BLUE", "PURPLE", "RED", "BLACK"];
-                                    return colors.indexOf (value.toUpperCase ());
+                                    return colors.indexOf (value.toUpperCase ().toString ());
                                 }
                         },
                         {   property: "name",
@@ -223,10 +226,11 @@ function sortByName (event)
                         },
                         {   property: "color",
                             ascend: current.sort.name == "ascending" ? false : true,
+                            casesensitive: true,
                             transform: value =>
                                 {
                                     const colors = ["GREEN", "ORANGE", "BLUE", "PURPLE", "RED", "BLACK"];
-                                    return colors.indexOf (value.toUpperCase ());
+                                    return colors.indexOf (value.toUpperCase ().toString ());
                                 }
                         }
                     ])
