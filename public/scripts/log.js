@@ -1,7 +1,8 @@
 //  A few global variables used to coordinate and store data required by multiple functions
 //  throughout this page...
 
-let dataset = ["1"];
+let dataset = [];
+let index = [];
 let status =
 {
     animals: undefined,
@@ -9,6 +10,12 @@ let status =
     menu: undefined, 
     page: undefined
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//  Collects the functions and variable that are used to manipulate the <div> elements that
+//  represent individual animals
 
 function buildAnimals ()
 {   //  Create an HTML <DIV> element to display the each animal in the dataset[] array -- but DON'T
@@ -21,26 +28,26 @@ function buildAnimals ()
     let sameName = 1;
     let prevName = undefined;
 
-    const length = dataset.length;
+    const length = index.length;
     for (let x=0; x<length; x++)
     {   let name = undefined;
 
-        if (dataset[x].name == prevName)
-        {   dataset[x-1].div.firstChild.innerText = dataset[x-1].name + " (" + sameName + ")";
+        if (index[x].name == prevName)
+        {   dataset[x-1].firstChild.innerText = index[x-1].name + " (" + sameName + ")";
             ++sameName;
-            name = dataset[x].name + " (" + sameName + ")";
+            name = index[x].name + " (" + sameName + ")";
         }
         else
         {   sameName = 1;
-            name = dataset[x].name;
+            name = index[x].name;
         }
 
-        prevName = dataset[x].name;
+        prevName = index[x].name;
 
         let animal = configureElement ("div",
             {
-                "class": "animal " + dataset[x].color,
-                "animalId": dataset[x].animalId
+                "class": "animal " + index[x].color,
+                "animalId": index[x].animalId
             });
 
         configureElement ("div",
@@ -53,14 +60,14 @@ function buildAnimals ()
         configureElement ("div",
             {
                 "class": "animal-color",
-                "innerText": dataset[x].color.toUpperCase ()
+                "innerText": index[x].color.toUpperCase ()
             },
             animal);
 
         configureElement ("div",
             {
                 "class": "animal-cage",
-                "innerText": dataset[x].cage ? dataset[x].cage : ""
+                "innerText": index[x].cage ? dataset[x].cage : ""
             },
             animal);
 
@@ -82,7 +89,16 @@ function buildAnimals ()
             }
         }
 
-        dataset[x].div = animal;
+        index[x].index = x;
+        dataset.push (animal);
+    }
+}
+
+function clearAnimals (main)
+{   //  Remove all childNodes of the DOM element <MAIN>
+
+    while (main.firstChild)
+    {   main.removeChild (main.firstChild);
     }
 }
 
@@ -104,12 +120,77 @@ function showAnimals ()
     status.animals = true;
 
     let main = document.getElementById ("main");
+    clearAnimals (main);
 
-    const length = dataset.length;
+    const length = index.length;
     for (let x=0; x<length; x++)
-    {   main.append (dataset[x].div);
+    {   main.append (dataset[index[x].index]);
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//  These are the various event handlers for the icons that appear on the page and are primarilly
+//  used to sort the animals displayed on the page
+
+const current =
+    {   "group": "dog",
+        "sort":
+        {   "name": "ascending",
+            "color": undefined,
+            "time": undefined,
+            "date": undefined
+        }
+    }
+
+function animalHandler (event)
+{   //  The two animalicons that appear on the page represent different actions depending on context
+    //
+    //  1)  There are two species in the database, and only one is retrieved and displayed at a time.
+    //      It is either cats or dogs, never both.  If the animal clicked represents the species not
+    //      currently on the page, retrieve data from the server and put it on the screen.
+    //  2)  If the current data set matches the species represented by the icon, the current dataset
+    //      is to be sorted by name.  In ascending or descending order depending on the current sort
+    //      order.
+    //
+    //  The labels on the icons must be changes to match the current context.
+
+    event.preventDefault();
+
+    const icon = event.target;
+    const group = icon.getAttribute ("group");
+
+    if (group != current.group)
+    {
+        //  retrieve data
+        //  buildAnimals();
+        //  showAnimals();
+        //  icon.setAttribute ("title")
+        return;
+    }
+
+    index = sort (index,
+                    [   {   property: "name",
+                            ascend: current.sort.name == "ascending" ? false : true
+                        },
+                        {   property: "color",
+                            transform: value =>
+                                {
+                                    const colors = ["GREEN", "ORANGE", "BLUE", "PURPLE", "RED", "BLACK"];
+                                    return colors.indexOf (value.toUpperCase ());
+                                }
+                        }
+                    ])
+    current.sort.name = current.sort.name == "ascending" ? "descending" : "ascending"
+    status.animals = false;
+    icon.setAttribute ("title",
+        current.sort.name == "ascending" ? "sort list by name (reverse order)" : "sort list by name");
+    showAnimals ();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 window.addEventListener ("load", (event) =>
 {   //  Before data is loaded onto the page, there aren't a lot of DOM elements on it, so the page
@@ -123,7 +204,7 @@ window.addEventListener ("load", (event) =>
     createMenu ();
 });
 
-function getAnimalData (species)
+function getAnimalData (group)
 {
     const xml = new XMLHttpRequest();
     xml.onreadystatechange = () =>
@@ -132,7 +213,7 @@ function getAnimalData (species)
                 switch (xml.status)
                 {   case 200:
                     {   status.data = true;
-                        dataset = JSON.parse(xml.responseText)
+                        index = JSON.parse(xml.responseText)
                         buildAnimals ();
                         showAnimals ();
                         break;
@@ -144,11 +225,11 @@ function getAnimalData (species)
                 }
         }
 
-    xml.open ("GET", "/api/animals/allactive/" + species, true);
+    xml.open ("GET", "/api/animals/allactive/" + group, true);
     xml.send();
 }
 
 //  There's no need to wait for the DOM in order to request data from the server, especially since
 //  it's far more likely that retrieving data from the server will take longer than rendering the DOM.
 
-getAnimalData ("dogs");
+getAnimalData ("dog");

@@ -15,7 +15,8 @@
             <img src="images/kitty.svg" class="sort-icon" id="switch-animal" name="cat-button" title="Switch to cat data"
                  onmouseover="this.src='images/kitty-selected.svg';"
                  onmouseout="this.src='images/kitty.svg';">
-            <img src="images/puppy.svg" class="sort-icon" name="name-button" title="Sort list by name (reverse order)"
+            <img src="images/puppy.svg" class="sort-icon" group="dog" name="name-button" title="Sort list by name (reverse order)"
+                 onclick="animalHandler(event);"
                  onmouseover="this.src='images/puppy-selected.svg';"
                  onmouseout="this.src='images/puppy.svg';">
             <img src="images/color.svg" class="sort-icon" name="color-button" title="Sort list by color"
@@ -39,6 +40,7 @@
 
 </body>
 
+<script language="JavaScript" src="sort/sort.js"></script>
 <script language="JavaScript" src="scripts/common.js"></script>
 <script language="JavaScript" src="scripts/log.js"></script>
 </html>

@@ -12,7 +12,7 @@ function select (query, parameters)
 
     return new Promise ((resolve, reject) =>
     {
-        connection.query (query, (error, result) =>
+        connection.query (query, parameters, (error, result) =>
         {   if (error) reject (error);
 
             resolve (result);
@@ -22,12 +22,13 @@ function select (query, parameters)
 
 const db =
 {
-    getAllActive: (species, returnData) =>
+    getAllActive: (group, returnData) =>
     {   //  The interaction log does not mix species.  It's either dogs or cats, but never both on the
         //  same page.  This function retrieves all active animals at the shelter of the indicated
         //  species.
 
-        select ("select * from Animals where species='dog' order by name, color;")
+//  01          select ("select * from Animals where species='dog' order by name, color;")
+        select ("select * from Animals where species=? order by name, color;", group)
         .then(data =>
         {   returnData (200, data);
         })

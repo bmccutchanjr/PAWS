@@ -1,4 +1,5 @@
 /node_modules
+/public/sort
 /test-bed
 
 /database/test.sql
