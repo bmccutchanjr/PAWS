@@ -1,6 +1,7 @@
 -- create database PAWS;
 use PAWS;
 
+-- drop table Animals;
 create table Animals
 (   --  Master table of animals in the shelter
 
@@ -61,4 +62,9 @@ insert into Animals values
     (null, true, "dog", "Dr. Strangelov", "purple", "", null, "Bill", "2020-09-05"),
     (null, true, "dog", "Dr. Quinn", "green", "", null, "Bill", "2020-09-05"),
     (null, true, "dog", "Dr. Jeckyl", "red", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Dr. Zhivago", "blue", "", null, "Bill", "2020-09-05")
+    (null, true, "dog", "Dr. Zhivago", "blue", "", null, "Bill", "2020-09-05"),
+    (null, true, "dog", "Buddy", "blue", "", null, "Bill", "2020-09-06"),
+    (null, true, "dog", "Anatole", "blue", 20, null, "Bill", "2020-09-06"),
+    (null, true, "dog", "Buddy", "green", "", null, "Bill", "2020-09-06"),
+    (null, true, "dog", "Bullwinkle", "orange", "", null, "Bill", "2020-09-06"),
+    (null, true, "dog", "Buddy", "blue", "", null, "Bill", "2020-09-05");

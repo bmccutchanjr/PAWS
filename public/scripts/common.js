@@ -166,7 +166,8 @@ function createMenu ()
     configureElement ("a",
         {   "class": "menu-option",
             "href": "#",
-            "innerText": "Sort by Names"
+            "innerText": "Sort by Names",
+            "onclick": "sortByName(event)"
         },
         div);
 
@@ -178,7 +179,8 @@ function createMenu ()
     configureElement ("a",
         {   "class": "menu-option",
             "href": "#",
-            "innerText": "Sort by Color"
+            "innerText": "Sort by Color",
+            "onclick": "sortByColor(event)"
         },
         div);
 

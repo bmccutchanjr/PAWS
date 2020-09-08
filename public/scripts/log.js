@@ -189,6 +189,52 @@ function animalHandler (event)
     showAnimals ();
 }
 
+function sortByColor (event)
+{   event.preventDefault ();
+    const icon = event.target;
+
+    index = sort (index,
+                    [   {   property: "color",
+                            ascend: current.sort.color == "ascending" ? false : true,
+                            transform: value =>
+                                {
+                                    const colors = ["GREEN", "ORANGE", "BLUE", "PURPLE", "RED", "BLACK"];
+                                    return colors.indexOf (value.toUpperCase ());
+                                }
+                        },
+                        {   property: "name",
+                            ascend: current.sort.color == "ascending" ? false : true
+                        }
+                    ])
+    current.sort.color = current.sort.color == "ascending" ? "descending" : "ascending"
+    status.animals = false;
+    icon.setAttribute ("title",
+        current.sort.color == "ascending" ? "sort list by color (reverse order)" : "sort list by color");
+    showAnimals ();
+}
+
+function sortByName (event)
+{   event.preventDefault ();
+    const icon = event.target;
+
+    index = sort (index,
+                    [   {   property: "name",
+                            ascend: current.sort.name == "ascending" ? false : true
+                        },
+                        {   property: "color",
+                            ascend: current.sort.name == "ascending" ? false : true,
+                            transform: value =>
+                                {
+                                    const colors = ["GREEN", "ORANGE", "BLUE", "PURPLE", "RED", "BLACK"];
+                                    return colors.indexOf (value.toUpperCase ());
+                                }
+                        }
+                    ])
+    current.sort.name = current.sort.name == "ascending" ? "descending" : "ascending"
+    status.animals = false;
+    showAnimals ();
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

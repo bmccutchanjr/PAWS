@@ -27,8 +27,7 @@ const db =
         //  same page.  This function retrieves all active animals at the shelter of the indicated
         //  species.
 
-//  01          select ("select * from Animals where species='dog' order by name, color;")
-        select ("select * from Animals where species=? order by name, color;", group)
+        select ("select * from Animals where species=? and active=true order by name, color;", group)
         .then(data =>
         {   returnData (200, data);
         })
