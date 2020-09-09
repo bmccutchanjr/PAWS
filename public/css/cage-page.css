@@ -1,0 +1,57 @@
+/********************************************************************/
+/* style settings for sticky footer                                 */
+/*                                                                  */
+
+body,
+html
+{   height: 100%;
+    min-height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+.wrapper
+{   height: auto;
+    max-height: 100%;
+    min-height: 100%;
+    margin: 0px auto;
+    margin-bottom: -65px;
+    width: 95vw;
+}
+
+.push
+{   height: 65px;
+}
+
+footer
+{   background: rgba(255,255,255,0.5);
+    border: 3px solid black;
+    border-radius: 5px;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 50px;
+    margin: 5px;
+    margin-left: 2.5vw;
+    margin-right: 2.5vw;
+    margin-top: 10px;
+    padding: 5px;
+    width: 95vw;
+}
+
+footer .name
+{   font-size: 20px;
+    height: auto;
+    margin: 0px auto;
+    text-align: center;
+    width: 100%;
+}
+
+footer .color
+{   font-size: 12px;
+    height: auto;
+    margin: 0px auto;
+    text-align: center;
+    width: 100%;
+}

@@ -22,19 +22,33 @@ function select (query, parameters)
 
 const db =
 {
-    getAllActive: (group, returnData) =>
+    getAllActive: (group, callback) =>
     {   //  The interaction log does not mix species.  It's either dogs or cats, but never both on the
         //  same page.  This function retrieves all active animals at the shelter of the indicated
         //  species.
 
         select ("select * from Animals where species=? and active=true order by name, color;", group)
         .then(data =>
-        {   returnData (200, data);
+        {   callback (200, data);
         })
         .catch(error =>
         {   
             console.log (chalk.red(error));
-            returnData (500, error);
+            callback (500, error);
+        })
+    },
+
+    getAnimal: (animalId, callback) =>
+    {   //  Get all of the data on the animal indicated.
+
+        select ("select * from Animals where animalId=?;", animalId)
+        .then(data =>
+        {   callback (200, data);
+        })
+        .catch(error =>
+        {   
+            console.log (chalk.red(error));
+            callback (500, error);
         })
     }
 }

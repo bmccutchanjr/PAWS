@@ -39,6 +39,19 @@ router
             else
                 response.status(200).json(data);
         })
+    })
+	.get("/animals/get/:animalId", (request, response) =>
+	{	// Get all of the animals currently in the shelter for the specified animal type.  This is
+        // displayed on the browser as the Enrichment Log.
+
+		animals.getAnimal (request.params.animalId, (status, data) =>
+        {   // serve data returned from animals.getAll()
+
+            if (status != 200)
+                response.status(status).send(data);
+            else
+                response.status(200).json(data);
+        })
     });
 
 module.exports = router;

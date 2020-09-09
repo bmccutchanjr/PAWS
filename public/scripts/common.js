@@ -73,9 +73,7 @@ function createMenu ()
 
     let icon = configureElement ("div",
         {   "class": "menu-icon",
-            // "expanded": "false",
-            "id": "menu-icon",
-            // "onclick": "alert ('icon clicked')"
+            "id": "menu-icon"
         },
         document.body);
 
@@ -95,135 +93,7 @@ function createMenu ()
         },
         document.body);
 
-    let div = configureElement ("div",
-        {   "class": "menu-option-div"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "login.html",
-            "innerText": "Log in"
-        },
-        div);
-
-    div = configureElement ("div",
-        {   "class": "menu-option-div"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "My Profile"
-        },
-        div);
-
-    div = configureElement ("div",
-        {   "class": "menu-option-div"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Admin Functions"
-        },
-        div);
-
-    configureElement ("hr",
-        {   "class": "menu-separator",
-        },
-        menu);
-
-    div = configureElement ("div",
-        {   "class": "menu-option-div"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Switch to the Cats"
-        },
-        div);
-
-    div = configureElement ("div",
-        {   "class": "menu-option-div"
-        },
-        menu);
-
-    configureElement ("hr",
-        {   "class": "menu-separator",
-        },
-        div);
-
-    div = configureElement ("div",
-        {   "class": "menu-option-div"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Sort by Names",
-            "onclick": "sortByName(event)"
-        },
-        div);
-
-    div = configureElement ("div",
-        {   "class": "menu-option-div"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Sort by Color",
-            "onclick": "sortByColor(event)"
-        },
-        div);
-
-    div = configureElement ("div",
-        {   "class": "menu-option-div"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Sort by Total Time"
-        },
-        div);
-
-    div = configureElement ("div",
-        {   "class": "menu-option-div"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Sort by Most Recent Date"
-        },
-        div);
-
-    configureElement ("hr",
-        {   "class": "menu-separator",
-        },
-        menu);
-
-    div = configureElement ("div",
-        {   "class": "menu-option-div"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "About"
-        },
-        div);
+    return menu;
 }
 
 function expandMenu (event)

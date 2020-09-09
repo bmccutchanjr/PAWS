@@ -62,13 +62,25 @@
 }
 
 .animal-name
-{   display: inline-block;
+{   color: white;
+    display: inline-block;
     flex-grow: 1;
     flex-shrink: 1;
     overflow: hidden;
     padding: 2px;
+    text-decoration: none;
     width: 50%;
     min-width: 150px;
+}
+
+.animal-name:visited
+{
+    color: white;
+}
+
+.animal-name:hover
+{
+    color: red;
 }
 
 .animal-color

@@ -71,16 +71,12 @@ body
     animation-fill-mode: forwards;
 }
 
-
-.menu-option-div
-{   display: inline-block;
+.menu-option
+{   color: grey;
+    display: inline-block;
     height: 20px;
     width: 100%;
     overflow: hidden;
-}
-
-.menu-option
-{   color: grey;
     text-decoration: none;
 }
 
@@ -95,6 +91,66 @@ body
 }
 
 .menu-option:active
+{   color: white;
+    text-decoration: none;
+}
+
+/********************************************************************/
+/* style settings for the modal message                             */
+/*                                                                  */
+
+.modal
+{   display: block;
+    position: fixed;
+    left: 0px;
+    top: 60px;
+    width: 100vw;
+    z-index: 100;
+}
+
+.modal-message
+{   background: lightgrey;
+    border: 3px solid grey;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    margin: 0px auto;
+    width: 90vw;
+    max-width: 500px;
+}
+
+.modal-text
+{   display: block;
+    flex-grow: 1;
+    flex-shrink: 1;
+    padding: 15px;
+}
+
+.modal-options
+{   display: block;
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 20px;
+    padding-left: 15px;
+}
+
+.modal-option
+{   color: grey;
+    height: 20px;
+    text-decoration: none;
+}
+
+.modal-option:visited
+{   color: grey;
+    text-decoration: none;
+}
+
+.modal-option:hover
+{   color: red;
+    text-decoration: none;
+}
+
+.modal-option:active
 {   color: white;
     text-decoration: none;
 }

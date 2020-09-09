@@ -1,3 +1,102 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function addMenu ()
+{   //  Create the side-bar menu
+
+    //  Menu options vary from page to page, but the empty side-bar and associated functions are
+    //  the same.  So call a function to create the menu and return a reference to the DOM element
+    //  so we can put the appropriate menu option in it.
+
+    const menu = createMenu ();
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "login.html",
+            "innerText": "Log in"
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "#",
+            "innerText": "My Profile"
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "#",
+            "innerText": "Admin Functions"
+        },
+        menu);
+
+    configureElement ("hr",
+        {   "class": "menu-separator",
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "#",
+            "innerText": "Switch to the Cats"
+        },
+        menu);
+
+    configureElement ("hr",
+        {   "class": "menu-separator",
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "#",
+            "innerText": "Sort by Names",
+            "onclick": "sortByName(event)"
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "#",
+            "innerText": "Sort by Color",
+            "onclick": "sortByColor(event)"
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "#",
+            "innerText": "Sort by Total Time"
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "#",
+            "innerText": "Sort by Most Recent Date"
+        },
+        menu);
+
+    configureElement ("hr",
+        {   "class": "menu-separator",
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "#",
+            "innerText": "About"
+        },
+        menu);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//  Collects the functions and variable that are used to manipulate the <div> elements that
+//  represent individual animals
+
 //  A few global variables used to coordinate and store data required by multiple functions
 //  throughout this page...
 
@@ -10,12 +109,6 @@ let status =
     menu: undefined, 
     page: undefined
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//  Collects the functions and variable that are used to manipulate the <div> elements that
-//  represent individual animals
 
 function buildAnimals ()
 {   //  Create an HTML <DIV> element to display the each animal in the dataset[] array -- but DON'T
@@ -50,10 +143,13 @@ function buildAnimals ()
                 "animalId": index[x].animalId
             });
 
-        configureElement ("div",
+        configureElement ("a",
             {
+                "animalId": index[x].animalId,
                 "class": "animal-name",
-                "innerText": name
+                "href": "#",
+                "innerText": name,
+                "onclick": "cagePage(event)"
             },
             animal);
 
@@ -242,6 +338,65 @@ function sortByName (event)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+function cagePage (event)
+{   //  This is the event handler for the animal names displayed on screen.
+
+    //  I tried to do this in a restful manner and simply tack animalId to the URL.
+    //
+    //          href="/cage-page/01"
+    //
+    //  But the browser treats that as a folder (that's what the URL actually represents on a
+    //  traditional web server) and all further requests for resources (css, scripts, images, etc) are
+    //  relative to what the browser thinks is a folder, but isn't actually.
+    //
+    //          cage-page/css/cage-page.css
+    //          cage-page/scripts/cage-page.js
+    //
+    //  And of course those files don't exist when the Node/Express server tries to serve them.  None
+    //  of the links could be coded with relative paths.  All of the links on the page would have to be
+    //  fully qualified.  And I don't want that.
+    //
+    //  The only alternative seems to be to set a cookie to identify the desired animal.  And
+    //  since there could be dozens of animals on the page, I need to set the cookie when the
+    //  link is clicked, and that means an event handler.
+    //
+    //  I'm learning that more and more of what Trilogy supposedly taught us just doesn't work.
+    
+    event.preventDefault ();
+
+    const link = event.target;
+    
+    const animalId = link.getAttribute ("animalId");
+    document.cookie = "animalId=" + animalId;
+
+    window.location.assign ("/cage-page");
+
+    //  A note about window.location.assign().
+    //
+    //  window.location.href is a read/write string property whose value is the URL of the current
+    //  page.  Changing location.href will cause the browser to load the page at the newly selected
+    //  URL.
+    //
+    //  window.location.assign() and window.location.redirect() are methods used to replace the URL
+    //  and, again, cause the browser to load the page at the new URL.
+    //
+    //  The difference is that assigning a value to location.href or using the method .redirect() are
+    //  not supposed to modify the history object.  But .assign() does.  Supposedly that means the
+    //  browser's back button will work as expected when using .assign().
+    //
+    //  Imagine a user follows a link from page1 to page2 and then page2 redirects to page3.
+    //  If page3 is loaded with .redirect() or loaction.href using the browser's back function will
+    //  return to page1, because page2 is not in the history.  But if .assign() is used to redirect
+    //  the page, using the browser's back function will return to page2.
+    //
+    //  Except it doesn't work that way.  Both Chrome and Firefox treat all three methodologies
+    //  the same, with Chrome ignoring page2 in all three cases and Firefox returning to page2 in
+    //  all three cases.
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 window.addEventListener ("load", (event) =>
 {   //  Before data is loaded onto the page, there aren't a lot of DOM elements on it, so the page
     //  will almost certainly be rendered before data is retrieved from the server.  Nevertheless,
@@ -251,7 +406,7 @@ window.addEventListener ("load", (event) =>
     status.page = true;
 
     showAnimals ();
-    createMenu ();
+    addMenu ();
 });
 
 function getAnimalData (group)
