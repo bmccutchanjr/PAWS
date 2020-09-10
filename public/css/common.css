@@ -10,6 +10,7 @@
 {
     --bg-color: black;
     --fg-color: black;
+    --width: 95vw;
 }
 
 body

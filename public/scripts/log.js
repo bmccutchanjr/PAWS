@@ -163,7 +163,7 @@ function buildAnimals ()
         configureElement ("div",
             {
                 "class": "animal-cage",
-                "innerText": index[x].cage ? dataset[x].cage : ""
+                "innerText": index[x].cage_num ? index[x].cage_num : ""
             },
             animal);
 

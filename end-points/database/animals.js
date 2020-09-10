@@ -41,7 +41,11 @@ const db =
     getAnimal: (animalId, callback) =>
     {   //  Get all of the data on the animal indicated.
 
-        select ("select * from Animals where animalId=?;", animalId)
+        select ("select * from Animals a "
+              + "left join AnimalRestrictions ar on a.animalId=ar.animalId "
+              + "left join Restrictions r on ar.restrictId=r.restrictId "
+              + "where a.animalId=?;", animalId + " "
+              + "group by r.text;")
         .then(data =>
         {   callback (200, data);
         })

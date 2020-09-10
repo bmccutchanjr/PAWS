@@ -151,6 +151,30 @@ function parseCookies (cookie)
 function buildPage ()
 {
     document.body.style.background = dataset[0].color;
+
+    if (dataset[0].text != null)
+    { 
+        const modal = configureElement ("div",
+            {   "class": "restriction-wrapper"
+            },
+            document.body);
+        
+        const div = configureElement ("div",
+            {   "class": "restriction-text"
+            },
+            modal);
+
+        dataset.forEach (d =>
+        {
+            if (d.text != null)
+                configureElement ("div",
+                    {   "class": "restriction",
+                        "innerText": d.text
+                    },
+                    div)
+        })
+    }
+
     document.getElementById ("footer-name").innerText = dataset[0].name;    
     document.getElementById ("footer-color").innerText = "(" + dataset[0].color + ")";    
 }

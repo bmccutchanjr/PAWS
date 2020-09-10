@@ -1,9 +1,68 @@
 -- create database PAWS;
 use PAWS;
 
--- drop table Animals;
-create table Animals
-(   --  Master table of animals in the shelter
+create table Colors if not exists
+(   --  'Master' table of colors, used to define options for the application
+
+    color           varchar (6)
+                    unique
+                    not null,
+
+    order           tinyint (2)
+                    unique
+                    not null,
+
+    primary key (color)
+)
+
+create table Comments if not exists
+(   --  All the animal handling comments entered by users of the application.
+
+    commentId       tinyint (2)
+                    auto_increment
+                    not null
+                    unique,
+
+    comment         text
+                    not null,
+
+    type            enum ("behavior",
+                          "color test",
+                          "information",
+                          "medical",
+                          "public",)
+
+    primary (commentId)
+);
+
+create table Restrictions if not exists
+(   --  'Master' table of additional restrictions
+    --
+    --  These entries DO NOT DEFINE the restriction, rather they are text describing the
+    --  restriction.  They are implemented in the application as a <select> or <input>
+    --  element.
+
+    restrictId      tinyint (2)
+                    auto_increment
+                    not null
+                    unique,
+
+    text            varchar (75)
+                    not null,
+
+    testable        boolean
+                    default true,
+
+    primary key (restrictId)
+);
+
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+
+--  The following table pertain to animals
+
+create table Animals if not exists
+(   --  'Master' table of animals in the shelter
 
     animalId        smallint (6)
                     auto_increment
@@ -25,10 +84,10 @@ create table Animals
                     not null
                     default "black",
 
-    add_restrict    tinyint (2)
+    cage_num        tinyint(3)
                     default null,
 
-    cage_num        tinyint(3)
+    image           char (10)
                     default null,
 
     change_by       smallint (6)
@@ -38,33 +97,136 @@ create table Animals
                     not null,
 
     primary key (animalId)
-)
-auto_increment = 0;
+);
 
-insert into Animals values
-    (null, true, "dog", "Geronimo", "blue", 20, null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Hidalgo", "blue", 20, null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Moety", "blue", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Sonny", "green", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Chloe", "green", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Kuj", "orange", "", null, "Bill", "2020-09-05"),
-    (null, true, "cat", "Digger", "blue", "", null, "Bill", "2020-09-05"),
-    (null, true, "cat", "Chulupa", "green", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Chardonnay", "green", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Reisling", "orange", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Patsy", "red", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Chandler", "orange", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Phoebe", "purple", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Joey", "black", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Ross", "black", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Monica", "red", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Rachel", "blue", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Dr. Strangelov", "purple", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Dr. Quinn", "green", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Dr. Jeckyl", "red", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Dr. Zhivago", "blue", "", null, "Bill", "2020-09-05"),
-    (null, true, "dog", "Buddy", "blue", "", null, "Bill", "2020-09-06"),
-    (null, true, "dog", "Anatole", "blue", 20, null, "Bill", "2020-09-06"),
-    (null, true, "dog", "Buddy", "green", "", null, "Bill", "2020-09-06"),
-    (null, true, "dog", "Bullwinkle", "orange", "", null, "Bill", "2020-09-06"),
-    (null, true, "dog", "Buddy", "blue", "", null, "Bill", "2020-09-05");
+create table AnimalRestrictions if not exists
+(   --  List of additional resrictins associated with individual animals
+    --
+    --  Additional restrictions is potentially a many-to-one relationship.  One animal
+    --  may have multiple additional restrictions
+    
+    animalId        smallint (6)
+                    not null,
+
+    restrictId      tinyint (2)
+                    not null,
+
+    primary key (animalId, restrictId),
+    foreign key (animalId) references Animals (animalId),
+    foreign key (restrictId) references Restrictions (restrictId)
+);
+
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+
+create table People if not exists
+(   --  'Master' table of people
+
+    peopleId        smallint (6)
+                    auto_increment
+                    not null
+                    unique,
+
+    active          boolean
+                    not null
+                    default true,
+
+    lock            boolean
+                    default false,
+
+    type            enum("staff",
+                         "volunteer")
+                    default "volunteer",
+
+    surname         varchar (15)
+                    not null,
+
+    given           varchar (15)
+                    not null,
+                    
+    middle          varchar (15)
+                    default null,
+
+    preferred       varchar (15)                --  What this person prefers to be called, perhaps a
+                    default null,               --  nickname
+                    
+    email           varchar(30)                 --  Using e-mail addresses in lieu of a user id.  E-mail
+                    unique                      --  addresses are unique, no two people in the world have
+                    not null,                   --  the same e-mail address.
+
+    volgistics      smallint (6)                --  Volgistics ID
+                    unique                      --  If this ID is known, it can be used instead of an
+                    default null,               --  e-mail address to login to PAWS.
+
+    password        binary (60)
+                    not null,
+
+    image           varchar (20)
+                    default null,
+
+    aboutme         text
+                    default null,
+
+    change_by       tinyint(6)
+                    not null,
+
+    change_date     date
+                    not null,
+
+    primary key (peopleId),
+    index (email),
+    index (volgistics),
+);
+
+create table ColorPermissions if not exists
+(
+    id              smallint (6)
+                    auto_increment
+                    not null
+                    unique,
+
+    peopleId        smallint (6)
+                    not null,
+
+    species         varchar (6)
+                    default "dog"
+                    not null,
+
+    color           varchar (6)
+                    default "green"
+                    not null,
+
+    primary key (id),
+    foreign key (peopleId) refenences People (peopleId)
+);
+
+create table AdditionalPermissions if not exists
+(   --  List of additional permissions associated with individual people.  These permissions
+    --  coorespond to AdditionalRestrictions.
+    --
+    --  Additional restrictions is potentially a many-to-one relationship.  One person
+    --  may have multiple additional permissions
+    
+    peopleId        smallint (6)
+                    not null,
+
+    restrictId      tinyint (2)
+                    not null,
+
+    primary key (peopleId, restrictId),
+    foreign key (peopleId) references People (peopleId),
+    foreign key (restrictId) references Restrictions (restrictId)
+);
+
+create table AdminPrivledges if not exists
+(   --  Administration Privledges.
+    --
+
+--  add people
+--  remove people
+--  change passwords
+--  add/change animal permissions
+--  add animals
+--  remove animals
+--  change animal colors/permissions    
+)
