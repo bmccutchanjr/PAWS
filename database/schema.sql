@@ -1,21 +1,21 @@
 -- create database PAWS;
 use PAWS;
 
-create table Colors if not exists
+create table if not exists Colors
 (   --  'Master' table of colors, used to define options for the application
 
     color           varchar (6)
                     unique
                     not null,
 
-    order           tinyint (2)
+    sort            tinyint (2)
                     unique
                     not null,
 
     primary key (color)
-)
+);
 
-create table Comments if not exists
+create table if not exists Comments
 (   --  All the animal handling comments entered by users of the application.
 
     commentId       tinyint (2)
@@ -26,16 +26,16 @@ create table Comments if not exists
     comment         text
                     not null,
 
-    type            enum ("behavior",
+    type_of         enum ("behavior",
                           "color test",
                           "information",
                           "medical",
-                          "public",)
+                          "public"),
 
-    primary (commentId)
+    primary key (commentId)
 );
 
-create table Restrictions if not exists
+create table if not exists Restrictions
 (   --  'Master' table of additional restrictions
     --
     --  These entries DO NOT DEFINE the restriction, rather they are text describing the
@@ -44,10 +44,10 @@ create table Restrictions if not exists
 
     restrictId      tinyint (2)
                     auto_increment
-                    not null
-                    unique,
+                    unique
+                    not null,
 
-    text            varchar (75)
+    restriction     varchar (75)
                     not null,
 
     testable        boolean
@@ -56,12 +56,12 @@ create table Restrictions if not exists
     primary key (restrictId)
 );
 
-------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------
+-- *********************************************************************************************
+-- *********************************************************************************************
 
 --  The following table pertain to animals
 
-create table Animals if not exists
+create table if not exists Animals
 (   --  'Master' table of animals in the shelter
 
     animalId        smallint (6)
@@ -99,7 +99,7 @@ create table Animals if not exists
     primary key (animalId)
 );
 
-create table AnimalRestrictions if not exists
+create table if not exists AnimalRestrictions
 (   --  List of additional resrictins associated with individual animals
     --
     --  Additional restrictions is potentially a many-to-one relationship.  One animal
@@ -116,10 +116,10 @@ create table AnimalRestrictions if not exists
     foreign key (restrictId) references Restrictions (restrictId)
 );
 
-------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------
+-- *********************************************************************************************
+-- *********************************************************************************************
 
-create table People if not exists
+create table if not exists People
 (   --  'Master' table of people
 
     peopleId        smallint (6)
@@ -131,10 +131,10 @@ create table People if not exists
                     not null
                     default true,
 
-    lock            boolean
+    locked          boolean
                     default false,
 
-    type            enum("staff",
+    type_of         enum("staff",
                          "volunteer")
                     default "volunteer",
 
@@ -175,11 +175,16 @@ create table People if not exists
 
     primary key (peopleId),
     index (email),
-    index (volgistics),
+    index (volgistics)
 );
 
-create table ColorPermissions if not exists
-(
+create table if not exists ColorPermissions
+(   --  A many-to-one table associating people with the animals they are allowed to interact with.
+    --
+    --  Color is the most basic level of permission.  A volunteer granted permission to a color is authorized to interact
+    --  with any animal which has been assigned that same color.  This permission can be modified by granting or revoking
+    --  permission to specific animals.
+    
     id              smallint (6)
                     auto_increment
                     not null
@@ -197,10 +202,10 @@ create table ColorPermissions if not exists
                     not null,
 
     primary key (id),
-    foreign key (peopleId) refenences People (peopleId)
+    foreign key (peopleId) references People (peopleId)
 );
 
-create table AdditionalPermissions if not exists
+create table if not exists AdditionalPermissions
 (   --  List of additional permissions associated with individual people.  These permissions
     --  coorespond to AdditionalRestrictions.
     --
@@ -218,15 +223,14 @@ create table AdditionalPermissions if not exists
     foreign key (restrictId) references Restrictions (restrictId)
 );
 
-create table AdminPrivledges if not exists
-(   --  Administration Privledges.
-    --
+-- create table if not exists AnimalPrivledges
 
---  add people
---  remove people
---  change passwords
---  add/change animal permissions
---  add animals
---  remove animals
---  change animal colors/permissions    
-)
+-- create table AdminPrivledges if not exists
+    --  grant admin privledges
+    --  add people
+    --  remove people
+    --  change passwords
+    --  add/change animal permissions
+    --  add animals
+    --  remove animals
+    --  change animal colors/restrictions    
