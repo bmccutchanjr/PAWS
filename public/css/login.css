@@ -1,0 +1,33 @@
+header
+{
+    color: grey;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 20px;
+    text-align: center;
+}
+
+main
+{
+    border: 3px solid grey;
+    border-radius: 5px;
+    color: grey;
+    margin: 0px auto;
+    padding: 10px;
+    width: 50vw;
+    min-width: 200px;
+}
+
+.login-div
+{
+    border: 1px solid grey;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    padding: 10px;
+}
+
+.login-div input
+{
+    width: 100%;
+}

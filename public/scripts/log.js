@@ -19,7 +19,7 @@ function addMenu ()
 
     configureElement ("a",
         {   "class": "menu-option",
-            "href": "#",
+            "href": "/profile",
             "innerText": "My Profile"
         },
         menu);

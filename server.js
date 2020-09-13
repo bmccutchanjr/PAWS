@@ -11,23 +11,22 @@
 //  configuration.
 
 const chalk = require("chalk");
-//  03  begins
 const dotenv = require("dotenv").config();
-//  03 ends
 const express = require("express");
 const app = express();
 const http = require ("http");
 const server = http.createServer (app);
 const io = require("socket.io");
 const socket = io.listen(server);
-//  01  const passport = require("passport");
+const passport = require("passport");
 
 //  Next we'll configure Express.
 
 app.use(express.urlencoded({ extended: true }));
 app.use ("/api", require("./end-points/api.js"));
 app.use ("/", require("./end-points/html.js"));
-//  01  app.use (passport);
+app.use (passport.initialize());
+app.use (passport.session ());
 
 const PORT = process.env.PORT ? process.env.PORT : 80;
 
