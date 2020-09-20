@@ -131,8 +131,8 @@ create table if not exists People
                     not null
                     default true,
 
-    locked          boolean
-                    default false,
+    lock_code       tinyint(3)
+                    default 0,
 
     type_of         enum("staff",
                          "volunteer")
@@ -158,7 +158,7 @@ create table if not exists People
                     unique                      --  If this ID is known, it can be used instead of an
                     default null,               --  e-mail address to login to PAWS.
 
-    password        binary (60)
+    password        char (60)
                     not null,
 
     image           varchar (20)

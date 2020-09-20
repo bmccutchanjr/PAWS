@@ -1,42 +1,45 @@
-	const passport = require ("passport");
-	const LocalStrategy = require ("passport-local").Strategy;
+const chalk = require("chalk");
+const passport = require ("passport");
+const LocalStrategy = require ("passport-local").Strategy;
 
-	const people = require ("./database/people.js");
+const people = require ("./database/people.js");
+//	01	I don't know how this code got here.  I don't remember it and don't know what it thinks it does.  I do remember
+//	01	deleting it before though...
+//	01	const { request } = require("http");
 
-	passport.use (new LocalStrategy (
-	{   // Passport by default uses fields 'username' and 'password'.  You will note that this function
-	    // (and later calls to passport.authenticate() do not reference these fields.  Passport appears
-	    // to strip these values directly out of request body without your interaction.  More f---ing
-	    // magic.
-	    //
-	    // But what if your code doesn't use these names?  Or perhaps you want to use an email address
-	    // instead of a user name?  You can configure passport-local to use properties and names other
-	    // than the default in the constructor.  Here we are telling Passport to use an email address
-	    // rather than a user name (User names have to be unique to this application, and email addresses
-	    // are already unique throughout the world.  Just makes sence.)
+passport.use (new LocalStrategy ( { usernameField:  "email" }, (email, password, done) =>
+{
+	people.authenticateByEmail (email, password)
+	.then (results =>
+	{
+		if (results.lock_code != 0)
+		{
+			console.log (chalk.redBright ("PAWS AUTHENTICATION ERROR 109"));
+			console.log (chalk.redBright ("Attempt to authenticate locked user account.  Lock code: " + results[0].lock_code));
+			return done (null, false, { message: "PAWS AUTHENTICATION ERROR 109" });
+		}
+		
+		return done (null, results);
+	})
+	.catch (error =>
+	{
+		console.log (chalk.redBright ("PAWS AUTHENTICATION ERROR 110"));
+		console.log (chalk.redBright (error));
+		return done (null, false, { message: "PAWS AUTHENTICATION ERROR 110" });
+	})
+}))
 
-	    usernameField:  "email"
-	},
-	function (email, password, done)
-	{   people.validateLogin (email, password)
-	    .then (function (results)
-	    {
-	        return done (null, results);
-	    })
-	    .catch (function (error)
-	    {   return done (null, false, { message: "Invalid login credentials"});
-	    })
-	}))
+// This code is required, but you will never refer to it or call it.  It just happens, f---ing magic.
+// It's "boiler plate" to handle session credentials.  You have to provide this code as is.
 
-	// This code is required, but you will never refer to it or call it.  It just happens, f---ing magic.
-	// It is "boiler plate" to handle session credentials.
+passport.serializeUser(function(user, callback)
+{   
+	callback (null, user);
+});
 
-	passport.serializeUser(function(user, callback)
-	{   callback (null, user);
-	});
+passport.deserializeUser(function(obj, callback)
+{
+	callback (null, obj);
+});
 
-	passport.deserializeUser(function(obj, callback)
-	{   callback (null, obj);
-	});
-
-	module.exports = passport;
+module.exports = passport;

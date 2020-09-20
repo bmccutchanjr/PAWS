@@ -25,16 +25,19 @@ router
         
         next();
     })
-.get("/", (request, response) =>
+
+    .get("/", (request, response) =>
     {	// The default page (or 'landing page') is log.html.
 
         // response.sendFile(path.join(__dirname, "../public/log.html"));
         response.redirect ("/log");
     })
-.get("/about", (request, response) =>
+
+    .get("/about", (request, response) =>
     {	response.sendFile(path.join(__dirname, "../public/about.html"));
     })
-.get("/admin", (request, response) =>
+
+    .get("/admin", (request, response) =>
     {	
         if (request.user)
         {
@@ -44,33 +47,40 @@ router
 
         response.sendFile(path.join(__dirname, "../public/login.html"));
     })
-.get("/cage-page", (request, response) =>
+
+    .get("/cage-page", (request, response) =>
     {	response.sendFile(path.join(__dirname, "../public/cage-page.html"));
     })
-.get("/log", (request, response) =>
+
+    .get("/log", (request, response) =>
     {	response.sendFile(path.join(__dirname, "../public/log.html"));
     })
-.get("/login", (request, response) =>
+
+    .get("/login", (request, response) =>
     {	response.sendFile(path.join(__dirname, "../public/login.html"));
     })
-.get("/profile",  (request, response, next) =>
+
+    .get("/logout", (request, response) =>
     {
-        passport.authenticate ("local", (error, user, info) =>
-        {
-            if (error)
-            {   console.log (error);
-                response.status(500).send(error);
-            }
-            else
-                if (!user)
-                    response.sendFile(path.join(__dirname, "../public/login.html"));
-                else
-                    response.sendFile(path.join(__dirname, "../public/profile.html"));
-        })(request, response, next)
+        request.logout();
+        response.redirect("/");
     })
-.use(express.static(path.join(__dirname, "../public")))
-.use((request, response) =>
-    {	//  A request was made for an unknown end-point.  That's corresponds to an HTML 404 status
+
+    .get("/profile",  (request, response, next) =>
+    {
+        if (!request.user)
+        {   //  This browser has not been authenticated if there is no user property in request
+            response.status(401).sendFile(path.join(__dirname, "../public/login.html"));
+            return;
+        }
+        
+        response.status(200).sendFile(path.join(__dirname, "../public/profile.html"));
+    })
+
+    .use(express.static(path.join(__dirname, "../public")))
+
+    .use((request, response) =>
+    {	//  A request was made for an unknown route.  That corresponds to an HTML 404 status
         //  code, so send them a 404 page!
 
         response.sendFile(path.join(__dirname, "../public/404.html"));

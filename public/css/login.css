@@ -11,7 +11,7 @@ main
 {
     border: 3px solid grey;
     border-radius: 5px;
-    color: grey;
+    color: black;
     margin: 0px auto;
     padding: 10px;
     width: 50vw;
@@ -27,7 +27,28 @@ main
     padding: 10px;
 }
 
-.login-div input
+.login-div.active
 {
+    background: rgb(128, 255, 128);
+}
+
+.login-div.error
+{
+    background: rgb(255, 128, 128);
+}
+
+.login-div input
+{   display: block;
     width: 100%;
+}
+
+.login-div .error-text
+{
+    font-size: 12px;
+}
+
+.spacer
+{
+    display: inline-block;
+    width: 20px;
 }

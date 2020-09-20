@@ -65,6 +65,10 @@ function person (data)
             hash (d[4])
             .then (password =>
             {
+console.log(typeof password);
+console.log(password);
+console.log(password.toString());
+
                 d[4] = password;
 
                 const query = 

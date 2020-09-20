@@ -12,14 +12,24 @@ function addMenu ()
 
     configureElement ("a",
         {   "class": "menu-option",
-            "href": "login.html",
-            "innerText": "Log in"
+            "href": "/login",
+            "id": "menu-login",
+            "innerText": "Log In"
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "/logout",
+            "id": "menu-logout",
+            "innerText": "Log Out"
         },
         menu);
 
     configureElement ("a",
         {   "class": "menu-option",
             "href": "/profile",
+            "id": "menu-profile",
             "innerText": "My Profile"
         },
         menu);
@@ -27,6 +37,7 @@ function addMenu ()
     configureElement ("a",
         {   "class": "menu-option",
             "href": "#",
+            "id": "menu-admin",
             "innerText": "Admin Functions"
         },
         menu);

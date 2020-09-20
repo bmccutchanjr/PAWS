@@ -14,16 +14,17 @@
         <header>PAWS</header>
         <main>
             Please log in:
-            <div class=login-div id=user-input>
-                <input name=user placeholder="your email address" type=text>
-                or<br>
-                <input name=volgistics placeholder="your Volgistics Id" type=text>
+            <div class="login-div active" id=user-input>
+                <input id=email name=email o-n-c-h-a-n-g-e="validateUser(event)" onfocus="select()" placeholder="Your email address or Volgistics Id" type=text>
+                <!-- or<br> -->
+                <!-- <input id=volgistics name=volgistics onchange="validateUser(event)" onfocus="select()" placeholder="your Volgistics Id" type=text> -->
             </div>
             <div class=login-div id=password-input>
-                <input name=password placeholder="password" type=password>
+                <input id=password name=password onchange="validatePassword(event)" onfocus="select()" placeholder="password" type=password>
             </div>
             <div class=login-div id=submit-password>
-                <button>Log In</button>
+                <a class=modal-option href="#" onclick="handleLoginOption(event)">Log In</a>
+                <div class=spacer></div>
                 <button>I Forgot My Password</button>
             </div>
         </main>
@@ -33,5 +34,6 @@
     <footer><div class="left">PAWS Log In</div><div class="right">&copy All Rights Reserved</div></footer>
 </body>
 
+<script language="JavaScript" src="scripts/common.js"></script>
 <script language="JavaScript" src="scripts/login.js"></script>
 </html>

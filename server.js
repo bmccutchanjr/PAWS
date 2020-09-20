@@ -13,6 +13,9 @@
 const chalk = require("chalk");
 const dotenv = require("dotenv").config();
 const express = require("express");
+//  01  begins
+const session = require ("express-session");
+//  01  ends
 const app = express();
 const http = require ("http");
 const server = http.createServer (app);
@@ -23,10 +26,20 @@ const passport = require("passport");
 //  Next we'll configure Express.
 
 app.use(express.urlencoded({ extended: true }));
-app.use ("/api", require("./end-points/api.js"));
-app.use ("/", require("./end-points/html.js"));
+app.use(express.json());
+app.use (session (
+    {   secret: "keyboard cat",
+    resave: true,
+    saveUninitialized: true
+    }));
+
 app.use (passport.initialize());
 app.use (passport.session ());
+
+//  require modules to handles routes and end-points
+
+app.use ("/api", require("./end-points/api.js"));
+app.use ("/", require("./end-points/html.js"));
 
 const PORT = process.env.PORT ? process.env.PORT : 80;
 

@@ -59,6 +59,14 @@ function configureElement (elementType, object, parent = undefined)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+//  AUTHENTICATION
+//
+//  Functions and variables used to authenticate users.
+//
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  MENUS
+//
 //  Functions and variables used to create and implement the page menu.  This code is common to
 //  all pages and does not include anything page specific.
 //
