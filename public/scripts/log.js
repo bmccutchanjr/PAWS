@@ -100,6 +100,36 @@ function addMenu ()
             "innerText": "About"
         },
         menu);
+
+    checkAuthenticated ()
+    .then (authenticated =>
+    {
+console.log ("promise");
+console.log ("authenticated: " + authenticated);
+        if (authenticated)
+        {
+//  02              checkAdmin (authenticated);
+            document.getElementById ("menu-login").style.display = "none";
+            document.getElementById ("menu-logout").style.display = "inline-block";
+            document.getElementById ("menu-profile").style.display = "inline-block";
+
+            checkAdmin ()
+            .then (isAdmin =>
+            {
+                if (isAdmin)
+                    document.getElementById ("menu-admin").style.display = "inline-block";
+            })
+            .catch (error =>
+            {
+                console.log (error);
+            })
+        }
+    })
+    .catch (error =>
+    {
+        //  There may not be anything to do here...
+        console.log (error);
+    })
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

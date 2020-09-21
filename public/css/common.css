@@ -96,6 +96,13 @@ body
     text-decoration: none;
 }
 
+#menu-logout,
+#menu-profile,
+#menu-admin
+{
+    display: none;
+}
+
 /********************************************************************/
 /* style settings for the modal message                             */
 /*                                                                  */

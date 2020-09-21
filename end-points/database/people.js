@@ -107,6 +107,25 @@ const db =
     isAdmin (peopleId)
     {   //  Retrieve list af admin privledges for the selected user
 
+        const query = "select peopleId, privledge from AdminPrivledges where peopleId=?";
+        return new Promise ((resolve, reject) =>
+        {
+            select (query, peopleId)
+            .then (results =>
+            {
+                if (results.length < 1)
+                    return false;
+                else
+                    return true;
+            })
+            .catch (error =>
+            {
+                console.log (chalk.redBright("PAWS PROCESS ERROR 102"));
+                console.log (chalk.redBright("people.js function isAdmin()"));
+                console.log (chalk.redBright(error));
+                return error;
+            })
+        })
     }
 }
 

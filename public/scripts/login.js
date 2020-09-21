@@ -29,11 +29,11 @@ console.log (xml.getAllResponseHeaders());
                     {
 //  01                             status.data = true;
 console.log ("status: 205");
-console.log (xml.status);
-console.log (xml.responseText);
+//  02  console.log (xml.status);
+//  02  console.log (xml.responseText);
 // console.log (JSON.stringify(xml.getAllResponseHeaders(), null, 2));
-console.log (xml.getAllResponseHeaders());
-// window.location.reload();
+//  02  console.log (xml.getAllResponseHeaders());
+window.location.reload();
                         break;
                     }
                     default:

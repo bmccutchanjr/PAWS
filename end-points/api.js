@@ -9,6 +9,7 @@ const passport = require("passport");
 //  Require custom middleware
 
 const animals = require("./database/animals.js");
+const people = require("./database/people.js");
 
 //  Configure express
 
@@ -27,6 +28,11 @@ router
 
         next();
 	})
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //  The following end-points relate to the animals in the shelter
+    //  
 
 	.get("/animals/allactive/:group", (request, response) =>
 	{	// Get all of the animals currently in the shelter for the specified animal type.  This is
@@ -54,6 +60,41 @@ router
             else
                 response.status(200).json(data);
         })
+    })
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //  The following end-points relate to the people using the application
+    //  
+
+    .get("/people/isAdmin", (request, response, next) =>
+    {   //  Return a boolean value indicating whether the authenticated user has admin privledges.
+
+        people.isAdmin (request.user.peopleId)
+        .then (result =>
+        {
+            response.status(200).send(result);
+        })
+        .catch (error =>
+        {
+            response.status(500)
+                    .send("Oops!  An error occured that is preventing the server from processing this request.  Contact "
+                        + "your IT support group for assistance.");
+        })
+    })
+
+    .get("/people/isAuthenticated", (request, response, next) =>
+    {
+        if (!request.user)
+        {
+console.log (chalk.yellowBright("NO SOUP FOR YOU!"));
+            response.status(200).send(false);
+        }
+        else
+        {
+console.log (chalk.yellowBright("yup, logged in!"));
+            response.status(200).send(true);
+        }
     })
 
     .post("/people/login", (request, response, next) =>
@@ -115,15 +156,23 @@ router
                                 + "at this time.  Please contact your IT support for assistance.");
                 }
 
-                return response.status(200).send("supercalifragilistic");
+                return response.status(205).send("supercalifragilistic");
             });
         })(request, response, next);
     })
 
-    .use((request, response) =>
-    {   //  Default API end-point to handle bad requests...all this does is send a 404 status
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //  Miscellaneous end-points
+    //  
 
-        response.status(404).send("Nothing to see here!");
+    .use((request, response) =>
+    {   //  Default API end-point to handle bad requests...all this does is send a 404 status with custom
+        //  message.
+
+        console.log (chalk.redBright("PAWS ERROR 404"));
+        console.log (chalk.redBright("Some client made an attempt to access an invalid end-point."));
+        response.status(404).send("Error 404.  You have requested an unknown or invalid service.");
     });
 
 module.exports = router;
