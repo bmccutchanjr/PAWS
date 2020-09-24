@@ -1,77 +1,46 @@
-function configureElement (elementType, object, parent = undefined)
-{   //  A generic function to configure HTML elements in the DOM.
-    //
-    //  'elementType' and 'object are required.
-    //
-    //  'parent' is an optional parameter.  If passed it is some DOM element that the newly created
-    //  element will be appended to.
+//  This module collects the various functions used to create the sidebar menu and implement the menu options that
+//  are common to all pages.
+//
 
-    if (typeof elementType != "string")
-    {   console.log ("Invalid parameter type: elementType");
-        return false;
-    }
+function checkOptions (options)
+{
+    //  Some of the common options are hidden unless the user has authenticated with the server or the user has
+    //  admin privledges.  The conditions may be true when the page loads, so verify with the server if these
+    //  options should be hidden or visible.
 
-    if (typeof object != "object")
-    {   console.log ("Invalid parameter type: object");
-        return false;
-    }
+    checkAuthenticated ()
+    .then (authenticated =>
+    {
+console.log ("promise");
+console.log ("authenticated: " + authenticated);
+        if (authenticated)
+        {
+            document.getElementById ("menu-login").style.display = "none";
+            document.getElementById ("menu-logout").style.display = "inline-block";
+            if (options.MyProfile != false)
+                document.getElementById ("menu-profile").style.display = "inline-block";
 
-    if (parent && (typeof parent != "object"))
-    {   console.log ("Invalid parameter type: parent");
-        return false;
-    }
-
-    //  First thing is to create the new HTML element...
-    let element = document.createElement (elementType);
-
-    //  And apply formatting...
-    let keys = Object.entries (object);
-    keys.forEach (attribute =>
-    {   switch (attribute[0])
-        {   case "display":
-            {   element.style.display = attribute[1];
-                break;
-            }
-            case "innerText":
-            {   element.innerText = attribute[1];
-                break;
-            }
-            case "innerHTML":
-            {   element.innerHTML = attribute[1];
-                break;
-            }
-            case "top":
-            {   element.style.top = attribute[1];
-                break;
-            }
-            default:
-            {   element.setAttribute (attribute[0], attribute[1]);
-                break;
-            }
+            if (options.AdminFunctions != false)
+                checkAdmin ()
+                .then (isAdmin =>
+                {
+                    if (isAdmin)
+                        document.getElementById ("menu-admin").style.display = "inline-block";
+                })
+                .catch (error =>
+                {
+                    console.log (error);
+                });
         }
     })
-
-    //  And finally append it to it's parent
-    if (parent)
-        parent.append (element);
-
-    return element;
+    .catch (error =>
+    {
+        //  There may not be anything to do here...
+        console.log (error);
+    })
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//  AUTHENTICATION
-//
-//  Functions and variables used to authenticate users.
-//
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//  MENUS
-//
-//  Functions and variables used to create and implement the page menu.  This code is common to
-//  all pages and does not include anything page specific.
-//
-
-function createMenu ()
+function configureSidebar (commonOptions, additionalOptions)
 {   //  Create the menu.
     //
     //  The menu consists of two elements; a small menu icon that is always visible in the top left
@@ -101,10 +70,83 @@ function createMenu ()
         },
         document.body);
 
-    return menu;
+    //  Not all of the common options are visible when the page loads.
+
+    checkOptions (commonOptions);
+
+    //  Add options that are common to all pages...
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "/login",
+            "id": "menu-login",
+            "innerText": "Log In"
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "/logout",
+            "id": "menu-logout",
+            "innerText": "Log Out"
+        },
+        menu);
+
+    if (commonOptions.MyProfile != false)
+        configureElement ("a",
+            {   "class": "menu-option",
+                "href": "/profile",
+                "id": "menu-profile",
+                "innerText": "My Profile"
+            },
+            menu);
+
+    if (commonOptions.AdminFunctions != false)
+        configureElement ("a",
+            {   "class": "menu-option",
+                "href": "/admin",
+                "id": "menu-admin",
+                "innerText": "Admin Functions"
+            },
+            menu);
+
+    //  Now add the menu options that are page specific.  These options are created by a function passed from
+    //  the page.
+
+    if (additionalOptions != undefined)
+    {   
+        configureElement ("hr",
+        {   "class": "menu-separator",
+        },
+        menu);
+
+        additionalOptions ();
+
+        configureElement ("hr",
+        {   "class": "menu-separator",
+        },
+        menu);
+    }
+
+    //  And a couple more options that are common to all pages.
+
+    configureElement ("input",
+        {   "class": "menu-option",
+            "onchange": "submitNames (event)",
+            "placeholder": "Suggest a name for the animals"
+        },
+        menu);
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "#",
+            "innerText": "About"
+        },
+        menu);
+
 }
 
-function expandMenu (event)
+function openSidebar (event)
 {   //  The 'menu-icon' option has been selected.  Either display or hide the menu depending on
     //  it's current state.
 
@@ -127,6 +169,9 @@ function expandMenu (event)
         icon.innerText = "◄";
     }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function checkAdmin ()
 {   //  Ask the PAWS server if the user has admin privledges and return an appropriate boolean value

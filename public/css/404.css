@@ -1,0 +1,25 @@
+body
+{   background: grey;
+    color: lightgrey;
+    text-align: center
+}
+
+header
+{   font-size: 40px;
+    padding: 20px;
+    text-align: center;
+}
+
+main
+{   overflow: hidden;
+}
+
+.puppy
+{
+    display: inline-block;
+    height: auto;
+    margin: 100px auto;
+    width: 60%;
+    max-width: 750px;
+    min-width: 200px;
+}
