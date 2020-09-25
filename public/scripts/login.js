@@ -1,32 +1,34 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//  FUnctions used to submit an API request to the server's end-point "/api/people/login".
-//
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function handleLoginOption (event)
 {   //  This is the event handler for the 'Log In' option.
+
+    //  At this time, there is no effort to validate data.  This function submits data to the server for purposes of
+    //  validating authentication credentials and does not update any data on the server.  Invalid or missing data only
+    //  means the user cannot be authenticated -- and at this point in development, the inconvenience of making a second
+    //  (or third) attempt to log in is not such a big deal.
     
     event.preventDefault ();
 
-    const xml = new XMLHttpRequest();
-    xml.onreadystatechange = () =>
+    AJAX ("POST", "/api/people/login/", xml =>
         {
-            if (xml.readyState == 4)
-                switch (xml.status)
-                {   case 200:
-                    {
+            switch (xml.status)
+            {   case 200:
+                {
 //  01                             status.data = true;
 //  I'm not sure I have anything to do here...if the user has properly authenticated with the server there's no need to receive and
 //  handle data from the server.  I'm just going to reload the page, and that's a status 205 not 200 (although 200 isn't exactly
-//  incorrect, it just implies the data sent data with the response.)
+//  incorrect, it just implies that data was sent data with the response.)
 console.log ("status: 200");
 console.log (xml.status);
 console.log (xml.responseText);
 console.log (xml.getAllResponseHeaders());
 // window.location.reload();
-                        break;
-                    }
-                    case 205:
-                    {
+                    break;
+                }
+                case 205:
+                {
 //  01                             status.data = true;
 console.log ("status: 205");
 //  02  console.log (xml.status);
@@ -34,34 +36,33 @@ console.log ("status: 205");
 // console.log (JSON.stringify(xml.getAllResponseHeaders(), null, 2));
 //  02  console.log (xml.getAllResponseHeaders());
 window.location.reload();
-                        break;
-                    }
-                    default:
-                    {   
+                    break;
+                }
+                default:
+                {   
 console.log ("status: default");
 console.log (xml.status);
 console.log (xml.responseText);
-                        alert (xml.responseText);
-                        break;
-                    }
+                    alert (xml.responseText);
+                    break;
                 }
-        }
-
-    xml.open ("POST", "/api/people/login/", true);
-    xml.setRequestHeader ("Content-Type", "application/x-www-form-urlencoded");
-const send = ("email=" + document.getElementById ("email").value + "&password=" + document.getElementById ("password").value);
-console.log (send);
-    xml.send(send);
+            }
+        },
+        {
+            "email": document.getElementById ("email").value,
+            "password": document.getElementById ("password").value
+        });
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //  Functions and variables used to validate the login credentials
-//
 
 function isEmail (text)
 {
     const indexAt = text.indexOf ("@");
-    const indexDot = text.indexOf (".");
+    const indexDot = text.indexOf (".", indexAt);
     const length = text.length;
 
     if ((indexAt <= 0) || (indexAt == length)) return false;

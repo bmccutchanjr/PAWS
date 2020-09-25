@@ -9,33 +9,29 @@ function checkOptions (options)
     //  options should be hidden or visible.
 
     checkAuthenticated ()
-    .then (authenticated =>
+    .then (result =>
     {
-        if (authenticated)
-        {
-            document.getElementById ("menu-login").style.display = "none";
-            document.getElementById ("menu-logout").style.display = "inline-block";
-            if (options.MyProfile != false)
-                document.getElementById ("menu-profile").style.display = "inline-block";
+        document.getElementById ("menu-login").style.display = "none";
+        document.getElementById ("menu-logout").style.display = "inline-block";
 
-            if (options.AdminFunctions != false)
-                checkAdmin ()
-                .then (isAdmin =>
-                {
-                    if (isAdmin)
-                        document.getElementById ("menu-admin").style.display = "inline-block";
-                })
-                .catch (error =>
-                {
-                    console.log (error);
-                });
-        }
+        if (options.MyProfile != false)
+            document.getElementById ("menu-profile").style.display = "inline-block";
     })
     .catch (error =>
     {
-        //  There may not be anything to do here...
         console.log (error);
+    });
+
+    checkAdmin ()
+    .then (result =>
+    {
+        if (result)
+            document.getElementById ("menu-admin").style.display = "inline-block";
     })
+    .catch (error =>
+    {
+        console.log (error);
+    });
 }
 
 function configureSidebar (commonOptions, additionalOptions)
@@ -131,7 +127,8 @@ function configureSidebar (commonOptions, additionalOptions)
     configureElement ("input",
         {   "class": "menu-option",
             "onchange": "submitNames (event)",
-            "placeholder": "Suggest a name for the animals"
+            "placeholder": "Suggest a name",
+            "title": "Suggest a name for the animals"
         },
         menu);
 
@@ -141,7 +138,6 @@ function configureSidebar (commonOptions, additionalOptions)
             "innerText": "About"
         },
         menu);
-
 }
 
 function openSidebar (event)
@@ -174,23 +170,10 @@ function openSidebar (event)
 function checkAdmin ()
 {   //  Ask the PAWS server if the user has admin privledges and return an appropriate boolean value
 
-    return new Promise ((resolve, reject) =>
-    {
-        const xml = new XMLHttpRequest ();
-        xml.onreadystatechange = () =>
+    return AJAX ("GET", "/api/people/isAdmin", xml =>
         {
-            if (xml.readyState == 4)
-            {   
-                if (xml.status == 200)
-                    resolve (true);
-                else
-                    reject (false);
-            }
-        }
-
-        xml.open ("GET", "/api/people/isAdmin");
-        xml.send ();
-    })
+            (xml.responseText == true) ? true : false;
+        });
 }
 
 function checkAuthenticated ()
@@ -205,56 +188,33 @@ function checkAuthenticated ()
     //  The original page and its script will no longer exist and there's no way for me to know if "/log" was served because
     //  the user clicked on the Log Out option or if they hit the browser's back button.
 
-    return new Promise ((resolve, reject) =>
-    {
-        const xml = new XMLHttpRequest ();
-        xml.onreadystatechange = () =>
+    return AJAX ("GET", "/api/people/isAuthenticated", xml =>
         {
-            if (xml.readyState == 4)
-            {   
-                    resolve (xml.responseText == true) ? true : false;
-            }
-        }
-
-        xml.open ("GET", "/api/people/isAuthenticated");
-        xml.send ();
-    })
+            (xml.responseText == "true") ? true : false;
+        });
 }
 
-function hideAdmin (isAuthenticated)
-{   //  Set the CSS display attribute to hide or display the Admin option.  The parameter indicates whether the user
-    //  is authenticated.  It remains to be seen if they have admin privledges.
+// function hideAdmin (isAuthenticated)
+// {   //  Set the CSS display attribute to hide or display the Admin option.  The parameter indicates whether the user
+//     //  is authenticated.  It remains to be seen if they have admin privledges.
 
-    if (isAuthenticated)
-    {   
-        checkAdmin ()
-        .then (result =>
-        {
-            document.getElementById ("menu-admin").style.display = "inline-block";
-        })
-        .catch (error =>
-        {
-            document.getElementById ("menu-admin").style.display = "none";
-            
-        })
-    }
-    else
-    {   
-        document.getElementById ("menu-admin").style.display = "none";
-    }
-}
+//     if (checkAdmin ())
+//         document.getElementById ("menu-admin").style.display = "inline-block";
+//     else
+//         document.getElementById ("menu-admin").style.display = "none";
+// }
 
-function hideLogin (isAuthenticated)
-{   //  Set the CSS display attribute to hide or display the Login and Logout options as indicated by the parameter
+// function hideLogin (isAuthenticated)
+// {   //  Set the CSS display attribute to hide or display the Login and Logout options as indicated by the parameter
 
-    if (isAuthenticated)
-    {   
-        document.getElementById ("menu-login").style.display = "inline-block";
-        document.getElementById ("menu-logout").style.display = "none";
-    }
-    else
-    {   
-        document.getElementById ("menu-login").style.display = "none";
-        document.getElementById ("menu-logout").style.display = "inline-block";
-    }
-}
+//     if (checkAuthenticated ())
+//     {   
+//         document.getElementById ("menu-login").style.display = "inline-block";
+//         document.getElementById ("menu-logout").style.display = "none";
+//     }
+//     else
+//     {   
+//         document.getElementById ("menu-login").style.display = "none";
+//         document.getElementById ("menu-logout").style.display = "inline-block";
+//     }
+// }

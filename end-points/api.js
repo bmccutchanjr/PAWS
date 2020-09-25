@@ -30,9 +30,9 @@ router
 	})
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
     //  The following end-points relate to the animals in the shelter
-    //  
 
 	.get("/animals/allactive/:group", (request, response) =>
 	{	// Get all of the animals currently in the shelter for the specified animal type.  This is
@@ -63,38 +63,37 @@ router
     })
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
     //  The following end-points relate to the people using the application
-    //  
 
     .get("/people/isAdmin", (request, response, next) =>
     {   //  Return a boolean value indicating whether the authenticated user has admin privledges.
 
-        people.isAdmin (request.user.peopleId)
-        .then (result =>
+        if (!request.user)
+            return response.status(200).send(false);
+        else
         {
-            response.status(200).send(result);
-        })
-        .catch (error =>
-        {
-            response.status(500)
-                    .send("Oops!  An error occured that is preventing the server from processing this request.  Contact "
-                        + "your IT support group for assistance.");
-        })
+            people.isAdmin (request.user.peopleId)
+            .then (result =>
+            {
+                response.status(200).send(result);
+            })
+            .catch (error =>
+            {
+                response.status(500)
+                        .send("Oops!  An error occured that is preventing the server from processing this request.  Contact "
+                            + "your IT support group for assistance.");
+            })
+        }
     })
 
     .get("/people/isAuthenticated", (request, response, next) =>
     {
         if (!request.user)
-        {
-console.log (chalk.yellowBright("NO SOUP FOR YOU!"));
-            response.status(200).send(false);
-        }
+            return response.status(200).send(false);
         else
-        {
-console.log (chalk.yellowBright("yup, logged in!"));
-            response.status(200).send(true);
-        }
+            return response.status(200).send(true);
     })
 
     .post("/people/login", (request, response, next) =>
@@ -162,9 +161,9 @@ console.log (chalk.yellowBright("yup, logged in!"));
     })
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
     //  Miscellaneous end-points
-    //  
 
     .use((request, response) =>
     {   //  Default API end-point to handle bad requests...all this does is send a 404 status with custom
