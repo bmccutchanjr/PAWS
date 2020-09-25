@@ -1,136 +1,61 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//  These functions create, populate and implement the menu.
+
 function addMenu ()
 {   //  Create the side-bar menu
 
-    //  Menu options vary from page to page, but the empty side-bar and associated functions are
-    //  the same.  So call a function to create the menu and return a reference to the DOM element
-    //  so we can put the appropriate menu option in it.
+    //  Menu options vary from page to page, but the empty side-bar, many options and associated functions are
+    //  the same.  So call a function to create the menu and return a reference to the DOM element so we can
+    //  add any page specific menu options.
 
-    const menu = createMenu ();
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "/login",
-            "id": "menu-login",
-            "innerText": "Log In"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "/logout",
-            "id": "menu-logout",
-            "innerText": "Log Out"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "/profile",
-            "id": "menu-profile",
-            "innerText": "My Profile"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "id": "menu-admin",
-            "innerText": "Admin Functions"
-        },
-        menu);
-
-    configureElement ("hr",
-        {   "class": "menu-separator",
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Switch to the Cats"
-        },
-        menu);
-
-    configureElement ("hr",
-        {   "class": "menu-separator",
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Sort by Names",
-            "onclick": "sortByName(event)"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Sort by Color",
-            "onclick": "sortByColor(event)"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Sort by Total Time"
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Sort by Most Recent Date"
-        },
-        menu);
-
-    configureElement ("hr",
-        {   "class": "menu-separator",
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "About"
-        },
-        menu);
-
-    checkAuthenticated ()
-    .then (authenticated =>
-    {
-console.log ("promise");
-console.log ("authenticated: " + authenticated);
-        if (authenticated)
+    configureSidebar ( { MyProfile: true, AdminFunctions: true }, () =>
         {
-//  02              checkAdmin (authenticated);
-            document.getElementById ("menu-login").style.display = "none";
-            document.getElementById ("menu-logout").style.display = "inline-block";
-            document.getElementById ("menu-profile").style.display = "inline-block";
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "innerText": "Switch to the Cats"
+                },
+                menu);
 
-            checkAdmin ()
-            .then (isAdmin =>
-            {
-                if (isAdmin)
-                    document.getElementById ("menu-admin").style.display = "inline-block";
-            })
-            .catch (error =>
-            {
-                console.log (error);
-            })
-        }
-    })
-    .catch (error =>
-    {
-        //  There may not be anything to do here...
-        console.log (error);
-    })
+            configureElement ("hr",
+                {   "class": "menu-separator",
+                },
+                menu);
+
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "innerText": "Sort by Names",
+                    "onclick": "sortByName(event)"
+                },
+                menu);
+
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "innerText": "Sort by Color",
+                    "onclick": "sortByColor(event)"
+                },
+                menu);
+
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "innerText": "Sort by Total Time"
+                },
+                menu);
+
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "innerText": "Sort by Most Recent Date"
+                },
+                menu);
+        });
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -396,6 +321,8 @@ function cagePage (event)
     //  And of course those files don't exist when the Node/Express server tries to serve them.  None
     //  of the links could be coded with relative paths.  All of the links on the page would have to be
     //  fully qualified.  And I don't want that.
+    //
+    //  IS THIS WHAT EXPRESS STATIC DOES???
     //
     //  The only alternative seems to be to set a cookie to identify the desired animal.  And
     //  since there could be dozens of animals on the page, I need to set the cookie when the

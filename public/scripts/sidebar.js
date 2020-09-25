@@ -11,8 +11,6 @@ function checkOptions (options)
     checkAuthenticated ()
     .then (authenticated =>
     {
-console.log ("promise");
-console.log ("authenticated: " + authenticated);
         if (authenticated)
         {
             document.getElementById ("menu-login").style.display = "none";
@@ -48,7 +46,7 @@ function configureSidebar (commonOptions, additionalOptions)
     //  until the menu icon is seleced.
     //
 
-    let icon = configureElement ("div",
+    const icon = configureElement ("div",
         {   "class": "menu-icon",
             "id": "menu-icon"
         },
@@ -59,7 +57,7 @@ function configureSidebar (commonOptions, additionalOptions)
             "expanded": "false",
             "href": "#",
             "innerText": "►",
-            "onclick": "expandMenu (event)"
+            "onclick": "openSidebar (event)"
         },
         icon);
 
@@ -69,10 +67,6 @@ function configureSidebar (commonOptions, additionalOptions)
             "id": "menu"
         },
         document.body);
-
-    //  Not all of the common options are visible when the page loads.
-
-    checkOptions (commonOptions);
 
     //  Add options that are common to all pages...
 
@@ -110,8 +104,12 @@ function configureSidebar (commonOptions, additionalOptions)
             },
             menu);
 
-    //  Now add the menu options that are page specific.  These options are created by a function passed from
-    //  the page.
+    //  The menu includes options that are intended to be available only when certain conditions are met; when the user is
+    //  authenticated to the server or when the user has admin privledges.  These options should not be visible.
+
+    checkOptions (commonOptions);
+
+    //  The menuu may also include options that are page specific.  These options are created by a function from the page.
 
     if (additionalOptions != undefined)
     {   
@@ -128,7 +126,7 @@ function configureSidebar (commonOptions, additionalOptions)
         menu);
     }
 
-    //  And a couple more options that are common to all pages.
+    //  There are additional menu options that are common to all pages and appear at the end of the menu.
 
     configureElement ("input",
         {   "class": "menu-option",
@@ -214,13 +212,6 @@ function checkAuthenticated ()
         {
             if (xml.readyState == 4)
             {   
-console.log ("checkAuthentication ()");
-console.log (xml.responseText);
-
-//  01                  if (xml.status == 200)
-//  01                      resolve (xml.responseText);
-//  01                  else
-//  01                      reject (xml.responseText);
                     resolve (xml.responseText == true) ? true : false;
             }
         }

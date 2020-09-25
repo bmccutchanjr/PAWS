@@ -1,6 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//  These functions create, populate and implement the menu.
+
 function addMenu ()
 {   //  Create the side-bar menu
 
@@ -8,88 +10,48 @@ function addMenu ()
     //  the same.  So call a function to create the menu and return a reference to the DOM element
     //  so we can put the appropriate menu option in it.
 
-    const menu = createMenu ();
+    configureSidebar ( { MyProfile: true, AdminFunctions: true }, () =>
+        {
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "innerText": "View Comments",
+                },
+                menu);
 
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "/login",
-            "id": "menu-login",
-            "innerText": "Log In"
-        },
-        menu);
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "innerText": "Start Walking"
+                },
+                menu);
 
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "/logout",
-            "id": "menu-logout",
-            "innerText": "Log Out"
-        },
-        menu);
+            configureElement ("hr",
+                {   "class": "menu-separator",
+                },
+                menu);
 
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "/profile",
-            "id": "menu-profile",
-            "innerText": "My Profile"
-        },
-        menu);
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "innerText": "Add Comments",
+                },
+                menu);
 
-    configureElement ("hr",
-        {   "class": "menu-separator",
-        },
-        menu);
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "innerText": "Add Public Comments",
+                },
+                menu);
 
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "View Comments",
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Start Walking"
-        },
-        menu);
-
-    configureElement ("hr",
-        {   "class": "menu-separator",
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Add Comments",
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Add Public Comments",
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "Color-Test Notes"
-        },
-        menu);
-
-    configureElement ("hr",
-        {   "class": "menu-separator",
-        },
-        menu);
-
-    configureElement ("a",
-        {   "class": "menu-option",
-            "href": "#",
-            "innerText": "About"
-        },
-        menu);
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "innerText": "Color-Test Notes"
+                },
+                menu);
+            });
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
