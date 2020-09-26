@@ -1,5 +1,13 @@
 use PAWS;
 
+insert into Colors values
+    ("green", 0),
+    ("orange", 1),
+    ("blue", 2),
+    ("purple", 3),
+    ("red", 4),
+    ("black", 5);
+
 insert into Restrictions values
     (null, "Experienced 'blue' dog walker; 20+ hours experience with 'blue' dogs", true),
     (null, "Difficult to leash.  Ask for staff assistance.", false),

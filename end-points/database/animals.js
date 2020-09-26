@@ -27,7 +27,9 @@ const db =
         //  same page.  This function retrieves all active animals at the shelter of the indicated
         //  species.
 
-        select ("select * from Animals where species=? and active=true order by name, color;", group)
+        select ("select * from Animals a "
+              + "left join Colors c on a.color=c.color "
+              + "where species=? and active=true order by name, sort;", group)
         .then(data =>
         {   callback (200, data);
         })
@@ -44,8 +46,7 @@ const db =
         select ("select * from Animals a "
               + "left join AnimalRestrictions ar on a.animalId=ar.animalId "
               + "left join Restrictions r on ar.restrictId=r.restrictId "
-              + "where a.animalId=?;", animalId + " "
-              + "group by r.text;")
+              + "where a.animalId=?;", animalId)
         .then(data =>
         {   callback (200, data);
         })
