@@ -4,7 +4,7 @@
 
 const chalk = require("chalk");
 const express = require("express");
-const passport = require("passport");
+const passport = require("./authenticate.js");
 
 //  Require custom middleware
 

@@ -114,16 +114,16 @@ const db =
             .then (results =>
             {
                 if (results.length < 1)
-                    return false;
+                    resolve (false);
                 else
-                    return true;
+                    resolve (true);
             })
             .catch (error =>
             {
                 console.log (chalk.redBright("PAWS PROCESS ERROR 102"));
                 console.log (chalk.redBright("people.js function isAdmin()"));
                 console.log (chalk.redBright(error));
-                return error;
+                reject (error);
             })
         })
     }

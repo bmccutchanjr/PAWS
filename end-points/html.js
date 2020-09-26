@@ -6,9 +6,14 @@
 //  The required npm modules
 const chalk = require("chalk");
 const express = require("express");
-const passport = require("./authenticate.js");
+//  02  const passport = require("./authenticate.js");
+//  01  Where is this crap coming from?
 const path = require("path");
-const { send } = require("process");
+//  01  const { send } = require("process");
+
+//  02  begins
+const people = require ("./database/people.js");
+//  02  ends
 
 // Configure express
 const server = express();
@@ -38,14 +43,31 @@ router
     })
 
     .get("/admin", (request, response) =>
-    {	
-        if (request.user)
-        {
-            response.sendFile(path.join(__dirname, "../public/admin.html"));
-            next ();
-        }
+    {	//  Handles requests for the /admin route.  There are at least three valid responses depending on whether the
+        //  user logged in and has admin privledges.
 
-        response.sendFile(path.join(__dirname, "../public/login.html"));
+        // First of all, if the user is not logged in they can't have the /admin route        
+
+        if (!request.user)
+            return response.sendFile(path.join(__dirname, "../public/login.html"));
+
+        //  If they are logged in, make sure they have admin privledges
+
+        people.isAdmin (request.user.peopleId)
+        .then (result =>
+        {
+            if (result)
+                response.sendFile(path.join(__dirname, "../public/admin.html"));
+            else
+                response.sendFile(path.join(__dirname, "../public/404.html"));
+        })
+        .catch (error =>
+        {
+            // response.status(500)
+            //         .send("Oops!  An error occured that is preventing the server from processing this request.  Contact "
+            //             + "your IT support group for assistance.");
+            response.sendFile(path.join(__dirname, "../public/404.html"));
+        })
     })
 
     .get("/cage-page", (request, response) =>
@@ -62,8 +84,10 @@ router
 
     .get("/logout", (request, response) =>
     {
+console.log (chalk.blueBright("serving /logout"));
         request.logout();
-        response.redirect("/");
+console.log (chalk.blueBright(request.user ? "still logged in" : "buh-bye"));
+        response.sendFile(path.join(__dirname, "../public/log.html"));
     })
 
     .get("/profile",  (request, response, next) =>

@@ -2,6 +2,38 @@
 //  are common to all pages.
 //
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//  The API requests used to configure menu options
+
+function checkAdmin ()
+{   //  Ask the PAWS server if the user has admin privledges and return an appropriate boolean value
+
+    return AJAX ("GET", "/api/people/isAdmin", xml =>
+        {
+            return (xml.responseText == "true") ? true : false;
+        });
+}
+
+function checkAuthenticated ()
+{   //  Determines if the user is authenticated with the server and return an appropriate boolean value
+
+    //  Apparently I have to ask the server, so another API request.  Deleting the session cookie is not an automatic
+    //  process performed by the browser.  Maybe it can't, after all the browser doesn't know what the function of
+    //  "cookie.sid" is.  In any case, the cookie persists after logging out so I can't use it's presence to determine
+    //  if the user is authenticated.
+    //
+    //  And I can't just delete the cookie either.  The Logout function is a route and on success, redirects to "/log".
+    //  The original page and its script will no longer exist and there's no way for me to know if "/log" was served because
+    //  the user clicked on the Log Out option or if they hit the browser's back button.
+
+    return AJAX ("GET", "/api/people/isAuthenticated", xml =>
+        {
+            return ((xml.responseText == "true") ? true : false);
+        });
+}
+
 function checkOptions (options)
 {
     //  Some of the common options are hidden unless the user has authenticated with the server or the user has
@@ -11,11 +43,14 @@ function checkOptions (options)
     checkAuthenticated ()
     .then (result =>
     {
-        document.getElementById ("menu-login").style.display = "none";
-        document.getElementById ("menu-logout").style.display = "inline-block";
+        if (result)
+        {
+            document.getElementById ("menu-login").style.display = "none";
+            document.getElementById ("menu-logout").style.display = "inline-block";
 
-        if (options.MyProfile != false)
-            document.getElementById ("menu-profile").style.display = "inline-block";
+            if (options.MyProfile != false)
+                document.getElementById ("menu-profile").style.display = "inline-block";
+        }
     })
     .catch (error =>
     {
@@ -33,6 +68,9 @@ function checkOptions (options)
         console.log (error);
     });
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function configureSidebar (commonOptions, additionalOptions)
 {   //  Create the menu.
@@ -126,9 +164,11 @@ function configureSidebar (commonOptions, additionalOptions)
 
     configureElement ("input",
         {   "class": "menu-option",
+            "id": "suggest-a-name",
+            "name": "suggest-a-name",
             "onchange": "submitNames (event)",
             "placeholder": "Suggest a name",
-            "title": "Suggest a name for the animals"
+            "title": "Suggest a name for the animals.  Suggest multiple names by separating them with a comma."
         },
         menu);
 
@@ -164,36 +204,6 @@ function openSidebar (event)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function checkAdmin ()
-{   //  Ask the PAWS server if the user has admin privledges and return an appropriate boolean value
-
-    return AJAX ("GET", "/api/people/isAdmin", xml =>
-        {
-            (xml.responseText == true) ? true : false;
-        });
-}
-
-function checkAuthenticated ()
-{   //  Determines if the user is authenticated with the server and return an appropriate boolean value
-
-    //  Apparently I have to ask the server, so another API request.  Deleting the session cookie is not an automatic
-    //  process performed by the browser.  Maybe it can't, after all the browser doesn't know what the function of
-    //  "cookie.sid" is.  In any case, the cookie persists after logging out so I can't use it's presence to determine
-    //  if the user is authenticated.
-    //
-    //  And I can't just delete the cookie either.  The Logout function is a route and on success, redirects to "/log".
-    //  The original page and its script will no longer exist and there's no way for me to know if "/log" was served because
-    //  the user clicked on the Log Out option or if they hit the browser's back button.
-
-    return AJAX ("GET", "/api/people/isAuthenticated", xml =>
-        {
-            (xml.responseText == "true") ? true : false;
-        });
-}
-
 // function hideAdmin (isAuthenticated)
 // {   //  Set the CSS display attribute to hide or display the Admin option.  The parameter indicates whether the user
 //     //  is authenticated.  It remains to be seen if they have admin privledges.
@@ -218,3 +228,28 @@ function checkAuthenticated ()
 //         document.getElementById ("menu-logout").style.display = "inline-block";
 //     }
 // }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function submitNames (event)
+{   //  Submit a suggested name for the animals
+
+    event.preventDefault ();
+
+    const name = document.getElementById ("suggest-a-name").value;
+    if ((name == "") || (name == null) || (name == undefined)) return;
+
+    AJAX ("POST", "/api/animal/suggestName", xml =>
+        {
+            if (xml.status == 200)
+                alert ("This name has been successfully added to the 'name jar'");
+            else
+            if (xml.status == 500)
+                alert (xml.resultText);
+            else
+                alert (xml.responseText)
+        },
+        {   name
+        });
+}
