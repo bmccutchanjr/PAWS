@@ -76,7 +76,9 @@ const db =
                     {   "animalId": data[x]["animalId"],
                         "name": data[x]["name"],
                         "color": data[x]["color"],
-                        "cage_num": data[x]["cage_num"]
+                        "cage_num": data[x]["cage_num"],
+                        "totalMinutes": 0,
+                        "mostRecent": 0,
                     }
 
                     const a = [];

@@ -43,7 +43,8 @@ function addMenu ()
             configureElement ("a",
                 {   "class": "menu-option",
                     "href": "#",
-                    "innerText": "Sort by Total Time"
+                    "innerText": "Sort by Total Time",
+                    "onclick": "sortByTime(event)"
                 },
                 menu);
 
@@ -144,6 +145,11 @@ function buildAnimals ()
                     animal);
 
                 if (index[x].day[(y * 7) + z].duration != undefined) 
+                {   
+                    if (y == 0)
+                        //  Accumulate total duration of interactions during the first seven days of the data set
+                        index[x].totalMinutes += index[x].day[(y * 7) + z].duration;
+
                     configureElement ("div",
                         {
                             "animalId": index[x].animalId,
@@ -158,6 +164,7 @@ function buildAnimals ()
 
                         },
                         day);
+                }
             }
         }
 
@@ -364,7 +371,7 @@ function sortByColor (event)
     current.sort.color = current.sort.color == "ascending" ? "descending" : "ascending"
     status.animals = false;
     icon.setAttribute ("title",
-        current.sort.color == "ascending" ? "sort list by color (reverse order)" : "sort list by color");
+        current.sort.color == "ascending" ? "Sort list by color (reverse order)" : "Sort list by color");
     showAnimals ();
 }
 
@@ -388,6 +395,37 @@ function sortByName (event)
                     ])
     current.sort.name = current.sort.name == "ascending" ? "descending" : "ascending"
     status.animals = false;
+    icon.setAttribute ("title",
+        current.sort.name == "ascending" ? "Sort list by name (reverse order)" : "Sort list by name");
+    showAnimals ();
+}
+
+function sortByTime (event)
+{   event.preventDefault ();
+    const icon = event.target;
+
+    index = sort (index,
+                    [   {   property: "totalMinutes",
+                            ascend: current.sort.time == "ascending" ? false : true,
+                            casesensitive: true
+                        },
+                        {   property: "name",
+                            ascend: current.sort.name == "ascending" ? false : true
+                        },
+                        {   property: "color",
+                            ascend: current.sort.name == "ascending" ? false : true,
+                            casesensitive: true,
+                            transform: value =>
+                                {
+                                    const colors = ["GREEN", "ORANGE", "BLUE", "PURPLE", "RED", "BLACK"];
+                                    return colors.indexOf (value.toUpperCase ().toString ());
+                                }
+                        }
+                    ])
+    current.sort.time = current.sort.time == "ascending" ? "descending" : "ascending"
+    status.animals = false;
+    icon.setAttribute ("title",
+        current.sort.time == "ascending" ? "Sort list by accumulated length of walks (reverse order)" : "Sort list by accumulated length of walks ");
     showAnimals ();
 }
 

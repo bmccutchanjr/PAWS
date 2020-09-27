@@ -118,8 +118,10 @@
 
 .interaction-mark
 {   
-    background: black;
-    border: 1px solid black;
+    /* background: black; */
+    /* border: 1px solid black; */
+    background: lightgrey;
+    border: 1px solid grey;
     border-radius: 50%;
     display: inline-block;
     flex-grow: 0;
@@ -134,7 +136,7 @@
     border-color: white;
 }
 
-.week0
+/* .week0
 {
     background: red;
 }
@@ -152,7 +154,7 @@
 .week3
 {
     background: yellow;
-}
+} */
 
 /********************************************************************/
 /* @media queries for various display sizes (primarilly intended    */
