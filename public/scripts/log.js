@@ -133,21 +133,31 @@ function buildAnimals ()
             },
             animal);
 
-        for (let x=0; x<4; x++)
+        for (let y=0; y<4; y++)
         {
-            for (let y=0; y<7; y++)
+            for (let z=0; z<7; z++)
             {
                 let day = configureElement ("div",
                     {
-                        "class": "interaction-day week" + x
+                        "class": "interaction-day week" + y
                     },
                     animal);
 
-                let mark = configureElement ("div",
-                    {
-                        "class": "interaction-mark"
-                    },
-                    day);
+                if (index[x].day[(y * 7) + z].duration != undefined) 
+                    configureElement ("div",
+                        {
+                            "animalId": index[x].animalId,
+                            "class": "interaction-mark",
+                            "day": index[x].day[(y * 7) + z].day,
+                            "month": index[x].day[(y * 7) + z].month,
+                            "onchange": "getInteraction (event)",
+                            "title": index[x].day[(y * 7) + z].year + "-"
+                                   + index[x].day[(y * 7) + z].month + "-" +
+                                   + index[x].day[(y * 7) + z].day,
+                            "year": index[x].day[(y * 7) + z].year
+
+                        },
+                        day);
             }
         }
 
@@ -379,35 +389,11 @@ window.addEventListener ("load", (event) =>
 
 function getAnimalData (group)
 {
-//  01      const xml = new XMLHttpRequest();
-//  01      xml.onreadystatechange = () =>
-//  01          {
-//  01              if (xml.readyState == 4 && xml.status == 200)
-//  01                  switch (xml.status)
-//  01                  {   case 200:
-//  01                      {   status.data = true;
-//  01                          index = JSON.parse(xml.responseText)
-//  01                          buildAnimals ();
-//  01                          showAnimals ();
-//  01                          break;
-//  01                      }
-//  01                      default:
-//  01                      {   alert (xml.responseText);
-//  01                          break;
-//  01                      }
-//  01                  }
-//  01          }
-//  01  
-//  01      xml.open ("GET", "/api/animals/allactive/" + group, true);
-//  01      xml.send();
-//  01  refectors API requests
-//  01  begins
     AJAX ("GET", "/api/animals/allactive/" + group, xml =>
         {
             switch (xml.status)
             {   case 200:
                 {   status.data = true;
-console.log(xml.responseText);
                     index = JSON.parse(xml.responseText)
                     buildAnimals ();
                     showAnimals ();
@@ -419,7 +405,6 @@ console.log(xml.responseText);
                 }
             }
         })
-//  01  ends
 }
 
 //  There's no need to wait for the DOM in order to request data from the server, especially since

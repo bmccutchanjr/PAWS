@@ -4,12 +4,18 @@ const chalk = require("chalk");
 const connection = require("./connect.js");
 
 function daysDiff (today, year, month, day)
-{   //  JavaScript chose to make the month of their Date object zero-indexed (January is 0 and December is 11) like all
-    //  other JavaScript arrays, and unlike any calendar in the history of mankind.  Curiously, they did not chose to treat
-    //  the day or year in the same manner.  The first of the month is 1.
+{   //  MySQL can do a lot, but it seems one of the things it can't do is math on dates.  There is no built-in function to
+    //  calculate the number of days between dates.  MySQL requires similar math as JavaScript, plus you have to embed it in
+    //  a select.  It's pretty messy.
     //
-    //  MySQL, on the other hand, assigns 1 to January and 12 to December.  Thus a little math is required to convert
-    //  a MySQL data into a JavaScript date.
+    //  So we're doing that math here, rather than a select statement.
+
+    //  But hey, JavaScript chose to make the month of their Date object zero-indexed (January is 0 and December is 11) just
+    //  like a JavaScript array (which it's not), and unlike any calendar in the history of mankind.  Curiously, they did not
+    //  chose to treat the day or year in the same manner.  The first of the month is 1.
+    //
+    //  MySQL, on the other hand, assigns 1 to January and 12 to December.  Thus a little math (very little) is required to
+    //  instantiate a JavaScript Date object with a date from MySQL.
     
     let diff = today.getTime() - new Date(year, (month - 1), day).getTime();
     return diff / 24 / 60 / 60 / 1000;

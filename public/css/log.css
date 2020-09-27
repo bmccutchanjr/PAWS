@@ -128,6 +128,12 @@
     width: 12px;
 }
 
+.interaction-mark:hover
+{   
+    background: white;
+    border-color: white;
+}
+
 .week0
 {
     background: red;
