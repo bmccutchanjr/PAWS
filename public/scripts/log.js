@@ -51,7 +51,8 @@ function addMenu ()
             configureElement ("a",
                 {   "class": "menu-option",
                     "href": "#",
-                    "innerText": "Sort by Most Recent Date"
+                    "innerText": "Sort by Most Recent Date",
+                    "onclick": "sortByMostRecent(event)"
                 },
                 menu);
         });
@@ -134,6 +135,8 @@ function buildAnimals ()
             },
             animal);
 
+        let foundMostRecent = false;
+
         for (let y=0; y<4; y++)
         {
             for (let z=0; z<7; z++)
@@ -147,8 +150,20 @@ function buildAnimals ()
                 if (index[x].day[(y * 7) + z].duration != undefined) 
                 {   
                     if (y == 0)
-                        //  Accumulate total duration of interactions during the first seven days of the data set
+                    {   //  Accumulate total duration of interactions during the first seven days of the data set
                         index[x].totalMinutes += index[x].day[(y * 7) + z].duration;
+                    }
+
+                    if (!foundMostRecent)
+                    {   //  If this is the most recent date of any interaction with this animal, set the index[] property
+                        //  mostRecent to the calculated index of the day.
+
+                        index[x].mostRecent = (y * 7) + z;
+
+                        //  and don't assign a value to it again for this animal
+
+                        foundMostRecent = true;
+                    }
 
                     configureElement ("div",
                         {
@@ -375,6 +390,35 @@ function sortByColor (event)
     showAnimals ();
 }
 
+function sortByMostRecent (event)
+{   event.preventDefault ();
+    const icon = event.target;
+
+    index = sort (index,
+                    [   {   property: "mostRecent",
+                            ascend: current.sort.date == "ascending" ? false : true,
+                            casesensitive: true
+                        },
+                        {   property: "name",
+                            ascend: current.sort.date == "ascending" ? false : true
+                        },
+                        {   property: "color",
+                            ascend: current.sort.date == "ascending" ? false : true,
+                            casesensitive: true,
+                            transform: value =>
+                                {
+                                    const colors = ["GREEN", "ORANGE", "BLUE", "PURPLE", "RED", "BLACK"];
+                                    return colors.indexOf (value.toUpperCase ().toString ());
+                                }
+                        }
+                    ])
+    current.sort.date = current.sort.date == "ascending" ? "descending" : "ascending"
+    status.animals = false;
+    icon.setAttribute ("title",
+        current.sort.date == "ascending" ? "Sort list by most recent date (reverse order)" : "Sort list by most recent date");
+    showAnimals ();
+}
+
 function sortByName (event)
 {   event.preventDefault ();
     const icon = event.target;
@@ -410,10 +454,10 @@ function sortByTime (event)
                             casesensitive: true
                         },
                         {   property: "name",
-                            ascend: current.sort.name == "ascending" ? false : true
+                            ascend: current.sort.time == "ascending" ? false : true
                         },
                         {   property: "color",
-                            ascend: current.sort.name == "ascending" ? false : true,
+                            ascend: current.sort.time == "ascending" ? false : true,
                             casesensitive: true,
                             transform: value =>
                                 {
@@ -425,7 +469,7 @@ function sortByTime (event)
     current.sort.time = current.sort.time == "ascending" ? "descending" : "ascending"
     status.animals = false;
     icon.setAttribute ("title",
-        current.sort.time == "ascending" ? "Sort list by accumulated length of walks (reverse order)" : "Sort list by accumulated length of walks ");
+        current.sort.time == "ascending" ? "Sort list by accumulated length of walks (reverse order)" : "Sort list by accumulated length of walks");
     showAnimals ();
 }
 
