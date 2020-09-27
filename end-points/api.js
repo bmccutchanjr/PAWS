@@ -62,6 +62,19 @@ router
         })
     })
 
+	.get("/animals/getInteraction/:animalId/:year/:month/:day", (request, response) =>
+	{	// Get interaction details fro the requested animal and day
+
+		animals.getInteraction (request.params, (status, data) =>
+        {   // serve data returned from animals.getAll()
+
+            if (status != 200)
+                response.status(status).send(data);
+            else
+                response.status(200).json(data);
+        })
+    })
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 

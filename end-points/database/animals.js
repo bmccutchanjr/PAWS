@@ -128,6 +128,24 @@ const db =
             console.log (chalk.red(error));
             callback (500, error);
         })
+    },
+
+    getInteraction: (params, callback) =>
+    {   //  Get all of the data on the animal indicated.
+
+        select ("select a.name, i.start, i.end, p.surname, p.given from Interactions i "
+              + "left join Animals a on i.animalId=a.animalId "
+              + "left join People p on i.peopleId=p.peopleId "
+              + "where a.animalId=? and year(start)=? and month(start)=? and day(start)=? "
+              + "order by start;", [params.animalId, params.year, params.month, params.day])
+        .then(data =>
+        {   callback (200, data);
+        })
+        .catch(error =>
+        {   
+            console.log (chalk.red(error));
+            callback (500, error);
+        })
     }
 }
 

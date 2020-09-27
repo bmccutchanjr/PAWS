@@ -150,7 +150,7 @@ function buildAnimals ()
                             "class": "interaction-mark",
                             "day": index[x].day[(y * 7) + z].day,
                             "month": index[x].day[(y * 7) + z].month,
-                            "onchange": "getInteraction (event)",
+                            "onclick": "getInteractionData (event)",
                             "title": index[x].day[(y * 7) + z].year + "-"
                                    + index[x].day[(y * 7) + z].month + "-" +
                                    + index[x].day[(y * 7) + z].day,
@@ -261,6 +261,33 @@ function animalHandler (event)
     icon.setAttribute ("title",
         current.sort.name == "ascending" ? "sort list by name (reverse order)" : "sort list by name");
     showAnimals ();
+}
+
+function getInteractionData (event)
+{   event.preventDefault();
+
+    const target = event.target;
+    const animal = target.getAttribute ("animalId");
+    const day = target.getAttribute ("day");
+    const month = target.getAttribute ("month");
+    const year = target.getAttribute ("year");
+
+    AJAX ("GET", "/api/animals/getInteraction/" + animal + "/" + year + "/" +  month + "/" + day, xml =>
+        {
+            switch (xml.status)
+            {
+                case 200:
+                {
+                    alert (xml.responseText);
+                    break;
+                }
+                default:
+                {
+                    alert (xml.responseText);
+                    break;
+                }
+            }
+        });
 }
 
 function sortByColor (event)
