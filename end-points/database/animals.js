@@ -49,8 +49,8 @@ const db =
                 + "from Animals a " 
                 + "left join Colors c on a.color=c.color "
                 + "left join Interactions i on a.animalId=i.animalId "
-                + "where species='dog' and active=true "
-                + "group by name, sort, a.animalId, date(start) desc;")
+                + "where species=? and active=true "
+                + "group by name, sort, a.animalId, date(start) desc;", group)
         .then(data =>
         {   //  Although MySQL can do a lot, it cannot convert several records into a JavaScript array
 

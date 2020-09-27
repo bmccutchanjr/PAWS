@@ -13,10 +13,11 @@
 <div class="wrapper">
     <header>
         <div id="sort-bar">
-            <img src="images/kitty.svg" class="sort-icon" id="switch-animal" name="cat-button" title="Switch to cat data"
+            <img src="images/kitty.svg" class="sort-icon" group="cat" id="cat-button" name="cat-button" title="Switch to cat data"
+                 onclick="animalHandler(event);"
                  onmouseover="this.src='images/kitty-selected.svg';"
                  onmouseout="this.src='images/kitty.svg';">
-            <img src="images/puppy.svg" class="sort-icon" group="dog" name="name-button" title="Sort list by name (reverse order)"
+            <img src="images/puppy.svg" class="sort-icon" group="dog" id="dog-button" name="dog-button" title="Sort list by name (reverse order)"
                  onclick="animalHandler(event);"
                  onmouseover="this.src='images/puppy-selected.svg';"
                  onmouseout="this.src='images/puppy.svg';">

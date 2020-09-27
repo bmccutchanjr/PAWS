@@ -15,7 +15,18 @@ function addMenu ()
             configureElement ("a",
                 {   "class": "menu-option",
                     "href": "#",
-                    "innerText": "Switch to the Cats"
+                    "id": "cat-option",
+                    "innerText": "Switch to the Cats",
+                    "onclick": "switchToGroup('cat');"
+                },
+                menu);
+
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "id": "dog-option",
+                    "innerText": "Switch to the Dogs",
+                    "onclick": "switchToGroup('dog');"
                 },
                 menu);
 
@@ -238,6 +249,43 @@ const current =
         }
     }
 
+function switchToGroup (group)
+{   //  Request data for the specified goup of animals
+    //  Format and display the data retrieved
+    //  Change titles on screen icons to indicate the group of animals now displayed
+    //  hide / display sidebar menu options as appropriate
+
+    //  Request data from the server
+
+    getAnimalData (group);
+
+    //  That's an asynchronous operation and is almost certainly going to take longer than the next two statements,
+    //  so this is probably good here.
+
+    //  Clear the dataset and set flag value to allow buildAnimals() to function
+
+    dataset = [];
+    status.animals = false;
+    current.group = group;
+
+    if (group == "cat")
+    {
+        document.getElementById ("cat-button").setAttribute("title", "Sort list by name");
+        document.getElementById ("cat-option").style.display = "none";
+
+        document.getElementById ("dog-button").setAttribute("title", "Switch to dog data");
+        document.getElementById ("dog-option").style.display = "inline-block";
+    }
+    else
+    {
+        document.getElementById ("cat-button").setAttribute("title", "Switch to cat data");
+        document.getElementById ("cat-option").style.display = "inline-block";
+
+        document.getElementById ("cat-button").setAttribute("title", "Sort list by name");
+        document.getElementById ("dog-option").style.display = "none";
+    }
+}
+
 function animalHandler (event)
 {   //  The two animalicons that appear on the page represent different actions depending on context
     //
@@ -257,10 +305,7 @@ function animalHandler (event)
 
     if (group != current.group)
     {
-        //  retrieve data
-        //  buildAnimals();
-        //  showAnimals();
-        //  icon.setAttribute ("title")
+        switchToGroup (group);
         return;
     }
 
@@ -555,7 +600,8 @@ function getAnimalData (group)
         {
             switch (xml.status)
             {   case 200:
-                {   status.data = true;
+                {
+                    status.data = true;
                     index = JSON.parse(xml.responseText)
                     buildAnimals ();
                     showAnimals ();

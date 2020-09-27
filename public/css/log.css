@@ -19,6 +19,16 @@
     width: auto;
 }
 
+/* page specific style setting for the sidebar options              */
+
+#cat-option
+{   display: inline-block;
+}
+
+#dog-option
+{   display: none;
+}
+
 /********************************************************************/
 /* The style settings for the <div> element representing individual */
 /* animals.                                                         */
