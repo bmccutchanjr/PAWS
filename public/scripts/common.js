@@ -126,3 +126,16 @@ function configureElement (elementType, object, parent = undefined)
 
     return element;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function removeModal (event)
+{   event.preventDefault ();
+
+    //  The modal element to be removed from the DOM is actually the grandparent of the element that triggers
+    //  this event.
+
+    const modal = event.target.parentNode.parentNode;
+    modal.remove ();    
+}

@@ -133,7 +133,8 @@ const db =
     getInteraction: (params, callback) =>
     {   //  Get all of the data on the animal indicated.
 
-        select ("select a.name, i.start, i.end, p.surname, p.given from Interactions i "
+        select ("select a.name, year(start), month(start), day(start), hour(start), minute(start), (time_to_sec(i.end) - time_to_sec(i.start)) / 60 as duration, p.surname, p.given "
+              + "from Interactions i "
               + "left join Animals a on i.animalId=a.animalId "
               + "left join People p on i.peopleId=p.peopleId "
               + "where a.animalId=? and year(start)=? and month(start)=? and day(start)=? "

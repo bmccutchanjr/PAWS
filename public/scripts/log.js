@@ -263,6 +263,27 @@ function animalHandler (event)
     showAnimals ();
 }
 
+function formatInteraction (data)
+{   //  Format the interaction data for display on the screen.  Return HTML code to be be rendered in a message
+    //  modal.
+
+    let html = "<h1>" + data[0]["name"]+ "</h1>";
+    html += "<h2>Daily Interaction Details: " + data[0]["year(start)"] + "-" + data[0]["month(start)"] + "-" + data[0]["day(start)"] + "</h2>";
+
+    data.forEach (d =>
+    {
+        let time = d["hour(start)"].toString().padStart(2, "0") + ":" + d["minute(start)"].toString().padStart (2, "0");
+        html += time;
+        html += "&nbsp;&nbsp;";
+        html += d["duration"].toString().padStart(2, "0") + " minutes";
+        html += "&nbsp;&nbsp;";
+        html += d["given"] + " " + d["surname"];
+        html += "<br>";
+    });
+
+    return html;
+}
+
 function getInteractionData (event)
 {   event.preventDefault();
 
@@ -278,7 +299,39 @@ function getInteractionData (event)
             {
                 case 200:
                 {
-                    alert (xml.responseText);
+                    let div = configureElement ("div",
+                        {
+                            "class": "modal"
+                        },
+                        document.body);
+
+                    const modal = configureElement ("div",
+                        {
+                            "class": "modal-message"
+                        },
+                        div);
+
+                    configureElement ("div",
+                        {
+                            "class": "modal-text",
+                            "innerHTML": formatInteraction (JSON.parse(xml.responseText))
+                        },
+                        modal);
+
+                    div = configureElement ("div",
+                        {
+                            "class": "modal-options"
+                        },
+                        modal);
+
+                    configureElement ("a",
+                        {
+                            "class": "modal-option",
+                            "href": "#",
+                            "innerText": "CLOSE",
+                            "onclick": "removeModal (event)"
+                        },
+                        div);
                     break;
                 }
                 default:
