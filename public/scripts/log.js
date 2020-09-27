@@ -379,27 +379,47 @@ window.addEventListener ("load", (event) =>
 
 function getAnimalData (group)
 {
-    const xml = new XMLHttpRequest();
-    xml.onreadystatechange = () =>
+//  01      const xml = new XMLHttpRequest();
+//  01      xml.onreadystatechange = () =>
+//  01          {
+//  01              if (xml.readyState == 4 && xml.status == 200)
+//  01                  switch (xml.status)
+//  01                  {   case 200:
+//  01                      {   status.data = true;
+//  01                          index = JSON.parse(xml.responseText)
+//  01                          buildAnimals ();
+//  01                          showAnimals ();
+//  01                          break;
+//  01                      }
+//  01                      default:
+//  01                      {   alert (xml.responseText);
+//  01                          break;
+//  01                      }
+//  01                  }
+//  01          }
+//  01  
+//  01      xml.open ("GET", "/api/animals/allactive/" + group, true);
+//  01      xml.send();
+//  01  refectors API requests
+//  01  begins
+    AJAX ("GET", "/api/animals/allactive/" + group, xml =>
         {
-            if (xml.readyState == 4 && xml.status == 200)
-                switch (xml.status)
-                {   case 200:
-                    {   status.data = true;
-                        index = JSON.parse(xml.responseText)
-                        buildAnimals ();
-                        showAnimals ();
-                        break;
-                    }
-                    default:
-                    {   alert (xml.responseText);
-                        break;
-                    }
+            switch (xml.status)
+            {   case 200:
+                {   status.data = true;
+console.log(xml.responseText);
+                    index = JSON.parse(xml.responseText)
+                    buildAnimals ();
+                    showAnimals ();
+                    break;
                 }
-        }
-
-    xml.open ("GET", "/api/animals/allactive/" + group, true);
-    xml.send();
+                default:
+                {   alert (xml.responseText);
+                    break;
+                }
+            }
+        })
+//  01  ends
 }
 
 //  There's no need to wait for the DOM in order to request data from the server, especially since

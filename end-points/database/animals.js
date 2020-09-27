@@ -3,6 +3,18 @@
 const chalk = require("chalk");
 const connection = require("./connect.js");
 
+function daysDiff (today, year, month, day)
+{   //  JavaScript chose to make the month of their Date object zero-indexed (January is 0 and December is 11) like all
+    //  other JavaScript arrays, and unlike any calendar in the history of mankind.  Curiously, they did not chose to treat
+    //  the day or year in the same manner.  The first of the month is 1.
+    //
+    //  MySQL, on the other hand, assigns 1 to January and 12 to December.  Thus a little math is required to convert
+    //  a MySQL data into a JavaScript date.
+    
+    let diff = today.getTime() - new Date(year, (month - 1), day).getTime();
+    return diff / 24 / 60 / 60 / 1000;
+}
+
 function select (query, parameters)
 {   //  This application execute several 'select' statements to retrieve data from the server, and
     //  for the most part, they all look alike.  A connection must be made to the MySQL server, a
@@ -27,15 +39,70 @@ const db =
         //  same page.  This function retrieves all active animals at the shelter of the indicated
         //  species.
 
-        select ("select * from Animals a "
-              + "left join Colors c on a.color=c.color "
-              + "where species=? and active=true order by name, sort;", group)
+        select ("select a.animalId, name, a.color, cage_num, year(start), month(start), day(start), sum((time_to_sec(end) - time_to_sec(start)) / 60) as duration "
+                + "from Animals a " 
+                + "left join Colors c on a.color=c.color "
+                + "left join Interactions i on a.animalId=i.animalId "
+                + "where species='dog' and active=true "
+                + "group by name, sort, a.animalId, date(start) desc;")
         .then(data =>
-        {   callback (200, data);
+        {   //  Although MySQL can do a lot, it cannot convert several records into a JavaScript array
+
+            if (data.length == 0)
+            {   //  The query returned no data.  But that isn't an error -- necessarilly...
+                console.log (chalk.red("no data"));
+                return;
+            }
+            else
+            {
+                let animalId = undefined;
+                let converted = [];
+//  The "current date" is fixed to the data of initial data load for the development cycle
+                let today = new Date(2020, 8, 26);
+
+                let length = data.length;
+                let x = 0;
+                while (x<length)
+                {
+                    animalId = data[x]["animalId"];
+                    
+                    const c1 =
+                    {   "animalId": data[x]["animalId"],
+                        "name": data[x]["name"],
+                        "color": data[x]["color"],
+                        "cage_num": data[x]["cage_num"]
+                    }
+
+                    const a = [];
+                    for (let y=0; y<28; y++)
+                    {
+                        a.push ({});
+                    }
+
+                    while ((x<length) && (animalId == data[x]["animalId"]))
+                    {
+                        a [daysDiff (today, data[x]["year(start)"], data[x]["month(start)"], data[x]["day(start)"])] =
+                        {   "year": data[x]["year(start)"],
+                            "month": data[x]["month(start)"],
+                            "day": data[x]["day(start)"],
+                            "duration": data[x]["duration"]
+                        }
+
+                        animalId = data[x]["animalId"];
+                        x++;
+                    }
+
+                    c1.day = a;
+                    converted.push (c1);
+                }
+
+                callback (200, converted);
+            }
         })
         .catch(error =>
         {   
-            console.log (chalk.red(error));
+            console.log (chalk.redBright("PAWS ERROR 102"));
+            console.log (chalk.redBright(error));
             callback (500, error);
         })
     },

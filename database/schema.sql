@@ -234,3 +234,32 @@ create table if not exists AdditionalPermissions
     --  add animals
     --  remove animals
     --  change animal colors/restrictions    
+
+-- *********************************************************************************************
+-- *********************************************************************************************
+
+create table if not exists Interactions
+(   --  Although simple, this is the real meat and potatoes of the application...the time a person spent
+    --  with one of the animals.
+
+    id              int (12)
+                    auto_increment
+                    not null
+                    unique,
+
+    peopleId        smallint (6)
+                    not null,
+
+    animalId        smallint (6)
+                    not null,
+
+    start           datetime
+                    not null,
+
+    end             datetime
+                    not null,
+
+    primary key (id),
+    foreign key (peopleId) references People (peopleId),
+    foreign key (animalId) references Animals (animalId)
+);
