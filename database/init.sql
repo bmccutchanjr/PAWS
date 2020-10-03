@@ -51,3 +51,12 @@ insert into AnimalRestrictions values
     (17, 3),
     (17, 4);
 
+insert into AdminPrivledges values
+    (null, "Grant admin privledges"),
+    (null, "Add/Remove people"),
+    (null, "Change people"),
+    (null, "Change passwords"),
+    (null, "Add/Change animal permissions"),
+    (null, "Add/Change animals"),
+    (null, "Remove animals"),
+    (null, "Change animal colors and restrictions");

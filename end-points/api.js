@@ -18,6 +18,13 @@ const server = express();
 const router = express.Router ();
 server.use ("/api", router);
 
+//  Some return message text that is used a lot
+const message403 = "Huh?!  It seems you don't have sufficient privledges for this function.  Please contact your PAWS "
+                 + "system administrator for assistance.";
+const message500 = "Oops!  An error occured that is preventing the server from processing this request.  Contact "
+                 + "your IT support group for assistance.";
+
+
 router
 .use ((request, response, next) =>
     {   // This always happens -- whenever any route is served in this module.  At the moment, all 
@@ -85,28 +92,155 @@ router
 
         if (!request.user)
             return response.status(200).send(false);
-        else
-        {
-            people.isAdmin (request.user.peopleId)
-            .then (result =>
-            {
-                response.status(200).send(result);
-            })
-            .catch (error =>
-            {
-                response.status(500)
-                        .send("Oops!  An error occured that is preventing the server from processing this request.  Contact "
-                            + "your IT support group for assistance.");
-            })
-        }
+
+        people.isAdmin (request.user.peopleId)
+        .then (result =>
+        {   response.status(200).send(result);
+        })
+        .catch (error =>
+        {   
+            console.log (chalk.red(error));
+            response.status(500).send(message500);
+        })
     })
 
     .get("/people/isAuthenticated", (request, response, next) =>
-    {
-        if (!request.user)
+    {   if (!request.user)
             return response.status(200).send(false);
         else
             return response.status(200).send(true);
+    })
+
+    .get("/people/allActivePeople", (request, response, next) =>
+    {   //  Return a boolean value indicating whether the authenticated user has admin privledges.
+
+        if (!request.user)
+            return response.status(401).send(false);
+
+        people.hasPeoplePrivledges (request.user.peopleId)
+        .then (results =>
+        {
+            if (!results) return false;
+
+            return people.allActivePeople ()
+        })
+        .then (data =>
+        {
+            if (!data)
+            {
+                response.status(403).send(message403);
+                return;
+            }
+
+            response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            response.status(500).send(message500);
+        })
+    })
+
+    .get("/people/getAdminPrivledges/:user", (request, response, next) =>
+    {   //  Retrieve and return all data for one person.
+
+        if (!request.user)
+            return response.status(200).send(false);
+
+        const admin = request.user.peopleId;
+        const user = request.params.user;
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(403).send(message403);
+            else                
+                return people.getAdminPrivledges (admin, user)
+        })
+        .then (data =>
+        {
+            response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            response.status(500).send(message500);
+        })
+    })
+
+    .get("/people/getAnimalPermissions/:user", (request, response, next) =>
+    {   //  Retrieve and return all data for one person.
+
+        if (!request.user)
+            return response.status(200).send(false);
+
+        const admin = request.user.peopleId;
+        const user = request.params.user;
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(403).send(message403);
+            else                
+                return people.getAnimalPermissions (admin, user)
+        })
+        .then (data =>
+        {
+            response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            response.status(500).send(message500);
+        })
+    })
+
+    .get("/people/getPerson/:peopleId", (request, response, next) =>
+    {   //  Retrieve and return all data for one person.
+
+        if (!request.user)
+            return response.status(200).send(false);
+
+        const admin = request.user.peopleId;
+        const user = request.params.peopleId;
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(403).send(message403);
+            else                
+                return people.getPerson (user)
+        })
+        .then (data =>
+        {
+            response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            response.status(500).send(message500);
+        })
+    })
+
+    .get("/people/hasPasswordPrivledge/:peopleId", (request, response, next) =>
+    {   //  Does the current user have privledges to change passwords.
+
+        if (!request.user)
+            return response.status(200).send(false);
+
+        const admin = request.user.peopleId;
+
+        people.hasPasswordPrivledge (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(403).send(message403);
+            else                
+                return response.status(200).send(result);
+        })
+        .catch (error =>
+        {
+            response.status(500).send(message500);
+        })
     })
 
     .post("/people/login", (request, response, next) =>

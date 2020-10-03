@@ -1,0 +1,38 @@
+header
+{
+    font-size: 30px;
+    padding: 10px;
+    text-align: center;
+}
+
+menu section
+{   border: 1px solid grey;
+    padding: 5px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.section-header
+{   background: grey;
+    border: 1px solid grey;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    padding: 2px;
+    text-align: center;
+}
+
+.main
+{
+    /* background: blue; */
+    margin: 0px auto;
+    width: 90%;
+}
+
+.admin-frame
+{
+    background: yellow;
+    border: none;
+    height: auto;
+    /* margin: 0px auto; */
+    width: 100%;
+}

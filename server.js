@@ -10,21 +10,37 @@
 //  Note that because I'm using socket.io to push data to the client, this is not a typical Express
 //  configuration.
 
-const chalk = require("chalk");
-const dotenv = require("dotenv").config();
+//  01  const chalk = require("chalk");
+//  01  const cookies = require ("cookie-parser");
+//  01  const dotenv = require("dotenv").config();
+//  01  const express = require("express");
+//  01  const session = require ("express-session");
+//  01  const app = express();
+//  01  const http = require ("http");
+//  01  const server = http.createServer (app);
+//  01  const io = require("socket.io");
+//  01  const socket = io.listen(server);
+//  01  const passport = require("passport");
+//  Require and configure NPM modules that are required to configure Express with Socket.IO
+
 const express = require("express");
-//  01  begins
-const session = require ("express-session");
-//  01  ends
 const app = express();
 const http = require ("http");
 const server = http.createServer (app);
 const io = require("socket.io");
 const socket = io.listen(server);
+
+//  Require the remainder of NPM modules used in this application
+
+const chalk = require("chalk");
+const cookies = require ("cookie-parser");
+const dotenv = require("dotenv").config();
 const passport = require("passport");
+const session = require ("express-session");
 
 //  Next we'll configure Express.
 
+app.use(cookies());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use (session (

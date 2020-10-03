@@ -1,0 +1,74 @@
+<head>
+    <link href="../css/common.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <div id=frame-wrapper>
+        <p>Select the name of the person you want to view/change:</p>
+        <section id="frame-section"></section>
+    </div>
+</body>
+
+<script language=JavaScript src="../scripts/common.js"></script>
+<script language=JavaScript>
+    function getPerson (event)
+    {   event.preventDefault ();
+
+        const target = event.target;
+        
+        //  This sucks, but it's how cookies work.  I need to get the value of the index for the selected person to 
+        //  person.html, but client processes cannot read cookies set by the server and vice versa.  That means this
+        //  page must set a cookie for person.html to read and that means I can't simpley use a link and set the cookie
+        //  on the server (which would be one line of code, if I could do it that way).
+        //
+        //  I need an event handler to set a cookie and reload the page...
+        
+        const peopleId = target.getAttribute ("peopleId");
+        document.cookie = "peopleId=" + peopleId;
+
+        window.location.href = "/admin/person/" + peopleId;
+    }
+
+    function peopleList (data)
+    {
+        const section = document.getElementById ("frame-section");
+
+        data.forEach (d =>
+        {   configureElement ("a",
+                {   "class": "menu-option",
+                    // "href": "/admin/person/" + d.peopleId,
+                    "href": "#",
+                    "innerText": d.surname + ", " + d.given,
+                    "onclick": "getPerson(event)",
+                    "peopleId": d.peopleId,
+                    // "target": "iframe"
+                },
+                section)
+        });
+
+//  This works, but it's not the optimal solution because every page loaded into the <iframe> has to do it.  The optimal
+//  solution would be getting the parent to monitor the <iframe> so it changes it's height attribute as required...with no
+//  further interaction from the child page.
+        //  Finally, the page is fully rendered...it's not going to get any larger.  So post a message to the parent document
+        //  telling it what the height of the rendered document in the <iframe> is.
+
+        window.parent.postMessage (document.getElementById("frame-wrapper").clientHeight);
+    }
+
+    document.addEventListener ("DOMContentLoaded", event =>
+    {
+        AJAX ("GET", "/api/people/allActivePeople", xml =>
+        {   switch (xml.status)
+            {   case 200:
+                {
+                    peopleList (JSON.parse(xml.responseText));
+                    break;
+                }
+                default:
+                {
+                    alert (xml.responseText);
+                    break;
+                }
+            }
+        })
+    });
+</script>

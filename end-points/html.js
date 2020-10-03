@@ -18,6 +18,7 @@ const people = require ("./database/people.js");
 // Configure express
 const server = express();
 const router = express.Router ();
+// server.use (express.static(path.join(__dirname, "../public")));
 server.use ("/", router);
 
 router
@@ -31,27 +32,32 @@ router
         next();
     })
 
-    .get("/", (request, response) =>
-    {	// The default page (or 'landing page') is log.html.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // response.sendFile(path.join(__dirname, "../public/log.html"));
-        response.redirect ("/log");
-    })
+    //  The following routes are for the various Admin functions.  There are several routes that are implemented
+    //  as individual pages displayed in an <iframe> element in admin.html
 
-    .get("/about", (request, response) =>
-    {	response.sendFile(path.join(__dirname, "../public/about.html"));
+    .get("/admin.html", (request, response) =>
+    {	//  To fully secure the route and still allow me to use /admin (as opposed to /admin.html) in my web page,
+        //  I need a route to both.  They are two names for the same route so I don't need two handlers, just redirect...
+
+        response.redirect ("/admin");
     })
 
     .get("/admin", (request, response) =>
-    {	//  Handles requests for the /admin route.  There are at least three valid responses depending on whether the
-        //  user logged in and has admin privledges.
+    {	//  The handler serves the route /admin, which is a parent page implementing the sidebar menu used by all
+        //  of it's child routes.  These child pages provide the actual admin functionality and are deployed in an
+        //  <iframe> element on admin.html
+
+        //  There are at least three valid responses depending on whether the user logged in and has admin privledges.
 
         // First of all, if the user is not logged in they can't have the /admin route        
 
         if (!request.user)
             return response.sendFile(path.join(__dirname, "../public/login.html"));
 
-        //  If they are logged in, make sure they have admin privledges
+        //  If they're logged in, make sure they have admin privledges
 
         people.isAdmin (request.user.peopleId)
         .then (result =>
@@ -62,12 +68,80 @@ router
                 response.sendFile(path.join(__dirname, "../public/404.html"));
         })
         .catch (error =>
-        {
-            // response.status(500)
-            //         .send("Oops!  An error occured that is preventing the server from processing this request.  Contact "
-            //             + "your IT support group for assistance.");
-            response.sendFile(path.join(__dirname, "../public/404.html"));
+        {   response.sendFile(path.join(__dirname, "../public/404.html"));
         })
+    })
+
+    .get("/admin/people-picker", (request, response) =>
+    {
+        // First of all, if the user isn't logged in they can't have this route        
+
+        if (!request.user)
+            return response.status(401).send("This function requires that you are logged into an account with administration privledges.");
+
+        //  If they're logged in, make sure they have privledges to administrate people
+
+        people.hasPeoplePrivledges (request.user.peopleId)
+        .then (result =>
+        {   if (result)
+                response.status(200).sendFile(path.join(__dirname, "../public/admin/peoplepicker.html"));
+            else
+                response.status(404).sendFile(path.join(__dirname, "../public/404.html"));
+        })
+        .catch (error =>
+        {   response.status(500).send("Oops!  An error occured that is preventing the server from processing this request.  Contact "
+                                    + "your IT support group for assistance.");
+        })
+    })
+
+    .get("/admin/person/:peopleId", (request, response) =>
+    {
+        // First of all, if the user isn't logged in they can't have this route        
+
+        if (!request.user)
+            return response.status(401).sendFile(path.join(__dirname, "../public/login.html"));
+
+        //  If they're logged in, make sure they have privledges to administrate people
+
+        const admin = request.user.peopleId;
+        const user = request.params.peopleId;
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {   if (result)
+                response.status(200).sendFile(path.join(__dirname, "../public/admin/person.html"));
+            else
+                response.status(404).sendFile(path.join(__dirname, "../public/404.html"));
+        })
+        .catch (error =>
+        {   console.log (error);
+            response.status(500).send("Oops!  An error occured that is preventing the server from processing this request.  Contact "
+                                    + "your IT support group for assistance.");
+        })
+    })
+
+    .get("/admin/:folder/:route", (request, response) =>
+    {   //  The various /admin "sub routes" still need the same CSS, script and image files used by the rest of
+        //  the application.  express.static () won't find them because it's looking for a folder /admin in the
+        //  file system.
+
+        response.redirect ("/" + request.params.folder + "/" + request.params.route);
+    })
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //  The following methods serve routes other than the Admin functions
+
+    .get("/", (request, response) =>
+    {	// The default page (or 'landing page') is log.html.
+
+        // response.sendFile(path.join(__dirname, "../public/log.html"));
+        response.redirect ("/log");
+    })
+
+    .get("/about", (request, response) =>
+    {	response.sendFile(path.join(__dirname, "../public/about.html"));
     })
 
     .get("/cage-page", (request, response) =>

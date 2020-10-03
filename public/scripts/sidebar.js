@@ -57,16 +57,17 @@ function checkOptions (options)
         console.log (error);
     });
 
-    checkAdmin ()
-    .then (result =>
-    {
-        if (result)
-            document.getElementById ("menu-admin").style.display = "inline-block";
-    })
-    .catch (error =>
-    {
-        console.log (error);
-    });
+    if (options.AdminFunctions != false)
+        checkAdmin ()
+        .then (result =>
+        {
+            if (result)
+                document.getElementById ("menu-admin").style.display = "inline-block";
+        })
+        .catch (error =>
+        {
+            console.log (error);
+        });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,6 +121,14 @@ function configureSidebar (commonOptions, additionalOptions)
         },
         menu);
 
+    if (commonOptions.HomePage != false)
+        configureElement ("a",
+            {   "class": "menu-option",
+                "href": "/",
+                "innerText": "Home"
+            },
+            menu);
+
     if (commonOptions.MyProfile != false)
         configureElement ("a",
             {   "class": "menu-option",
@@ -139,11 +148,12 @@ function configureSidebar (commonOptions, additionalOptions)
             menu);
 
     //  The menu includes options that are intended to be available only when certain conditions are met; when the user is
-    //  authenticated to the server or when the user has admin privledges.  These options should not be visible.
+    //  authenticated to the server or when the user has admin privledges.  Otherwise, these options should be hidden.
 
     checkOptions (commonOptions);
 
-    //  The menuu may also include options that are page specific.  These options are created by a function from the page.
+    //  The menu may also include options that are page specific.  These options are created by a function passed from the
+    //  page.
 
     if (additionalOptions != undefined)
     {   

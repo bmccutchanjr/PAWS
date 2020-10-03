@@ -225,15 +225,32 @@ create table if not exists AdditionalPermissions
 
 -- create table if not exists AnimalPrivledges
 
--- create table AdminPrivledges if not exists
-    --  grant admin privledges
-    --  add people
-    --  remove people
-    --  change passwords
-    --  add/change animal permissions
-    --  add animals
-    --  remove animals
-    --  change animal colors/restrictions    
+create table if not exists AdminPrivledges
+(
+    adminId         tinyint (2)
+                    auto_increment
+                    not null
+                    unique,
+
+    privledge       varchar(45)
+                    not null,
+
+    primary key (adminId)
+);
+
+create table if not exists Administrators
+(   --  This is the table that links people to admin privledges
+
+    peopleId        smallint (6)
+                    not null,
+
+    adminId         tinyint (2)
+                    not null,
+
+    primary key (peopleId, adminId),
+    foreign key (peopleId) references People (peopleId),
+    foreign key (adminId) references AdminPrivledges (adminId)
+);
 
 -- *********************************************************************************************
 -- *********************************************************************************************

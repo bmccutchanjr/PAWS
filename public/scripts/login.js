@@ -20,17 +20,17 @@ function handleLoginOption (event)
 //  I'm not sure I have anything to do here...if the user has properly authenticated with the server there's no need to receive and
 //  handle data from the server.  I'm just going to reload the page, and that's a status 205 not 200 (although 200 isn't exactly
 //  incorrect, it just implies that data was sent data with the response.)
-console.log ("status: 200");
-console.log (xml.status);
-console.log (xml.responseText);
-console.log (xml.getAllResponseHeaders());
+// console.log ("status: 200");
+// console.log (xml.status);
+// console.log (xml.responseText);
+// console.log (xml.getAllResponseHeaders());
 // window.location.reload();
                     break;
                 }
                 case 205:
                 {
 //  01                             status.data = true;
-console.log ("status: 205");
+// console.log ("status: 205");
 //  02  console.log (xml.status);
 //  02  console.log (xml.responseText);
 // console.log (JSON.stringify(xml.getAllResponseHeaders(), null, 2));
@@ -40,9 +40,9 @@ window.location.reload();
                 }
                 default:
                 {   
-console.log ("status: default");
-console.log (xml.status);
-console.log (xml.responseText);
+// console.log ("status: default");
+// console.log (xml.status);
+// console.log (xml.responseText);
                     alert (xml.responseText);
                     break;
                 }

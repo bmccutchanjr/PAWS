@@ -10,7 +10,7 @@ function addMenu ()
     //  the same.  So call a function to create the menu and return a reference to the DOM element so we can
     //  add any page specific menu options.
 
-    configureSidebar ( { MyProfile: true, AdminFunctions: true }, () =>
+    configureSidebar ( { HomePage: false, MyProfile: true, AdminFunctions: true }, () =>
         {
             configureElement ("a",
                 {   "class": "menu-option",
