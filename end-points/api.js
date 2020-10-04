@@ -140,6 +140,33 @@ router
         })
     })
 
+    .post("/people/changeAdminPrivledges/:user", (request, response) =>
+    {
+        // response.status(200).send(request.body);
+        if (!request.user)
+            return response.status(200).send(false);
+
+        const admin = request.user.peopleId;
+        const user = request.params.user;
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(403).send(message403);
+            else                
+                return people.updateAdminPrivledges (admin, user, request.body)
+        })
+        .then (data =>
+        {
+            response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            response.status(500).send(message500);
+        })
+    })
+
     .get("/people/getAdminPrivledges/:user", (request, response, next) =>
     {   //  Retrieve and return all data for one person.
 

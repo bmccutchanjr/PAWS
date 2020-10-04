@@ -6,6 +6,12 @@
             width: 50%;
         }
 
+        .error
+        {
+            border: red;
+            color: red;
+        }
+
         .frame-section
         {   border: 1px solid grey;
             border-radius: 3px;
@@ -64,14 +70,21 @@
 </head>
 <body>
     <div id=frame-wrapper>
-        <!-- <section class=frame-section name=names> -->
+        <section class=frame-section>
+            <a class=menu-option href=# id=lock-option name=lock>LOCK</a>
+            <input id=lock-code name=lock-code onchange="validateLock(event);" placeholder="(lock code)" readonly>
+            <a class=menu-option href=# id=unlock-option name=lock>UNLOCK</a>
+            <div id=lock-error></div>
+        </section>
         <form class=frame-section name=names>
             <div class=name-div>
-                <input class=name-input id=name-given name=given placeholder="(given name)" readonly>
-                <input class=name-input id=name-middle name=middle placeholder="(middle name)" readonly>
-                <input class=name-input id=name-surname name=surname placeholder="(surname)" readonly>
+                <input class=name-input id=name-given name=given onchange="validateName(event);" placeholder="(given name)" readonly which=given>
+                <input class=name-input id=name-middle name=middle onchange="validateName(event);" placeholder="(middle name)" readonly which=middle>
+                <input class=name-input id=name-surname name=surname onchange="validateName(event);" placeholder="(surname)" readonly which=surname>
             </div>
-            <input class=email-input name=email placeholder="(email address)" readonly>
+            <div id=name-error></div>
+            <input class=email-input id=email-input name=email onchange="validateEmail(event);" placeholder="(email address)" readonly>
+            <div id=email-error></div>
             <div>
                 <a class=menu-option href=# id=create-option name=create>SUBMIT</a>
                 <div class=spacer id=create-spacer></div>
@@ -79,18 +92,13 @@
                 <div class=spacer id=change-spacer></div>
                 <a class=menu-option href=# id=delete-option name=delete>DELETE/DEACTIVATE</a>
             </div>
-            Lock Code: 
-            <input id=lock-code name=lock-code placeholder="(lock code)" readonly>
-            <a class=menu-option href=# id=lock-option name=lock>LOCK</a>
-            <a class=menu-option href=# id=unlock-option name=lock>UNLOCK</a>
         </form>
-        <!-- </section> -->
         <section class="frame-section" id=password-section>
             <input name=password placeholder="New password">
             <a class=menu-option href=# id=password-option name=lock>CHANGE PASSWORD</a>
         </section>
         <section class="frame-section" id=permissions>
-            <div class=permissions-div id=admin-permissions>
+            <div class=permissions-div id=admin-privledges>
                 <p>Admin Privledges</p>
             </div>
             <div class=permissions-div id=cat-permissions>
@@ -105,6 +113,11 @@
 
 <script language=JavaScript src="../scripts/common.js"></script>
 <script language=JavaScript>
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //  These functions are required to get data from the server and put it on the screen.
+
     function allowPerson ()
     {
         document.getElementById ("name-given").setAttribute ("readonly", false);
@@ -115,7 +128,7 @@
 
     function doAdmin (data)
     {
-        const section = document.getElementById ("admin-permissions");
+        const section = document.getElementById ("admin-privledges");
 
         data.privledges.forEach (p =>
         {
@@ -127,12 +140,13 @@
             const input = configureElement ("input",
                 {
                     "name": p.adminId,
+                    "selected": p.allow == true ? true : false,
                     "type": "checkbox",
                 },
                 div);
 
-            if (p.allow == true) input.setAttribute ("checked", "");
-            if (data.allow != true) input.setAttribute ("disabled", "");
+            if (p.allow == true) input.setAttribute ("checked", "checked");
+            if (data.allow != true) input.setAttribute ("disabled", "true");
 
             configureElement ("label",
                 {
@@ -142,15 +156,17 @@
                 div);
         });
 
-        configureElement ("a",
-            {
-                "class": "menu-option",
-                "href": "#",
-                "id": "submit-privledges",
-                "innerText": "SUBMIT",
-                "onclick": "submitPrivledges (event);"
-            },
-            section);
+        if (data.allow == true)
+        {   configureElement ("a",
+                {
+                    "class": "menu-option",
+                    "href": "#",
+                    "id": "submit-privledges",
+                    "innerText": "SUBMIT",
+                    "onclick": "submitPrivledges(event);"
+                },
+                section);
+        }
 
         postParentMessage ();
     }
@@ -187,26 +203,21 @@
                 div);
         });
 
-        configureElement ("a",
-            {
-                "class": "menu-option",
-                "href": "#",
-                "id": "submit-privledges",
-                "innerText": "SUBMIT",
-                "onclick": "submitPrivledges (event);",
-                "species": species
-            },
-            section);
+        if (data.allow == true)
+        {   configureElement ("a",
+                {
+                    "class": "menu-option",
+                    "href": "#",
+                    "id": "submit-privledges",
+                    "innerText": "SUBMIT",
+                    "onclick": "submitColors(event);",
+                    "species": species
+                },
+                section);
+        }
 
         postParentMessage ();
     }
-
-//     function doColors (data)
-//     {
-// console.log (JSON.stringify (data, null, 2));
-//         doAnimals (data, "cat");
-//         doAnimals (data, "dog");
-//     }
 
     function doPassword (allow)
     {
@@ -234,8 +245,13 @@
             if (data.results.middle != "") document.names.middle.value = data.results[0].middle;
             if (data.results.surname != "") document.names.surname.value = data.results[0].surname;
             if (data.results.email != "") document.names.email.value = data.results[0].email;
-            if (data.results.lock_code != "") document.names["lock-code"].value = data.results[0].lock_code;
-            if (data.results.lock_code == "0") document.getElementById ("unlock-option").remove();
+            if (data.results.lock_code == undefined)
+                document.getElementById ("unlock-option").remove();
+            else
+            {   document.getElementById ("lock-code").value = data.results[0].lock_code;
+                document.getElementById ("lock-code").setAttribute ("readonly", "");
+                document.getElementById ("lock-option").remove ();
+            }
         }
 
         if (!data.add)
@@ -247,8 +263,8 @@
         if (!data.change)
         {   document.getElementById ("change-option").remove();
             document.getElementById ("change-spacer").remove();
-            document.getElementById ("lock-option").remove();
-            document.getElementById ("unlock-option").remove();
+            // document.getElementById ("lock-option").remove();
+            // document.getElementById ("unlock-option").remove();
 
             allowPerson ();
         }
@@ -345,4 +361,112 @@
             }
         })
     })
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //  These are event handlers for the <input> elements, used to validate the data.
+
+    let errors = false;
+
+    const error =
+    {   email: false,
+        lock: false,
+        names:
+        {   given: false,
+            middle: false,
+            surname: false
+        }
+    }
+
+    function emailError (error)
+    {
+        if (error)
+        {
+            const div = document.getElementById ("email-error");
+
+            configreElement ("div",
+                {
+                    "class": "error-text",
+                    "id": "email-text",
+                    "innerText": "This does not appear to be a valid e-mail address"
+                },
+                div);
+
+            document.getElementById ("email-input").setAttribute ("class", getAttribute ("class") + " error");
+        }
+        else
+        {
+            document.getElementById ("email-text").remove ();
+            document.getElementById ("email-input").setAttribute ("class", getAttribute ("class").replace (" error", ""));
+        }
+    }
+
+    function validateEmail (event)
+    {   event.preventDefault ();
+
+        emailError (false);
+
+        const value = document.names.email.value;
+        if (value != "")
+        {
+            const indexAt = value.indexOf ("@");
+            const indexDot = value.indexOf ("@", indexAt);
+
+            if ((indexAt < 1) || (indexAt > (value.length - 4)))
+                emailError (true);
+
+            if ((indexDot < 5) || (indexDot > (value.length - 1)))
+                emailError (true);
+        }
+    }
+
+    function validateLock (event)
+    {   event.preventDefault ();
+    }
+
+    function validateName (event)
+    {   event.preventDefault ();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //  These are API requests to POST data to the server.
+
+    function submitPrivledges (event)
+    {   event.preventDefault ();
+
+        // let postData =
+        // [   {   "user": getCookie ("peopleId") + ";"
+        //     }
+        // ]
+        let postData = [];
+
+        let changed = 0;
+
+        const admin = document.getElementById ("admin-privledges");
+        const privledges = admin.getElementsByTagName ("input");
+
+        const length = privledges.length;
+        for (let x=0; x<length; x++)
+        {
+            const checked = privledges[x].checked;
+            const selected = privledges[x].getAttribute ("selected") == "true" ? true : false;
+
+            if ((checked == selected) == false)
+            {   changed++;
+                let o = { [privledges[x].name] : checked }
+                postData.push (o);
+            }
+        }
+        if (changed > 0)
+        {
+            AJAX ("POST", "/api/people/changeAdminPrivledges/" + getCookie ("peopleId"), xml =>
+            {
+alert (xml.status + " + " + xml.responseText);
+            },
+            postData);
+        }
+    }
 </script>

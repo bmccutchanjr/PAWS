@@ -50,6 +50,50 @@ function hasAdminPrivledge (user, privledge)
     })
 }
 
+function updateEachPrivledge (user, data, iteration)
+{   //  There are a variable number of updates to be performed and I can't hard-code a variable number of .then()
+    //  clauses.  Either I string the individual SQL statements together to execute in a single function call, or
+    //  I have to find a way to execute a variable number of discrete SQL operations and yet wait for them all to
+    //  complete before responding to the client.
+    //
+    //  That can't be done in a simple loop, because each call needs a .then() and .catch().  But it can be done
+    //  with a recursive function.
+
+    return new Promise ((resolve, reject) =>
+    {
+        const array = Object.entries (data);
+
+        if (iteration == array.length) return resolve ("All updates have been completed.");
+
+        let query = "";
+
+        //  Only privledges that have been changed are submitted to be updated.  So if the new status of this
+        //  privledge is to be 'false' that means it is now 'true', and the privledge should be deleted from
+        //  Administrators.
+
+        if (array[iteration][1] == "false")
+            query = "delete from Administrators where peopleId=? and adminId=?;";
+        else
+            query = "insert into Administrators values (?, ?);";
+        select (query, [user, array[iteration][0]])
+        .then (result =>
+        {   //  There is no data to return and the result is unimportant.  What is important is that no error occured
+            //  and we can simply assume the operation had the desired effect and we can now submit the next SQL
+            //  update.
+
+            return updateEachPrivledge (user, data, ++iteration);
+        })
+        .then (result =>
+        {
+            resolve (result);
+        })
+        .catch (error =>
+        {
+            reject (error);
+        })
+    })
+}
+
 const db =
 {
     allActivePeople: (() =>
@@ -373,6 +417,40 @@ const db =
                 console.log (chalk.redBright("people.js function isAdmin()"));
                 console.log (chalk.redBright(error));
                 reject (error);
+            })
+        })
+    },
+
+    updateAdminPrivledges (admin, user, data)
+    {
+        return new Promise ((resolve, reject) =>
+        {
+            hasAdminPrivledge (admin, "Grant admin privledges")
+            .then (result =>
+            {   //  Okay, so the currently authenticated user has the appropriate privledge to do this...
+
+                return select ("begin;")
+            })
+            .then (result =>
+            {   //  Started a transaction...there's no result that I care to bother with
+
+                return updateEachPrivledge (user, data, 0);
+            })
+            .then (result =>
+            {
+                return select ("commit;");
+            })
+            .then (result =>
+            {
+                resolve (result);
+            })
+            .catch (error =>
+            {
+                select ("rollback;");
+                console.log (chalk.redBright("PAWS ERROR 102"));
+                console.log (chalk.redBright(error));
+                reject ("Oops!  An error occured that is preventing the server from processing this request.  Contact "
+                      + "your IT support group for assistance.");
             })
         })
     }

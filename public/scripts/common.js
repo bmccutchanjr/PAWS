@@ -33,14 +33,27 @@ function AJAX (method, route, result, data)
         let requestData = "";
 
         if (method == "POST")
-        {   if (data == undefined) reject ("'request data' is required.");
+        {   if (data == undefined) reject ("'request data' is required for POST requests.");
             if (typeof data != "object") reject ("'request data' is not JSON object.");
 
-            Object.entries (data).forEach (entry =>
-            {
-                if (requestData.length != 0) requestData += "&";
-                requestData += entry[0] + "=" + entry[1];
-            });
+            if (data.forEach)
+            {   data.forEach (d =>
+                {   
+                    if (requestData.length != 0) requestData += "&";
+
+                    Object.entries (d).forEach (entry =>
+                    {
+                        requestData += entry[0] + "=" + entry[1];
+                    });
+                })
+            }
+            else
+            {   Object.entries (data).forEach (entry =>
+                {
+                    if (requestData.length != 0) requestData += "&";
+                    requestData += entry[0] + "=" + entry[1];
+                });
+            }
         }
 
         const xml = new XMLHttpRequest ();
