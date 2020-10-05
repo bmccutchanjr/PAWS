@@ -280,7 +280,7 @@ router
             if (!result)
                 return response.status(403).send(message403);
             else                
-                return people.getPerson (user)
+                return people.getPerson (admin, user)
         })
         .then (data =>
         {
@@ -288,6 +288,9 @@ router
         })
         .catch (error =>
         {
+            console.log (chalk.redBright("PAWS ERROR"));
+            console.log (chalk.redBright("/api/people/getPerson"));
+            console.log (chalk.redBright(error))
             response.status(500).send(message500);
         })
     })

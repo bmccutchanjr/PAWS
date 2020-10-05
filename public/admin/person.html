@@ -1,10 +1,8 @@
 <head>
     <link href="../css/common.css" rel="stylesheet" type="text/css">
     <style>
-        .email-input
-        {
-            width: 50%;
-        }
+        /*  style used by more than one element or function         */
+        /*                                                          */
 
         .error
         {
@@ -30,29 +28,6 @@
             width: auto;
         }
 
-        .name-div
-        {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .name-input
-        {
-            flex-grow: 0;
-            flex-shrink: 0;
-            width: 32%;
-        }
-
-        .spacer
-        {   display: inline-block;
-            width: 20px;
-        }
-
-        #password-section
-        {
-            display: none;
-        }
-
         #permissions
         {
             border: none;
@@ -71,15 +46,49 @@
             padding: 5px;
             width: 32%;
         }
+
+        .spacer
+        {   display: inline-block;
+            width: 20px;
+        }
+
+        /*  style used by elements in the the names section         */
+        /*                                                          */
+
+        .email-input
+        {
+            width: 50%;
+        }
+
+        .name-div
+        {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .name-input
+        {
+            flex-grow: 0;
+            flex-shrink: 0;
+            width: 32%;
+        }
+
+        /*  style used by elements in the the password section      */
+        /*                                                          */
+
+        #password-section
+        {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div id=frame-wrapper>
         <section class=frame-section>
             <a class=menu-option href=# id=lock-option name=lock>LOCK</a>
-            <input id=lock-code name=lock-code onchange="validateLock(event);" placeholder="(lock code)" readonly>
+            <!-- <input id=lock-code name=lock-code onchange="validateLock(event);" placeholder="(lock code)" readonly> -->
             <a class=menu-option href=# id=unlock-option name=lock>UNLOCK</a>
-            <div id=lock-error></div>
+            <!-- <div id=lock-error></div> -->
         </section>
         <form class=frame-section name=names>
             <div class=name-div>
@@ -87,13 +96,13 @@
                 <input class=name-input id=name-middle name=middle onchange="validateName(event);" placeholder="(middle name)" readonly which=middle>
                 <input class=name-input id=name-surname name=surname onchange="validateName(event);" placeholder="(surname)" readonly which=surname>
             </div>
-            <div id=name-error></div>
+            <!-- <div id=name-error></div> -->
             <input class=email-input id=email-input name=email onchange="validateEmail(event);" placeholder="(email address)" readonly>
-            <div id=email-error></div>
+            <!-- <div id=email-error></div> -->
             <div>
                 <a class=menu-option href=# id=create-option name=create>SUBMIT</a>
                 <div class=spacer id=create-spacer></div>
-                <a class=menu-option href=# id=change-option name=change>SUBMIT</a>
+                <a class=menu-option href=# id=change-option name=change>SUBMIT CHANGES</a>
                 <div class=spacer id=change-spacer></div>
                 <a class=menu-option href=# id=delete-option name=delete>DELETE/DEACTIVATE</a>
             </div>
@@ -128,7 +137,7 @@
         document.getElementById ("name-given").setAttribute ("readonly", false);
         document.getElementById ("name-middle").setAttribute ("readonly", false);
         document.getElementById ("name-surname").setAttribute ("readonly", false);
-        document.getElementById ("lock-code").setAttribute ("readonly", false);
+//          document.getElementById ("lock-code").setAttribute ("readonly", false);
     }
 
     function doAdmin (data)
@@ -253,10 +262,10 @@
             if (data.results.lock_code == undefined)
                 document.getElementById ("unlock-option").remove();
             else
-            {   document.getElementById ("lock-code").value = data.results[0].lock_code;
-                document.getElementById ("lock-code").setAttribute ("readonly", "");
+//            {   document.getElementById ("lock-code").value = data.results[0].lock_code;
+//                document.getElementById ("lock-code").setAttribute ("readonly", "");
                 document.getElementById ("lock-option").remove ();
-            }
+//            }
         }
 
         if (!data.add)

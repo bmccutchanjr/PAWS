@@ -358,7 +358,7 @@ const db =
         })
     },
 
-    getPerson: (user =>
+    getPerson: ((admin, user) =>
     {   //  Retrieves data from People for the specified user id (user) and the applicable admin privledges
         //  for the administrator (admin).  These are not related information and can't be retrieved by joining
         //  the tables in a single SQL query.
@@ -371,24 +371,23 @@ const db =
 
         return new Promise ((resolve, reject)  =>
         {
-            const query = "select peopleId, surname, given, middle, email, lock_code from People where peopleId=?;";
-
-            select (query, user)
-            .then (results =>
-            {
-                returnData.results = results;
-
-                return hasAdminPrivledge (user, "Add/Remove people");
-            })
+            hasAdminPrivledge (admin, "Add/Remove people")
             .then (hasPrivledge =>
             {
                 if (hasPrivledge) returnData.add = true;
 
-                return hasAdminPrivledge (user, "Change people");
+                return hasAdminPrivledge (admin, "Change people");
             })
             .then (hasPrivledge =>
             {
                 if (hasPrivledge) returnData.change = true;
+
+                const query = "select peopleId, surname, given, middle, email, lock_code from People where peopleId=?;";
+                return select (query, user);
+            })
+            .then (results =>
+            {
+                returnData.results = results;
 
                 resolve (returnData);
             })
