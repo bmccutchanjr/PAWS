@@ -30,9 +30,10 @@ menu section
 
 .admin-frame
 {
-    background: yellow;
+    /* background: yellow; */
     border: none;
     height: auto;
     /* margin: 0px auto; */
+    overflow: hidden;
     width: 100%;
 }

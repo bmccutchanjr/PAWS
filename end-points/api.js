@@ -21,6 +21,8 @@ server.use ("/api", router);
 //  Some return message text that is used a lot
 const message400 = "Oops!  It appears there is an error on this web page.  The PAWS server did not receive the data it "
                  + "was expecting and cannot process this request.  Contact your IT support staff for assistance.";
+const message401 = "Huh?!  It seems you don't have sufficient privledges for this function.  Please contact your PAWS "
+                 + "system administrator for assistance.";
 const message403 = "Huh?!  It seems you don't have sufficient privledges for this function.  Please contact your PAWS "
                  + "system administrator for assistance.";
 const message500 = "Oops!  An error occured that is preventing the server from processing this request.  Contact "
@@ -296,29 +298,27 @@ router
     })
 
 
-    .get("/people/lockPerson/:peopleId/:lock", (request, response, next) =>
+    .get("/people/lockPerson/:user/:lock", (request, response, next) =>
     {   //  Retrieve and return all data for one person.
 
         if (!request.user)
-            return response.status(400).send(false);
+            return response.status(401).send(message401);
 
         const admin = request.user.peopleId;
-        const user = request.params.peopleId;
+        const lock = request.params.lock;
+        const user = request.params.user;
 
         people.hasPeoplePrivledges (admin)
         .then (result =>
         {
             if (!result)
-                return response.status(403).send(message403);
-//  01              else                
-//  01                  return people.getPerson (admin, user)
-//  01          })
-//  01          .then (data =>
-//  01          {
-//  01              response.status(200).send(data);
-//  01  begins
-            response.status(200).send("bounceback")
-//  01  ends
+                return response.status(401).send(message401);
+
+            return people.lockPerson (admin, user, lock);
+        })
+        .then(result =>
+        {
+            response.status(200).send("result")
         })
         .catch (error =>
         {

@@ -464,6 +464,37 @@ const db =
         })
     },
 
+    lockPerson: ((admin, user, lock) =>
+    {   //  Retrieves data from People for the specified user id (user) and the applicable admin privledges
+        //  for the administrator (admin).  These are not related information and can't be retrieved by joining
+        //  the tables in a single SQL query.
+
+        return new Promise ((resolve, reject)  =>
+        {
+            hasAdminPrivledge (admin, "Change people")
+            .then (hasPrivledge =>
+            {
+                if (!hasPrivledge) return ("Don't have the necessary privledges");
+
+                const query = "update People set lock_code=? where peopleId=?;";
+                const code = lock == "true" ? 100 : 0;
+                return select (query, [code, user]);
+            })
+            .then (results =>
+            {
+                resolve (results);
+            })
+            .catch (error =>
+            {
+                console.log (chalk.redBright("PAWS ERROR 102"));
+                console.log (chalk.redBright("people.lockUser()"));
+                console.log (chalk.redBright(error));
+                reject ("Oops!  An error occured that is preventing the server from processing this request.  Contact "
+                        + "your IT support group for assistance.");
+            })
+        })
+    }),
+
     updateAdminPrivledges (admin, user, data)
     {
         return new Promise ((resolve, reject) =>

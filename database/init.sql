@@ -56,7 +56,7 @@ insert into AdminPrivledges values
     (null, "Add/Remove people"),
     (null, "Change people"),
     (null, "Change passwords"),
-    (null, "Add/Change animal permissions"),
+    (null, "Grant animal permissions"),
     (null, "Add/Change animals"),
     (null, "Remove animals"),
     (null, "Change animal colors and restrictions");
