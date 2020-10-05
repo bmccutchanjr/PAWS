@@ -50,6 +50,19 @@ function hasAdminPrivledge (user, privledge)
     })
 }
 
+function hashPassword (password)
+{   //  Hash the password...
+
+    return new Promise ((resolve, reject) =>
+    {   bcrypt.hash (password, 10, (error, hash) =>
+        {   if (error) reject (error);
+
+            resolve (hash);
+        })
+    })
+};
+
+
 function updateEachPrivledge (user, data, iteration)
 {   //  There are a variable number of updates to be performed and I can't hard-code a variable number of .then()
     //  clauses.  Either I string the individual SQL statements together to execute in a single function call, or
@@ -195,6 +208,37 @@ const db =
 //  01              return { status: 500, message: "something bad happened"};
 //  01          })
 //  01      },
+
+    changePassword (admin, user, password)
+    {
+        return new Promise ((resolve, reject) =>
+        {
+            hasAdminPrivledge (admin, "Change passwords")
+            .then (result =>
+            {   //  Okay, so the currently authenticated user has the appropriate privledge to do this...
+
+                return hashPassword (password);
+            })
+            .then (result =>
+            {
+                const query = "update People set password=? where peopleId=?";
+
+                return select (query, [result.toString(), user]);
+            })
+            .then (result =>
+            {
+                resolve ("The password was successfully changed.");
+            })
+            .catch (error =>
+            {
+                console.log (chalk.redBright("PAWS ERROR 102"));
+                console.log (chalk.redBright("people.updatePassword()"));
+                console.log (chalk.redBright(error));
+                reject ("Oops!  An error occured that is preventing the server from processing this request.  Contact "
+                      + "your IT support group for assistance.");
+            })
+        })
+    },
 
     getAdminPrivledges (admin, user)
     {   //  Returns the list of Admin privledges (which may well be zero) that have been granted to this user
@@ -448,6 +492,7 @@ const db =
             {
                 select ("rollback;");
                 console.log (chalk.redBright("PAWS ERROR 102"));
+                console.log (chalk.redBright("people.updateAdminPrivledges()"));
                 console.log (chalk.redBright(error));
                 reject ("Oops!  An error occured that is preventing the server from processing this request.  Contact "
                       + "your IT support group for assistance.");

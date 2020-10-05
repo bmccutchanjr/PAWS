@@ -8,7 +8,12 @@
 
         .error
         {
-            border: red;
+            border-color: red;
+            color: red;
+        }
+
+        .error-text
+        {
             color: red;
         }
 
@@ -94,8 +99,8 @@
             </div>
         </form>
         <section class="frame-section" id=password-section>
-            <input name=password placeholder="New password">
-            <a class=menu-option href=# id=password-option name=lock>CHANGE PASSWORD</a>
+            <input id=password name=password onfocus="passwordClearError(event)" placeholder="New password">
+            <a class=menu-option href=# id=password-option name=lock onclick="submitPassword(event)">CHANGE PASSWORD</a>
         </section>
         <section class="frame-section" id=permissions>
             <div class=permissions-div id=admin-privledges>
@@ -379,6 +384,27 @@
         }
     }
 
+//  01      function clearErrors (event)
+//  01      {   event.preventDefault();
+//  01  
+//  01          const target = event.target;
+//  01          const parent = target.parentNode;
+//  01          const errordiv = parent.getElementsByClassName ("error-div")[0];
+//  01          errordiv.remove ();
+//  01  
+//  01  
+//  01      }
+
+    function setErrorClass (div, error)
+    {
+        if (error)
+            div.setAttribute ("class", div.getAttribute ("class") + " error");
+        else
+        {   let classlist = div.getAttribute ("class");
+            if (classlist != null) div.setAttribute ("class", div.getAttribute ("class").replace (" error", ""));
+        }
+    }
+
     function emailError (error)
     {
         if (error)
@@ -429,18 +455,88 @@
     {   event.preventDefault ();
     }
 
+    function passwordClearError (text)
+    {   event.preventDefault ();
+
+        const input = event.target;
+        const section = input.parentNode;
+        const errors = section.getElementsByClassName ("error-text");
+        const length = errors.length;
+        for (let x=0; x<length; x++)
+        {
+            errors[x].remove ();
+        }
+
+        setErrorClass (input, false);
+
+        postParentMessage ();
+    }
+
+    function passwordSetError (input, text)
+    {
+        const section = document.getElementById ("password-section");
+        configureElement ("div",
+            {
+                "class": "error-text",
+                "innerText": text
+            },
+            section);
+
+        // const input = document.getElementById ("password");
+        setErrorClass (input, true);
+
+        postParentMessage ();
+    }
+
+    function passwordValidate ()
+    {   //  This function is called by the 'change password' event handler and not by an 'onchange' event on the
+        //  <input> element.  Both are equally effective and efficient, but this way may seem more intuitive to the
+        //  user.
+
+        const input = document.getElementById ("password");
+        const password = input.value;
+
+        if (password == "")
+        {   passwordSetError (input, "A password is required");
+            return false;
+        }
+
+        if (password.length < 8)
+        {   passwordSetError (input, "Password must be at least 8 characters in length");
+            return false;
+        }
+
+        return true;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //  These are API requests to POST data to the server.
 
+    function submitPassword (event)
+    {   event.preventDefault ();
+
+        if (passwordValidate ())
+        {
+            AJAX ("POST", "/api/people/changePassword/" + getCookie ("peopleId"), xml =>
+            {
+                if (xml.status == 200)
+                {
+                    const input = document.getElementById ("password");
+                    input.value = null;
+                    alert ("All good!");
+                }
+                else
+                    alert (xml.responseText);
+            },
+            { "password": password } );
+        }
+    }
+
     function submitPrivledges (event)
     {   event.preventDefault ();
 
-        // let postData =
-        // [   {   "user": getCookie ("peopleId") + ";"
-        //     }
-        // ]
         let postData = [];
 
         let changed = 0;

@@ -19,6 +19,8 @@ const router = express.Router ();
 server.use ("/api", router);
 
 //  Some return message text that is used a lot
+const message400 = "Oops!  It appears there is an error on this web page.  The PAWS server did not receive the data it "
+                 + "was expecting and cannot process this request.  Contact your IT support staff for assistance.";
 const message403 = "Huh?!  It seems you don't have sufficient privledges for this function.  Please contact your PAWS "
                  + "system administrator for assistance.";
 const message500 = "Oops!  An error occured that is preventing the server from processing this request.  Contact "
@@ -142,9 +144,8 @@ router
 
     .post("/people/changeAdminPrivledges/:user", (request, response) =>
     {
-        // response.status(200).send(request.body);
         if (!request.user)
-            return response.status(200).send(false);
+            return response.status(401).send(false);
 
         const admin = request.user.peopleId;
         const user = request.params.user;
@@ -163,6 +164,49 @@ router
         })
         .catch (error =>
         {
+            response.status(500).send(message500);
+        })
+    })
+
+    .post("/people/changePassword/:user", (request, response) =>
+    {
+        if (!request.user)
+            return response.status(401).send(false);
+
+        const admin = request.user.peopleId;
+        const user = request.params.user;
+
+        if (!request.body.password)
+        {   console.log (chalk.redBright("PAWS ERROR 103"));
+            console.log (chalk.redBright("api.js: /api/people/changePassword"));
+            console.log (chalk.redBright("PAWS server received invalid data: no property 'password' in request.body"));
+            return response.status(400).send(message400);
+        }
+
+        if (!request.body.password)
+        {   console.log (chalk.redBright("PAWS ERROR 104"));
+            console.log (chalk.redBright("api.js: /api/people/changePassword"));
+            console.log (chalk.redBright("PAWS server received invalid data: password does meet minimum requirements"));
+            return response.status(400).send(message400);
+        }
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(403).send(message403);
+            else                
+                return people.changePassword (admin, user, request.body.password)
+        })
+        .then (data =>
+        {
+            response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            console.log (chalk.redBright("PAWS ERROR 102"));
+            console.log (chalk.redBright("api.js: /api/people/changePassword"));
+            console.log (chalk.redBright(error));
             response.status(500).send(message500);
         })
     })

@@ -27,3 +27,7 @@
 101     Some client attempted to access a non-existant end-point.
 
 102     MySQL threw an error.  Most likely due to a syntax error in the query.
+
+103     Required data was not passed to the server in POST data
+
+104     Password does not meet minimum requirements
