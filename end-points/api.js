@@ -269,7 +269,7 @@ router
     {   //  Retrieve and return all data for one person.
 
         if (!request.user)
-            return response.status(200).send(false);
+            return response.status(400).send(false);
 
         const admin = request.user.peopleId;
         const user = request.params.peopleId;
@@ -285,6 +285,40 @@ router
         .then (data =>
         {
             response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            console.log (chalk.redBright("PAWS ERROR"));
+            console.log (chalk.redBright("/api/people/getPerson"));
+            console.log (chalk.redBright(error))
+            response.status(500).send(message500);
+        })
+    })
+
+
+    .get("/people/lockPerson/:peopleId/:lock", (request, response, next) =>
+    {   //  Retrieve and return all data for one person.
+
+        if (!request.user)
+            return response.status(400).send(false);
+
+        const admin = request.user.peopleId;
+        const user = request.params.peopleId;
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(403).send(message403);
+//  01              else                
+//  01                  return people.getPerson (admin, user)
+//  01          })
+//  01          .then (data =>
+//  01          {
+//  01              response.status(200).send(data);
+//  01  begins
+            response.status(200).send("bounceback")
+//  01  ends
         })
         .catch (error =>
         {

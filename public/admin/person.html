@@ -85,31 +85,31 @@
 <body>
     <div id=frame-wrapper>
         <section class=frame-section>
-            <a class=menu-option href=# id=lock-option name=lock>LOCK</a>
+            <a class=menu-option href=# id=lock-option name=lock onclick="submitLock(event);">Lock This User</a>
             <!-- <input id=lock-code name=lock-code onchange="validateLock(event);" placeholder="(lock code)" readonly> -->
-            <a class=menu-option href=# id=unlock-option name=lock>UNLOCK</a>
+            <a class=menu-option href=# id=unlock-option name=unlock onclick="submitLock(event);">Unlock This User</a>
             <!-- <div id=lock-error></div> -->
         </section>
         <form class=frame-section name=names>
             <div class=name-div>
-                <input class=name-input id=name-given name=given onchange="validateName(event);" placeholder="(given name)" readonly which=given>
-                <input class=name-input id=name-middle name=middle onchange="validateName(event);" placeholder="(middle name)" readonly which=middle>
-                <input class=name-input id=name-surname name=surname onchange="validateName(event);" placeholder="(surname)" readonly which=surname>
+                <input class=name-input id=name-given name=given onchange="nameValidation(event);" placeholder="(given name)" readonly which=given>
+                <input class=name-input id=name-middle name=middle onchange="nameValidation(event);" placeholder="(middle name)" readonly which=middle>
+                <input class=name-input id=name-surname name=surname onchange="nameValidation(event);" placeholder="(surname)" readonly which=surname>
             </div>
             <!-- <div id=name-error></div> -->
-            <input class=email-input id=email-input name=email onchange="validateEmail(event);" placeholder="(email address)" readonly>
+            <input class=email-input id=email-input name=email onchange="emailValidation(event);" placeholder="(email address)" readonly>
             <!-- <div id=email-error></div> -->
             <div>
-                <a class=menu-option href=# id=create-option name=create>SUBMIT</a>
+                <a class=menu-option href=# id=create-option name=create>Submit</a>
                 <div class=spacer id=create-spacer></div>
-                <a class=menu-option href=# id=change-option name=change>SUBMIT CHANGES</a>
+                <a class=menu-option href=# id=change-option name=change>Submit Changes</a>
                 <div class=spacer id=change-spacer></div>
-                <a class=menu-option href=# id=delete-option name=delete>DELETE/DEACTIVATE</a>
+                <a class=menu-option href=# id=delete-option name=delete>Delete/Deactivate</a>
             </div>
         </form>
         <section class="frame-section" id=password-section>
-            <input id=password name=password onfocus="passwordClearError(event)" placeholder="New password">
-            <a class=menu-option href=# id=password-option name=lock onclick="submitPassword(event)">CHANGE PASSWORD</a>
+            <input id=password name=password onfocus="passwordClearError(event)" placeholder="(new password)">
+            <a class=menu-option href=# id=password-option name=lock onclick="submitPassword(event)">Change Password</a>
         </section>
         <section class="frame-section" id=permissions>
             <div class=permissions-div id=admin-privledges>
@@ -260,11 +260,11 @@
             if (data.results.surname != "") document.names.surname.value = data.results[0].surname;
             if (data.results.email != "") document.names.email.value = data.results[0].email;
             if (data.results.lock_code == undefined)
-                document.getElementById ("unlock-option").remove();
+                hideOption (document.getElementById ("unlock-option"));
             else
 //            {   document.getElementById ("lock-code").value = data.results[0].lock_code;
 //                document.getElementById ("lock-code").setAttribute ("readonly", "");
-                document.getElementById ("lock-option").remove ();
+                hideOption (document.getElementById ("lock-option"));
 //            }
         }
 
@@ -299,6 +299,10 @@
         })
 
         return value;
+    }
+
+    function hideOption (option)
+    {   option.style.display = "none";
     }
 
     function postParentMessage ()
@@ -437,7 +441,7 @@
         }
     }
 
-    function validateEmail (event)
+    function emailValidation (event)
     {   event.preventDefault ();
 
         emailError (false);
@@ -456,18 +460,22 @@
         }
     }
 
-    function validateLock (event)
-    {   event.preventDefault ();
-    }
+//  04      function validateLock (event)
+//  04      {   event.preventDefault ();
+//  04      }
 
-    function validateName (event)
+    function nameValidation (event)
     {   event.preventDefault ();
+
+        const target = event.target;
+
     }
 
     function passwordClearError (text)
     {   event.preventDefault ();
 
         const input = event.target;
+        input.select();
         const section = input.parentNode;
         const errors = section.getElementsByClassName ("error-text");
         const length = errors.length;
@@ -491,13 +499,12 @@
             },
             section);
 
-        // const input = document.getElementById ("password");
         setErrorClass (input, true);
 
         postParentMessage ();
     }
 
-    function passwordValidate ()
+    function passwordValidation ()
     {   //  This function is called by the 'change password' event handler and not by an 'onchange' event on the
         //  <input> element.  Both are equally effective and efficient, but this way may seem more intuitive to the
         //  user.
@@ -523,10 +530,31 @@
 
     //  These are API requests to POST data to the server.
 
+    function submitLock (event)
+    {   event.preventDefault ();
+
+        const target = event.target;
+
+        let other = target.name == "lock" ? document.getElementById ("unlock-option") : document.getElementById ("lock-option");
+            
+        const api = "/api/people/lockPerson/" + getCookie ("peopleId") + "/" + (target.name == "lock" ? "true" : "false");
+        AJAX ("GET", api, xml =>
+        {
+            if (xml.status == 200)
+            {
+                target.style.display = "none";
+                other.style.display = "inline-block";
+                alert ("This user account is now " + (target.name == "lock" ? "locked out" : "unlocked"))
+            }
+            else
+                alert (xml.responseText);
+        })
+    }
+
     function submitPassword (event)
     {   event.preventDefault ();
 
-        if (passwordValidate ())
+        if (passwordValidation ())
         {
             AJAX ("POST", "/api/people/changePassword/" + getCookie ("peopleId"), xml =>
             {
