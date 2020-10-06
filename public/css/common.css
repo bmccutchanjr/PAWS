@@ -76,9 +76,10 @@ body
 .menu-option
 {   color: grey;
     display: inline-block;
-    height: 20px;
+    /* height: 20px; */
+    height: auto;
     width: 100%;
-    overflow: hidden;
+    /* overflow: hidden; */
     text-decoration: none;
 }
 

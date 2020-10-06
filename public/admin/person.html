@@ -20,10 +20,13 @@
             border-radius: 3px;
             padding: 5px;
             margin: 0px;
+            vertical-align: bottom;
         }
 
         .menu-option
-        {   display: inline-block;
+        {   
+            /* background: rgba(255,0,0,0.5); */
+            display: inline-block;
             padding: 2px;
             width: auto;
         }
@@ -86,9 +89,7 @@
     <div id=frame-wrapper>
         <section class=frame-section>
             <a class=menu-option href=# id=lock-option name=lock onclick="submitLock(event);">Lock This User</a>
-            <!-- <input id=lock-code name=lock-code onchange="validateLock(event);" placeholder="(lock code)" readonly> -->
             <a class=menu-option href=# id=unlock-option name=unlock onclick="submitLock(event);">Unlock This User</a>
-            <!-- <div id=lock-error></div> -->
         </section>
         <form class=frame-section name=names>
             <div class=name-div>
@@ -96,9 +97,7 @@
                 <input class=name-input id=name-middle name=middle onchange="nameValidation(event);" placeholder="(middle name)" readonly which=middle>
                 <input class=name-input id=name-surname name=surname onchange="nameValidation(event);" placeholder="(surname)" readonly which=surname>
             </div>
-            <!-- <div id=name-error></div> -->
             <input class=email-input id=email-input name=email onchange="emailValidation(event);" placeholder="(email address)" readonly>
-            <!-- <div id=email-error></div> -->
             <div>
                 <a class=menu-option href=# id=create-option name=create>Submit</a>
                 <div class=spacer id=create-spacer></div>
@@ -109,7 +108,7 @@
         </form>
         <section class="frame-section" id=password-section>
             <input id=password name=password onfocus="passwordClearError(event)" placeholder="(new password)">
-            <a class=menu-option href=# id=password-option name=lock onclick="submitPassword(event)">Change Password</a>
+            <a class=menu-option href=# id=password-option name=password onclick="submitPassword(event)">Change Password</a>
         </section>
         <section class="frame-section" id=permissions>
             <div class=permissions-div id=admin-privledges>
@@ -134,10 +133,12 @@
 
     function allowPerson ()
     {
-        document.getElementById ("name-given").setAttribute ("readonly", false);
-        document.getElementById ("name-middle").setAttribute ("readonly", false);
-        document.getElementById ("name-surname").setAttribute ("readonly", false);
-//          document.getElementById ("lock-code").setAttribute ("readonly", false);
+//         document.getElementById ("name-given").setAttribute ("readonly", false);
+//         document.getElementById ("name-middle").setAttribute ("readonly", false);
+//         document.getElementById ("name-surname").setAttribute ("readonly", false);
+        document.getElementById ("name-given").removeAttribute ("readonly");
+        document.getElementById ("name-middle").removeAttribute ("readonly");
+        document.getElementById ("name-surname").removeAttribute ("readonly");
     }
 
     function doAdmin (data)
