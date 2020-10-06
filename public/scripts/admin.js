@@ -1,10 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  02  begins
 //  The sidebar menu and event handlers that are specific to this page
 
-function getPerson (event)
+function newPerson (event)
 {   event.preventDefault ();
 
     const target = event.target;
@@ -16,12 +15,21 @@ function getPerson (event)
     //
     //  I need an event handler to set a cookie and reload the page...
     
-    const peopleId = "new";
-    document.cookie = "peopleId=" + peopleId;
+    //  peopleId represents the index of a record in the People table and is used by severl fincutins in /admin/person.html
+    //  to get retrieve data specific to some individual.  Since all indices are positive integers, anindex of '0' will
+    //  not appear in any tables.  Those queries will function without error but return no results.
+    //
+    //  Seems the cleanest way to signal that it should configure to create a new user rather than modify an existing
+    //  user.  And better than writing a second page just for the new user since almost everything about creating or
+    //  modifying users is the same.
 
-    window.location.href = "/admin/person/" + peopleId;
+//
+//  I should check that the current user has the "Create people" privledge first...
+//
+    document.cookie = "peopleId=0;path=/;maxAge=3600";
+
+    window.iframe.location = "/admin/person/new";
 }
-//  02  ends
 
 function addMenu ()
 {   //  Create the side-bar menu
@@ -105,76 +113,6 @@ function addMenu ()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  01  This is no longer relevent.  All of the admin functions are now implemented as child pages loaded in an
-//  01  <iframe> and not directly as part of this page.
-//  01
-//  01  //  Functions to request and implement the various admin functions
-//  01  
-//  01  function getPerson (event)
-//  01  {
-//  01      event.preventDefault ();
-//  01      const person = event.target;
-//  01  
-//  01      const main = document.getElementById ("main");
-//  01  
-//  01      AJAX ("GET", "/admin/person.html", xml =>
-//  01      {
-//  01          if (xml.status == 200)
-//  01          {
-//  01              const section = configureElement ("section",
-//  01                  {   "class": "people-picker",
-//  01                      "id": "main-section",
-//  01                      "innerHTML": xml.responseText
-//  01                  },
-//  01                  main);
-//  01          }
-//  01          else
-//  01              alert (xml.responseText);
-//  01      });
-//  01  
-//  01      AJAX ("GET", "/api/people/getOne/" + person.peopleId, xml =>
-//  01      {
-//  01          if (xml.status == 200)
-//  01          {
-//  01              document.getElementById ("person-div").innerText = xml.responseText;
-//  01          }
-//  01          else
-//  01              alert (xml.responseText);
-//  01      });
-//  01  
-//  01      main.removeChild (main.firstChild);
-//  01  }
-//  01  
-//  01  function peopleList (data)
-//  01  {
-//  01      const main = document.getElementById ("main");
-//  01  
-//  01      const section = configureElement ("section",
-//  01          {   "class": "people-picker",
-//  01          },
-//  01          main);
-//  01  
-//  01      configureElement ("p",
-//  01          {   "innerText": "Select the person you want to administer.",
-//  01          },
-//  01          section);
-//  01  
-//  01      data.forEach (d =>
-//  01      {   configureElement ("a",
-//  01              {   "class": "menu-option",
-//  01                  "href": "/admin/person.html",
-//  01                  "innerText": d.surname + ", " + d.given,
-//  01                  // "onclick": "getPerson (event);",
-//  01                  "peopleId": d.peopleId,
-//  01                  "target": "iframe"
-//  01              },
-//  01              section)
-//  01      })
-//  01  }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 //  various event handlers for the window object
 
 window.addEventListener ("load", (event) =>
@@ -191,6 +129,6 @@ window.addEventListener ("load", (event) =>
 window.addEventListener ("message", (event) =>
 {   //  Something happened in a child document loaded into the <iframe> element that may have changed the size
     //  of the content rendered in the <iframe>.  Change the height of the <iframe> to match it.
-    
+
     document.getElementById ("admin-frame").style.height = event.data + "px";
 });

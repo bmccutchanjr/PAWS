@@ -23,7 +23,7 @@
         //  I need an event handler to set a cookie and reload the page...
         
         const peopleId = target.getAttribute ("peopleId");
-        document.cookie = "peopleId=" + peopleId;
+        document.cookie = "peopleId=" + peopleId +";path=/;maxAge=3600;";
 
         window.location.href = "/admin/person/" + peopleId;
     }

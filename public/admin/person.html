@@ -76,6 +76,15 @@
             width: 32%;
         }
 
+        .create-option,
+        .create-spacer,
+        .change-option,
+        .change-spacer,
+        .delete-option
+        {
+            display: none;
+        }
+
         /*  style used by elements in the the password section      */
         /*                                                          */
 
@@ -87,7 +96,7 @@
 </head>
 <body>
     <div id=frame-wrapper>
-        <section class=frame-section>
+        <section class=frame-section id=lock-section>
             <a class=menu-option href=# id=lock-option name=lock onclick="submitLock(event);">Lock This User</a>
             <a class=menu-option href=# id=unlock-option name=unlock onclick="submitLock(event);">Unlock This User</a>
         </section>
@@ -131,16 +140,6 @@
 
     //  These functions are required to get data from the server and put it on the screen.
 
-    function allowPerson ()
-    {
-//         document.getElementById ("name-given").setAttribute ("readonly", false);
-//         document.getElementById ("name-middle").setAttribute ("readonly", false);
-//         document.getElementById ("name-surname").setAttribute ("readonly", false);
-        document.getElementById ("name-given").removeAttribute ("readonly");
-        document.getElementById ("name-middle").removeAttribute ("readonly");
-        document.getElementById ("name-surname").removeAttribute ("readonly");
-    }
-
     function doAdmin (data)
     {
         const section = document.getElementById ("admin-privledges");
@@ -182,8 +181,6 @@
                 },
                 section);
         }
-
-        postParentMessage ();
     }
 
     function doColors (data, species)
@@ -230,8 +227,6 @@
                 },
                 section);
         }
-
-        postParentMessage ();
     }
 
     function doPassword (allow)
@@ -239,23 +234,47 @@
         if (!allow)
             document.getElementById ("password-section").remove ();
         else
-            document.getElementById ("password-section").style.display = "block";
+            if (!createMode) document.getElementById ("password-section").style.display = "block";
+    }
 
-        postParentMessage ();
+    function allowPersonInputs ()
+    {
+//         document.getElementById ("name-given").setAttribute ("readonly", false);
+//         document.getElementById ("name-middle").setAttribute ("readonly", false);
+//         document.getElementById ("name-surname").setAttribute ("readonly", false);
+        document.getElementById ("name-given").removeAttribute ("readonly");
+        document.getElementById ("name-middle").removeAttribute ("readonly");
+        document.getElementById ("name-surname").removeAttribute ("readonly");
+        document.getElementById ("email-input").removeAttribute ("readonly");
+    }
+
+    function doNewPerson ()
+    {   //  Configure the screen to create a new user.  Simply, all sections except the personal information section
+        //  should be hidden (but not removed from the DOM).  The submit option for new users should be visible and
+        //  the change and deactivate options should be hidden (but not removed from the DOM).  There is no initial
+        //  data for the input fields.
+
+        document.getElementById ("lock-section").style.display = "none";
+        document.getElementById ("password-section").style.display = "none";
+        document.getElementById ("permissions").style.display = "none";
+
+        document.getElementById ("create-option").style.display = "inline-block";
+
+        allowPersonInputs ();
     }
 
     function doPersonData (data)
     {
-        if (!data.results)
-        {   document.getElementById ("change-option").remove();
-            document.getElementById ("change-spacer").remove();
-            document.getElementById ("lock-option").remove();
-            document.getElementById ("unlock-option").remove();
-
-            allowPerson ();
-        }
-        else
-        {
+//  03          if (!data.results)
+//  03          {   document.getElementById ("change-option").remove();
+//  03              document.getElementById ("change-spacer").remove();
+//  03              document.getElementById ("lock-option").remove();
+//  03              document.getElementById ("unlock-option").remove();
+//  03  
+//  03              allowPerson ();
+//  03          }
+//  03          else
+//  03          {
             if (data.results[0].given != "") document.names.given.value = data.results[0].given;
             if (data.results.middle != "") document.names.middle.value = data.results[0].middle;
             if (data.results.surname != "") document.names.surname.value = data.results[0].surname;
@@ -267,13 +286,14 @@
 //                document.getElementById ("lock-code").setAttribute ("readonly", "");
                 hideOption (document.getElementById ("lock-option"));
 //            }
-        }
+//  03          }
 
-        if (!data.add)
-        {   document.getElementById ("create-option").remove();
-            document.getElementById ("create-spacer").remove();
-            document.getElementById ("delete-option").remove();
-        }
+//  03          if (!data.add)
+//  03          {   
+//  03              document.getElementById ("create-option").remove();
+//  03              document.getElementById ("create-spacer").remove();
+//  03              document.getElementById ("delete-option").remove();
+//  03          }
 
         if (!data.change)
         {   document.getElementById ("change-option").remove();
@@ -281,10 +301,8 @@
             // document.getElementById ("lock-option").remove();
             // document.getElementById ("unlock-option").remove();
 
-            allowPerson ();
+            allowPersonInputs ();
         }
-
-        postParentMessage ();
     }
 
     function getCookie (cookie)
@@ -325,14 +343,24 @@
         //  But it can't go on the first section.
 
         const sections = document.getElementsByClassName ("frame-section");
+
         const length = sections.length;
-        for (let x=1; x<length; x++)
+        let firstX = createMode ? 2 : 1;
+        for (let x=firstX; x<length; x++)
         {   sections[x].style.marginTop = "10px";
         }
     }
 
+    let createMode = false;
+
+    function setCreateMode ()
+    {   if (getCookie ("peopleId") == "0") createMode = true;
+    }
+
     document.addEventListener ("DOMContentLoaded", event =>
     {
+        setCreateMode ();
+
         spaceSections ();
 
         AJAX ("GET", "/api/people/getAdminPrivledges/" + getCookie ("peopleId"), xml =>
@@ -344,7 +372,7 @@
             else
             {   alert ("/getAdminPrivledges\n\n" + xml.responseText);
             }
-        })
+        });
 
         AJAX ("GET", "/api/people/getAnimalPermissions/" + getCookie ("peopleId"), xml =>
         {
@@ -356,18 +384,7 @@
             else
             {   alert ("/getAnimalPermissions\n\n" + xml.responseText);
             }
-        })
-
-        AJAX ("GET", "/api/people/getPerson/" + getCookie ("peopleId"), xml =>
-        {
-            if (xml.status == 200)
-            {
-                doPersonData (JSON.parse(xml.responseText));
-            }
-            else
-            {   alert ("/getPerson\n\n" + xml.responseText);
-            }
-        })
+        });
 
         AJAX ("GET", "/api/people/hasPasswordPrivledge/" + getCookie ("peopleId"), xml =>
         {
@@ -378,7 +395,32 @@
             {
                 doPassword (xml.responseText == "true" ? true : false);
             }
-        })
+        });
+
+        if (createMode)
+            doNewPerson ();
+        else
+        {   AJAX ("GET", "/api/people/getPerson/" + getCookie ("peopleId"), xml =>
+            {
+                if (xml.status == 200)
+                {
+                    doPersonData (JSON.parse(xml.responseText));
+                }
+                else
+                {   alert ("/getPerson\n\n" + xml.responseText);
+                }
+            });
+        }
+
+        const observer = new ResizeObserver (entries =>
+        {   for (const entry of entries)
+            {   if (entry.contentBoxSize)
+                {   postParentMessage ();
+                }
+            }
+        });
+
+        observer.observe (document.getElementById ("frame-wrapper"));
     })
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -461,15 +503,10 @@
         }
     }
 
-//  04      function validateLock (event)
-//  04      {   event.preventDefault ();
-//  04      }
-
     function nameValidation (event)
     {   event.preventDefault ();
 
         const target = event.target;
-
     }
 
     function passwordClearError (text)
