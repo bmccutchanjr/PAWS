@@ -531,7 +531,7 @@ router
             return response.status(401).send(process.env.PAWS_MESSAGE_401);
 
         const admin = request.user.peopleId;
-        const user = request.params.user;
+//  02          const user = request.params.user;
 
         people.hasPeoplePrivledges (admin)
         .then (result =>
@@ -539,7 +539,7 @@ router
             if (!result)
                 return response.status(401).send(process.env.PAWS_MESSAGE_401);
 
-            return response.status(200).send(request.body);
+            return people.updatePerson (admin, request.body);
         })
         .then(result =>
         {
