@@ -16,65 +16,77 @@ function AJAX (method, route, result, data)
     //  Parameter 'data' is an optional parameter that contains the request data.  'data' is required if
     //  method == 'POST'.
 
-    return new Promise ((resolve, reject) =>
+    if (typeof method != "string")
     {
-        //  Because the function call is expecting a Promise, it needs a reject or resolve, not a simple boolean
-        //  value.  Reject and resolve are only available in the Promise's callback and so the parameters must be
-        //  validated in callback.
+        console.log ("PAWS ERROR: call to function AJAX() incorrect, parameter 'method' is not a string.");
+        return false;
+    }
 
-        if (typeof method != "string") reject ("'method' is not a string.");
-        method = method.toUpperCase ();
-        if ((method != "GET") && (method != "POST")) reject ("'method' is not a supported HTTP method.");
+    method = method.toUpperCase ();
+    if ((method != "GET") && (method != "POST"))
+    {
+        console.log ("PAWS ERROR: call to function AJAX() incorrect, parameter 'method' is not a supported HTTP method.");
+        return false;
+    }
 
-        if (typeof route != "string") reject ("'route' is not a string.");
+    if (typeof route != "string")
+    {
+        console.log ("PAWS ERROR: call to function AJAX() incorrect, parameter 'route' is not a string.");
+        return false;
+    }
 
-        if (typeof result != "function") reject ("'result' is not a function.");
+    if (typeof result != "function")
+    {
+        console.log ("PAWS ERROR: call to function AJAX() incorrect, parameter 'result' is not a function.");
+        return false;
+    }
 
-        let requestData = "";
+    let requestData = "";
 
-        if (method == "POST")
-        {   if (data == undefined) reject ("'request data' is required for POST requests.");
-            if (typeof data != "object") reject ("'request data' is not JSON object.");
+    if (method == "POST")
+    {   if (data == undefined) reject ("'request data' is required for POST requests.");
+        if (typeof data != "object") reject ("'request data' is not JSON object.");
 
-            if (data.forEach)
-            {   data.forEach (d =>
-                {   
-                    if (requestData.length != 0) requestData += "&";
+        if (data.forEach)
+        {   data.forEach (d =>
+            {   
+                if (requestData.length != 0) requestData += "&";
 
-                    Object.entries (d).forEach (entry =>
-                    {
-                        requestData += entry[0] + "=" + entry[1];
-                    });
-                })
-            }
-            else
-            {   Object.entries (data).forEach (entry =>
+                Object.entries (d).forEach (entry =>
                 {
-                    if (requestData.length != 0) requestData += "&";
                     requestData += entry[0] + "=" + entry[1];
                 });
-            }
+            })
         }
-
-        const xml = new XMLHttpRequest ();
-
-        xml.open (method, route);
-        if (method != "POST")
-            xml.send ();
         else
-        {
-            xml.setRequestHeader ("Content-Type", "application/x-www-form-urlencoded");
-            xml.send (requestData);
+        {   Object.entries (data).forEach (entry =>
+            {
+                if (requestData.length != 0) requestData += "&";
+                requestData += entry[0] + "=" + entry[1];
+            });
         }
+    }
 
-        xml.onreadystatechange = () =>
-        {
-            if (xml.readyState == 4)
-            {   
-                resolve (result (xml));
-            }
+    const xml = new XMLHttpRequest ();
+
+    xml.open (method, route);
+    if (method != "POST")
+        xml.send ();
+    else
+    {
+        xml.setRequestHeader ("Content-Type", "application/x-www-form-urlencoded");
+        xml.send (requestData);
+    }
+
+    xml.onreadystatechange = () =>
+    {
+        if (xml.readyState == 4)
+        {   
+            resolve (result (xml));
         }
-    })
+    }
+
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
