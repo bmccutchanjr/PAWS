@@ -80,9 +80,103 @@ router
 
     //  The following end-points relate to the people using the application
 
-//  02  begins
+    .get("/people/allActivePeople", (request, response, next) =>
+    {   //  Return a boolean value indicating whether the authenticated user has admin privledges.
+
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+
+        people.hasPeoplePrivledges (request.user.peopleId)
+        .then (results =>
+        {
+            if (!results) return false;
+
+            return people.allActivePeople ()
+        })
+        .then (data =>
+        {
+            if (!data)
+                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+
+            response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+        })
+    })
+
+    .post("/people/changeAdminPrivledges/:user", (request, response) =>
+    {
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+
+        const admin = request.user.peopleId;
+        const user = request.params.user;
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            else
+                return people.updateAdminPrivledges (admin, user, request.body)
+        })
+        .then (data =>
+        {
+            response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+        })
+    })
+
+    .post("/people/changePassword/:user", (request, response) =>
+    {
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+
+        const admin = request.user.peopleId;
+        const user = request.params.user;
+
+        if (!request.body.password)
+        {   console.log (chalk.redBright("PAWS ERROR 103"));
+            console.log (chalk.redBright("api.js: /api/people/changePassword"));
+            console.log (chalk.redBright("PAWS server received invalid data: no property 'password' in request.body"));
+            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+        }
+
+        if (!request.body.password)
+        {   console.log (chalk.redBright("PAWS ERROR 104"));
+            console.log (chalk.redBright("api.js: /api/people/changePassword"));
+            console.log (chalk.redBright("PAWS server received invalid data: password does meet minimum requirements"));
+            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+        }
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            else
+                return people.changePassword (admin, user, request.body.password)
+        })
+        .then (data =>
+        {
+            response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            console.log (chalk.redBright("PAWS ERROR 102"));
+            console.log (chalk.redBright("api.js: /api/people/changePassword"));
+            console.log (chalk.redBright(error));
+            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+        })
+    })
+
     .post("/people/createPerson", (request, response, next) =>
-    {   //  Updates personal data (name and email address) for one person.
+    {   //  Create a new record in People with the personal data (name and email address) provided.
 
         if (!request.user)
             return response.status(401).send(process.env.PAWS_MESSAGE_401);
@@ -95,7 +189,7 @@ router
             if (!result)
                 return response.status(401).send(process.env.PAWS_MESSAGE_401);
 
-            return response.status(200).send(request.body);
+            return people.createPerson (admin, request.body);
         })
         .then(result =>
         {
@@ -109,7 +203,6 @@ router
             return response.status(500).send(process.env.PAWS_MESSAGE_500);
         })
     })
-//  02  ends
 
     .get("/people/isAdmin", (request, response, next) =>
     {   //  Return a boolean value indicating whether the authenticated user has admin privledges.
@@ -136,138 +229,6 @@ router
             return response.status(200).send(false);
         else
             return response.status(200).send(true);
-    })
-
-    .get("/people/allActivePeople", (request, response, next) =>
-    {   //  Return a boolean value indicating whether the authenticated user has admin privledges.
-
-        if (!request.user)
-//  01              return response.status(401).send(false);
-//  01  begins
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
-
-        people.hasPeoplePrivledges (request.user.peopleId)
-        .then (results =>
-        {
-            if (!results) return false;
-
-            return people.allActivePeople ()
-        })
-        .then (data =>
-        {
-            if (!data)
-//  01              {
-//  01                  response.status(403).send(message403);
-//  01                  return;
-//  01              }
-//  01  begins
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
-
-
-            response.status(200).send(data);
-        })
-        .catch (error =>
-        {
-//  01              response.status(500).send(message500);
-//  01  begins
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
-//  01  ends
-        })
-    })
-
-    .post("/people/changeAdminPrivledges/:user", (request, response) =>
-    {
-        if (!request.user)
-//  01              return response.status(401).send(false);
-//  01  begins
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
-
-        const admin = request.user.peopleId;
-        const user = request.params.user;
-
-        people.hasPeoplePrivledges (admin)
-        .then (result =>
-        {
-            if (!result)
-//  01                  return response.status(403).send(message403);
-//  01  begins
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
-            else
-                return people.updateAdminPrivledges (admin, user, request.body)
-        })
-        .then (data =>
-        {
-            response.status(200).send(data);
-        })
-        .catch (error =>
-        {
-//  01              response.status(500).send(message500);
-//  01  begins
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
-//  01  ends
-        })
-    })
-
-    .post("/people/changePassword/:user", (request, response) =>
-    {
-        if (!request.user)
-//  01              return response.status(401).send(false);
-//  01  begins
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
-
-        const admin = request.user.peopleId;
-        const user = request.params.user;
-
-        if (!request.body.password)
-        {   console.log (chalk.redBright("PAWS ERROR 103"));
-            console.log (chalk.redBright("api.js: /api/people/changePassword"));
-            console.log (chalk.redBright("PAWS server received invalid data: no property 'password' in request.body"));
-//  01              return response.status(400).send(message400);
-//  01  begins
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
-        }
-
-        if (!request.body.password)
-        {   console.log (chalk.redBright("PAWS ERROR 104"));
-            console.log (chalk.redBright("api.js: /api/people/changePassword"));
-            console.log (chalk.redBright("PAWS server received invalid data: password does meet minimum requirements"));
-//  01              return response.status(400).send(message400);
-//  01  begins
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
-//  01  ends
-        }
-
-        people.hasPeoplePrivledges (admin)
-        .then (result =>
-        {
-            if (!result)
-//  01                  return response.status(403).send(message403);
-//  01  begins
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
-            else
-                return people.changePassword (admin, user, request.body.password)
-        })
-        .then (data =>
-        {
-            response.status(200).send(data);
-        })
-        .catch (error =>
-        {
-            console.log (chalk.redBright("PAWS ERROR 102"));
-            console.log (chalk.redBright("api.js: /api/people/changePassword"));
-            console.log (chalk.redBright(error));
-//  01              response.status(500).send(message500);
-//  01  begins
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
-//  01  ends
-        })
     })
 
     .get("/people/getAdminPrivledges/:user", (request, response, next) =>
@@ -523,7 +484,6 @@ router
         })(request, response, next);
     })
 
-//  02  begins
     .post("/people/updatePerson/:user", (request, response, next) =>
     {   //  Updates personal data (name and email address) for one person.
 
@@ -531,7 +491,6 @@ router
             return response.status(401).send(process.env.PAWS_MESSAGE_401);
 
         const admin = request.user.peopleId;
-//  02          const user = request.params.user;
 
         people.hasPeoplePrivledges (admin)
         .then (result =>
@@ -553,7 +512,6 @@ router
             return response.status(500).send(process.env.PAWS_MESSAGE_500);
         })
     })
-//  02  ends
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////

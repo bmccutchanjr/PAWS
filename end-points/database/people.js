@@ -240,6 +240,35 @@ const db =
         })
     },
 
+    createPerson (admin, data)
+    {
+        return new Promise ((resolve, reject) =>
+        {
+            hasAdminPrivledge (admin, "Add/remove people")
+            .then (result =>
+            {   //  Okay, so the currently authenticated user has the appropriate privledge to do this...
+
+                let { given, middle, surname, email } = data;
+
+                const query = "insert into People "
+                            + "(surname, given, middle, email, password, change_by, change_date) "
+                            + "values (?, ?, ?, ?, 'unassigned', ?, now());";
+                return select (query, [ surname, middle, given, email, admin ]);
+            })
+            .then (result =>
+            {
+                resolve (result);
+            })
+            .catch (error =>
+            {
+                console.log (chalk.redBright("PAWS ERROR 102"));
+                console.log (chalk.redBright("people.createPerson()"));
+                console.log (chalk.redBright(error));
+                reject (process.env.PAWS_MESSAGE_500);
+            })
+        })
+    },
+
     getAdminPrivledges (admin, user)
     {   //  Returns the list of Admin privledges (which may well be zero) that have been granted to this user
         //
@@ -526,6 +555,33 @@ const db =
                 console.log (chalk.redBright(error));
                 reject ("Oops!  An error occured that is preventing the server from processing this request.  Contact "
                       + "your IT support group for assistance.");
+            })
+        })
+    },
+
+    updatePerson (admin, data)
+    {
+        return new Promise ((resolve, reject) =>
+        {
+            hasAdminPrivledge (admin, "Change people")
+            .then (result =>
+            {   //  Okay, so the currently authenticated user has the appropriate privledge to do this...
+
+                let { user, given, middle, surname, email } = data;
+
+                const query = "update People set surname=?, middle=?, given=?, email=? where peopleId=?;";
+                return select (query, [surname, middle, given, email, user]);
+            })
+            .then (result =>
+            {
+                resolve (result);
+            })
+            .catch (error =>
+            {
+                console.log (chalk.redBright("PAWS ERROR 102"));
+                console.log (chalk.redBright("people.updatePerson()"));
+                console.log (chalk.redBright(error));
+                reject (process.env.PAWS_MESSAGE_500);
             })
         })
     }
