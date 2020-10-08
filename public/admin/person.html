@@ -100,19 +100,18 @@
             <a class=menu-option href=# id=lock-option name=lock onclick="submitLock(event);">Lock This User</a>
             <a class=menu-option href=# id=unlock-option name=unlock onclick="submitLock(event);">Unlock This User</a>
         </section>
-        <form class=frame-section name=names>
+        <form class=frame-section id=name-section name=names>
             <div class=name-div>
-                <input class=name-input id=name-given name=given onchange="nameValidation(event);" placeholder="(given name)" readonly which=given>
-                <input class=name-input id=name-middle name=middle onchange="nameValidation(event);" placeholder="(middle name)" readonly which=middle>
-                <input class=name-input id=name-surname name=surname onchange="nameValidation(event);" placeholder="(surname)" readonly which=surname>
+                <input class=name-input id=name-given name=given onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(given name is required)" readonly>
+                <input class=name-input id=name-middle name=middle onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(middle name)" readonly>
+                <input class=name-input id=name-surname name=surname onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(surname is required)" readonly>
             </div>
-            <input class=email-input id=email-input name=email onchange="emailValidation(event);" placeholder="(email address)" readonly>
+            <input class=email-input id=email-input name=email onchange="emailValidation(event);" onfocus="nameClearError(event)" placeholder="(email address is required)" readonly>
             <div>
-                <a class=menu-option href=# id=create-option name=create>Submit</a>
-                <div class=spacer id=create-spacer></div>
-                <a class=menu-option href=# id=change-option name=change>Submit Changes</a>
+                <a class=menu-option href=# id=create-option onclick="submitNames(event)" name=create>Submit</a>
+                <a class=menu-option href=# id=change-option onclick="submitNames(event)" name=change>Submit Changes</a>
                 <div class=spacer id=change-spacer></div>
-                <a class=menu-option href=# id=delete-option name=delete>Delete/Deactivate</a>
+                <a class=menu-option href=# id=delete-option onclick="submitDeactivate(event)" name=delete>Delete/Deactivate</a>
             </div>
         </form>
         <section class="frame-section" id=password-section>
@@ -238,11 +237,7 @@
     }
 
     function allowPersonInputs ()
-    {
-//         document.getElementById ("name-given").setAttribute ("readonly", false);
-//         document.getElementById ("name-middle").setAttribute ("readonly", false);
-//         document.getElementById ("name-surname").setAttribute ("readonly", false);
-        document.getElementById ("name-given").removeAttribute ("readonly");
+    {   document.getElementById ("name-given").removeAttribute ("readonly");
         document.getElementById ("name-middle").removeAttribute ("readonly");
         document.getElementById ("name-surname").removeAttribute ("readonly");
         document.getElementById ("email-input").removeAttribute ("readonly");
@@ -265,44 +260,43 @@
 
     function doPersonData (data)
     {
-//  03          if (!data.results)
-//  03          {   document.getElementById ("change-option").remove();
-//  03              document.getElementById ("change-spacer").remove();
-//  03              document.getElementById ("lock-option").remove();
-//  03              document.getElementById ("unlock-option").remove();
-//  03  
-//  03              allowPerson ();
-//  03          }
-//  03          else
-//  03          {
-            if (data.results[0].given != "") document.names.given.value = data.results[0].given;
-            if (data.results.middle != "") document.names.middle.value = data.results[0].middle;
-            if (data.results.surname != "") document.names.surname.value = data.results[0].surname;
-            if (data.results.email != "") document.names.email.value = data.results[0].email;
-            if (data.results.lock_code == undefined)
-                hideOption (document.getElementById ("unlock-option"));
-            else
-//            {   document.getElementById ("lock-code").value = data.results[0].lock_code;
-//                document.getElementById ("lock-code").setAttribute ("readonly", "");
-                hideOption (document.getElementById ("lock-option"));
-//            }
-//  03          }
+        if (data.results[0].given != "")
+        {   
+            document.names.given.value = data.results[0].given;
+            document.getElementById ("name-given").setAttribute ("value", data.results[0].given);
+        }
 
-//  03          if (!data.add)
-//  03          {   
-//  03              document.getElementById ("create-option").remove();
-//  03              document.getElementById ("create-spacer").remove();
-//  03              document.getElementById ("delete-option").remove();
-//  03          }
+        if (data.results.middle != "")
+        {   
+            document.names.middle.value = data.results[0].middle;
+            document.getElementById ("name-middle").setAttribute ("value", data.results[0].middle);
+        }
+
+        if (data.results.surname != "")
+        {   
+            document.names.surname.value = data.results[0].surname;
+            document.getElementById ("name-surname").setAttribute ("value", data.results[0].surname);
+        }
+
+        if (data.results.email != "")
+        {   
+            document.names.email.value = data.results[0].email;
+            document.getElementById ("email-input").setAttribute ("value", data.results[0].email);
+        }
+
+        if (data.results.lock_code == undefined)
+            hideOption (document.getElementById ("unlock-option"));
+        else
+            hideOption (document.getElementById ("lock-option"));
+
+        document.getElementById ("create-option").remove();
 
         if (!data.change)
         {   document.getElementById ("change-option").remove();
             document.getElementById ("change-spacer").remove();
-            // document.getElementById ("lock-option").remove();
-            // document.getElementById ("unlock-option").remove();
-
-            allowPersonInputs ();
         }
+        else
+            allowPersonInputs ();
     }
 
     function getCookie (cookie)
@@ -323,10 +317,6 @@
     function hideOption (option)
     {   option.style.display = "none";
     }
-
-    function postParentMessage ()
-    {   window.parent.postMessage (document.getElementById("frame-wrapper").clientHeight);
-    };
 
     function spaceSections ()
     {   //  Who knew?!  A top margin on the first element, or a bottom margin on the last element, in an <iframe>
@@ -415,7 +405,7 @@
         const observer = new ResizeObserver (entries =>
         {   for (const entry of entries)
             {   if (entry.contentBoxSize)
-                {   postParentMessage ();
+                {   window.parent.postMessage (document.getElementById("frame-wrapper").clientHeight);
                 }
             }
         });
@@ -428,28 +418,22 @@
 
     //  These are event handlers for the <input> elements, used to validate the data.
 
-    let errors = false;
+    // pre-load audio files
 
-    const error =
-    {   email: false,
-        lock: false,
-        names:
-        {   given: false,
-            middle: false,
-            surname: false
-        }
+    const buzz = new Audio("../audio/buzz.mp3");
+    const ting = new Audio("../audio/ting.mp3");
+
+    function playAudio (sound)
+    {
+        sound.load ();
+        sound.play ();
     }
 
-//  01      function clearErrors (event)
-//  01      {   event.preventDefault();
-//  01  
-//  01          const target = event.target;
-//  01          const parent = target.parentNode;
-//  01          const errordiv = parent.getElementsByClassName ("error-div")[0];
-//  01          errordiv.remove ();
-//  01  
-//  01  
-//  01      }
+    const errors =
+    {   email: false,
+        names: false,
+        password: false
+    }
 
     function setErrorClass (div, error)
     {
@@ -461,52 +445,215 @@
         }
     }
 
-    function emailError (error)
+    function emailSetError (field, text)
     {
-        if (error)
-        {
-            const div = document.getElementById ("email-error");
+        const section = document.getElementById ("name-section");
+        configureElement ("div",
+            {
+                "class": "error-text",
+                "id": "email-error",
+                "innerText": text
+            },
+            section);
 
-            configreElement ("div",
-                {
-                    "class": "error-text",
-                    "id": "email-text",
-                    "innerText": "This does not appear to be a valid e-mail address"
-                },
-                div);
+        setErrorClass (field, true);
+        errors.names = true;
+    }
 
-            document.getElementById ("email-input").setAttribute ("class", getAttribute ("class") + " error");
+    function emailValidation (event)
+    {   event.preventDefault ();
+
+        const email = event.target;
+
+        const value = document.names.email.value.trim();
+        if (value == "")
+        {   nameSetError (email, "An email address is required");
+            return false;
         }
-        else
+
+        const indexAt = value.indexOf ("@");
+        const indexDot = value.indexOf ("@", indexAt);
+
+        //  No need to test all three error conditions.  They all check that the e-mail address appears to be a valid
+        //  format, and they all display the same error message.  There's no need to have the same test on the screen
+        //  multiple times.  So if any of them is true, that's enough.
+
+        //  email addresses cannot include spaces
+
+        if (value.indexOf (" ") > 0)
+        {   nameSetError (email, "This does not appear to be a valid email address");
+            return false;
+        }
+
+        //  there must be an '@' and it can't be the first character
+
+        if (indexAt < 1)
+        {   nameSetError (email, "This does not appear to be a valid email address");
+            return false;
+        }
+
+        //  there must be no more then one '@'
+
+        if (value.indexOf ("@", (indexAt + 1)) != -1)
+        {   nameSetError (email, "This does not appear to be a valid email address");
+            return false;
+        }
+
+        //  although there can be dots '.' before the '@', there must be at least one after
+
+        if (indexDot == -1)
+        {   nameSetError (email, "This does not appear to be a valid email address");
+            return false;
+        }
+
+        //  the string cannot end with a '.'
+
+        if (value.lastIndexOf (".") == (value.length -1))
+        {   nameSetError (email, "This does not appear to be a valid email address");
+            return false;
+        }
+
+        //  there must not be a comma ','
+
+        if (value.indexOf (",") != -1)
+        {   nameSetError (email, "This does not appear to be a valid email address");
+            return false;
+        }
+    }
+
+    function charTest (char)
+    {   
+        //  An email address must include both an '@' and period.  Those characters are not errors
+
+        if ((char == "@") || (char == "."))
+            return true;
+
+        //  An email address may also include numeric digits
+
+        if (!isNaN (parseInt (char)))
+            return true;
+
+        if (char.toLowerCase () == char.toUpperCase ())
+            return false;
+
+        return true;
+    }
+
+    function emailValidator (email)
+    {   const value = document.names.email.value.trim();
+        if (value == "")
+        {   nameSetError (email, "An email address is required");
+            return false;
+        }
+
+        const indexAt = value.indexOf ("@");
+        const indexDot = value.indexOf ("@", indexAt);
+
+        //  No need to test all three error conditions.  They all check that the e-mail address appears to be a valid
+        //  format, and they all display the same error message.  There's no need to have the same test on the screen
+        //  multiple times.  So if any of them is true, that's enough.
+
+        //  there must be an '@' and it can't be the first character
+
+        if (indexAt < 1)
+        {   nameSetError (email, "This does not appear to be a valid email address");
+            return false;
+        }
+
+        //  there must be no more then one '@'
+
+        if (value.indexOf ("@", (indexAt + 1)) != -1)
+        {   nameSetError (email, "This does not appear to be a valid email address");
+            return false;
+        }
+
+        //  although there can be dots '.' before the '@', there must be at least one after
+
+        if (indexDot == -1)
+        {   nameSetError (email, "This does not appear to be a valid email address");
+            return false;
+        }
+
+        //  the string cannot end with a '.'
+
+        if (value.lastIndexOf (".") == (value.length -1))
+        {   nameSetError (email, "This does not appear to be a valid email address");
+            return false;
+        }
+
+        //  and finally check for invalid characters in the name
+
+        let length = value.length;
+        for (let x=0; x<length; x++)
         {
-            document.getElementById ("email-text").remove ();
-            document.getElementById ("email-input").setAttribute ("class", getAttribute ("class").replace (" error", ""));
+             if (!charTest (value.charAt (x)))
+            {   nameSetError (email, "This does not appear to be a valid email address");
+                return false;
+            }
         }
     }
 
     function emailValidation (event)
     {   event.preventDefault ();
 
-        emailError (false);
+        const email = event.target;
+        
+        emailValidator (email);
+    }
 
-        const value = document.names.email.value;
-        if (value != "")
-        {
-            const indexAt = value.indexOf ("@");
-            const indexDot = value.indexOf ("@", indexAt);
+    function nameClearError (event)
+    {   event.preventDefault ();
 
-            if ((indexAt < 1) || (indexAt > (value.length - 4)))
-                emailError (true);
+        const input = event.target;
+        input.select();
+        const error = document.getElementById(input.name + "-error");
+        if (error) error.remove();
 
-            if ((indexDot < 5) || (indexDot > (value.length - 1)))
-                emailError (true);
+        setErrorClass (input, false);
+        errors.names = false;
+    }
+
+    function nameSetError (field, text)
+    {
+        const section = document.getElementById ("name-section");
+        configureElement ("div",
+            {
+                "class": "error-text",
+                "id": field.name + "-error",
+                "innerText": text
+            },
+            section);
+
+        setErrorClass (field, true);
+        errors.names = true;
+    }
+
+    function nameValidator (input)
+    {   const name = input.value;
+
+        if ((input.name != "middle") && (name == ""))
+        {   nameSetError (input, input.name + " is required");
+            return false;
+        }
+
+        let length = name.length;
+        for (let x=0; x<length; x++)
+        {   //  Names can include titles which means names might also include periods.  Some names, like O'Neal, include
+            //  apostrophes ("'").  Other than that, names should only include alpha characters
+
+            if ((name.charAt (x) != "'") && (name.charAt (x) != "."))
+                if (name.charAt (x).toLowerCase () == name.charAt (x).toUpperCase ())
+                {   nameSetError (input, "This does not appear to be a real name");
+                    return false;
+                }
         }
     }
 
     function nameValidation (event)
     {   event.preventDefault ();
 
-        const target = event.target;
+        const input = event.target;
+        nameValidator (input);
     }
 
     function passwordClearError (text)
@@ -523,8 +670,7 @@
         }
 
         setErrorClass (input, false);
-
-        postParentMessage ();
+        errors.password = false;
     }
 
     function passwordSetError (input, text)
@@ -538,8 +684,7 @@
             section);
 
         setErrorClass (input, true);
-
-        postParentMessage ();
+        errors.password = true;
     }
 
     function passwordValidation ()
@@ -572,7 +717,6 @@
     {   event.preventDefault ();
 
         const target = event.target;
-
         let other = target.name == "lock" ? document.getElementById ("unlock-option") : document.getElementById ("lock-option");
             
         const api = "/api/people/lockPerson/" + getCookie ("peopleId") + "/" + (target.name == "lock" ? "true" : "false");
@@ -580,17 +724,26 @@
         {
             if (xml.status == 200)
             {
+                playAudio (ting);
                 target.style.display = "none";
                 other.style.display = "inline-block";
                 alert ("This user account is now " + (target.name == "lock" ? "locked out" : "unlocked"))
             }
             else
+            {
+                playAudio (buzz);
                 alert (xml.responseText);
+            }
         })
     }
 
     function submitPassword (event)
     {   event.preventDefault ();
+
+        if (errors.password)
+        {   playAudio (buzz);
+            return false;
+        }
 
         if (passwordValidation ())
         {
@@ -598,14 +751,63 @@
             {
                 if (xml.status == 200)
                 {
+                    playAudio (ting);
                     const input = document.getElementById ("password");
                     input.value = null;
                     alert ("All good!");
                 }
                 else
+                {
+                    playAudio (buzz);
                     alert (xml.responseText);
+                }
             },
             { "password": password } );
+        }
+    }
+
+    function submitNamesValidate ()
+    {
+        let returnValue = true;
+
+        if (!nameValidator (document.names.given)) returnValue = false;
+        if (!nameValidator (document.names.middle)) returnValue = false;
+        if (!nameValidator (document.names.surname)) returnValue = false;
+
+        if (!emailValidator (document.names.email)) returnValue = false;
+
+        return returnValue;
+    }
+
+    function submitNames (event)
+    {   event.preventDefault ();
+
+        //  this function is disabled if nothing has been changed
+
+        let changed = false;
+
+        let originalValue = document.getElementById ("name-given").getAttribute ("value");
+        if (document.names.given.value != originalValue) changed = true;
+
+        originalValue = document.getElementById ("name-middle").getAttribute ("value");
+        if (document.names.middle.value != originalValue) changed = true;
+        
+        originalValue = document.getElementById ("name-surname").getAttribute ("value");
+        if (document.names.surname.value != originalValue) changed = true;
+        
+        originalValue = document.getElementById ("email-input").getAttribute ("value");
+        if (document.names.email.value != originalValue) changed = true;
+        
+        if (!changed)
+        {   playAudio (buzz);
+            return false;
+        }
+
+        //  this function is disabled if there are errors in the data
+
+        if (!submitNamesValidate ())
+        {   playAudio (buzz);
+            return false;
         }
     }
 
@@ -635,7 +837,15 @@
         {
             AJAX ("POST", "/api/people/changeAdminPrivledges/" + getCookie ("peopleId"), xml =>
             {
-alert (xml.status + " + " + xml.responseText);
+                if (xml.status == 200)
+                {   playAudio (ting);
+                    alert ("Successfully updated admin privledges");
+                }
+                else
+                {
+                    playAudio (buzz);
+                    alert (xml.responseText);
+                }
             },
             postData);
         }
