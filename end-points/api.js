@@ -18,17 +18,6 @@ const server = express();
 const router = express.Router ();
 server.use ("/api", router);
 
-//  Some return message text that is used a lot
-//  01  const message400 = "Oops!  It appears there is an error on this web page.  The PAWS server did not receive the data it "
-//  01                   + "was expecting and cannot process this request.  Contact your IT support staff for assistance.";
-//  01  const message401 = "Huh?!  It seems you don't have sufficient privledges for this function.  Please contact your PAWS "
-//  01                   + "system administrator for assistance.";
-//  01  const message403 = "Huh?!  It seems you don't have sufficient privledges for this function.  Please contact your PAWS "
-//  01                   + "system administrator for assistance.";
-//  01  const message500 = "Oops!  An error occured that is preventing the server from processing this request.  Contact "
-//  01                   + "your IT support group for assistance.";
-
-
 router
 .use ((request, response, next) =>
     {   // This always happens -- whenever any route is served in this module.  At the moment, all 
@@ -90,6 +79,37 @@ router
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //  The following end-points relate to the people using the application
+
+//  02  begins
+    .post("/people/createPerson", (request, response, next) =>
+    {   //  Updates personal data (name and email address) for one person.
+
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+
+        const admin = request.user.peopleId;
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+
+            return response.status(200).send(request.body);
+        })
+        .then(result =>
+        {
+            response.status(200).send(result);
+        })
+        .catch (error =>
+        {
+            console.log (chalk.redBright("PAWS ERROR"));
+            console.log (chalk.redBright("/api/people/updatePerson"));
+            console.log (chalk.redBright(error))
+            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+        })
+    })
+//  02  ends
 
     .get("/people/isAdmin", (request, response, next) =>
     {   //  Return a boolean value indicating whether the authenticated user has admin privledges.
@@ -503,6 +523,38 @@ router
         })(request, response, next);
     })
 
+//  02  begins
+    .post("/people/updatePerson/:user", (request, response, next) =>
+    {   //  Updates personal data (name and email address) for one person.
+
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+
+        const admin = request.user.peopleId;
+        const user = request.params.user;
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+
+            return response.status(200).send(request.body);
+        })
+        .then(result =>
+        {
+            response.status(200).send(result);
+        })
+        .catch (error =>
+        {
+            console.log (chalk.redBright("PAWS ERROR"));
+            console.log (chalk.redBright("/api/people/updatePerson"));
+            console.log (chalk.redBright(error))
+            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+        })
+    })
+//  02  ends
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -514,10 +566,7 @@ router
 
         console.log (chalk.redBright("PAWS ERROR 404"));
         console.log (chalk.redBright("Some client made an attempt to access an invalid end-point."));
-//  01          response.status(404).send("Error 404.  You have requested an unknown or invalid service.");
-//  01  begins
         response.status(404).send(process.env.PAWS_MESSAGE_404);
-//  01  ends
     });
 
 module.exports = router;

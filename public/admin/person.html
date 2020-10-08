@@ -591,6 +591,8 @@
                 return false;
             }
         }
+
+        return true;
     }
 
     function emailValidation (event)
@@ -647,6 +649,8 @@
                     return false;
                 }
         }
+
+        return true;
     }
 
     function nameValidation (event)
@@ -766,17 +770,69 @@
         }
     }
 
+//  01  begins
+    function submitNamesChange ()
+    {
+        const postData =
+        {
+            given: document.names.given.value,
+            middle: document.names.middle.value,
+            surname: document.names.surname.value,
+            email: document.names.email.value,
+        };
+
+        AJAX ("POST", "/api/people/updatePerson/" + getCookie ("peopleId"), xml =>
+        {
+            if (xml.status == 200)
+            {
+                playAudio (ting);
+alert (JSON.stringify (xml.responseText, null, 2));
+            }
+            else
+            {
+                playAudio (buzz);
+                alert (xml.responseText);
+            }
+        },
+        postData);
+    }
+
+    function submitNamesNew ()
+    {
+        const postData =
+        {
+            given: document.names.given.value,
+            middle: document.names.middle.value,
+            surname: document.names.surname.value,
+            email: document.names.email.value,
+        };
+
+        AJAX ("POST", "/api/people/createPerson", xml =>
+        {
+            if (xml.status == 200)
+            {
+                playAudio (ting);
+alert (JSON.stringify (xml.responseText, null, 2));
+            }
+            else
+            {
+                playAudio (buzz);
+                alert (xml.responseText);
+            }
+        },
+        postData);
+    }
+//  01  ends
+
     function submitNamesValidate ()
     {
-        let returnValue = true;
+        if (!nameValidator (document.names.given)) return false;
+        if (!nameValidator (document.names.middle)) return false;
+        if (!nameValidator (document.names.surname)) return false;
 
-        if (!nameValidator (document.names.given)) returnValue = false;
-        if (!nameValidator (document.names.middle)) returnValue = false;
-        if (!nameValidator (document.names.surname)) returnValue = false;
+        if (!emailValidator (document.names.email)) return false;
 
-        if (!emailValidator (document.names.email)) returnValue = false;
-
-        return returnValue;
+        return true;
     }
 
     function submitNames (event)
@@ -799,16 +855,25 @@
         if (document.names.email.value != originalValue) changed = true;
         
         if (!changed)
-        {   playAudio (buzz);
+        {
+            playAudio (buzz);
             return false;
         }
 
         //  this function is disabled if there are errors in the data
 
         if (!submitNamesValidate ())
-        {   playAudio (buzz);
+        {
+            playAudio (buzz);
             return false;
         }
+
+//  01  begins
+        if (createMode)
+            submitNamesNew ();
+        else
+            submitNamesChange ();
+//  01  ends
     }
 
     function submitPrivledges (event)
