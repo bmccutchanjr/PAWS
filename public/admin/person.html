@@ -138,6 +138,11 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //  These functions are required to get data from the server and put it on the screen.
+    allow =
+    {   admin: false,
+        change: false,
+        password: false
+    }
 
     function doAdmin (data)
     {
@@ -233,7 +238,9 @@
         if (!allow)
             document.getElementById ("password-section").remove ();
         else
+        {   allow.password = true;
             if (!createMode) document.getElementById ("password-section").style.display = "block";
+        }
     }
 
     function allowPersonInputs ()
@@ -262,6 +269,16 @@
 
     function doPersonData (data)
     {
+        allow.change = data.change;
+        if (allow.change)   document.getElementById ("lock-section").style.display = "block";
+        if (allow.password) document.getElementById ("password-section").style.display = "block";
+        document.getElementById ("permissions").style.display = "flex";
+
+        document.getElementById ("create-option").style.display = "none";
+        document.getElementById ("change-option").style.display = "inline-block";
+        document.getElementById ("change-spacer").style.display = "inline-block";
+        document.getElementById ("delete-option").style.display = "inline-block";
+
         if (data.results[0].given != "")
         {   
             document.names.given.value = data.results[0].given;
@@ -300,21 +317,6 @@
         else
             allowPersonInputs ();
     }
-
-//  02      function getCookie (cookie)
-//  02      {   //  Parse the cookie string and return the value of the selected cookie
-//  02  
-//  02          let value = undefined;
-//  02  
-//  02          const cookies = document.cookie.split (";");
-//  02          cookies.forEach (c =>
-//  02          {
-//  02              const cPrime = c.split ("=");
-//  02              if (cPrime[0].trim() == cookie) value = cPrime[1];
-//  02          })
-//  02  
-//  02          return value;
-//  02      }
 
     function hideOption (option)
     {   option.style.display = "none";
@@ -772,7 +774,6 @@
         }
     }
 
-//  01  begins
     function submitNamesChange ()
     {
         const postData =
@@ -815,7 +816,17 @@ alert (JSON.stringify (xml.responseText, null, 2));
             if (xml.status == 200)
             {
                 playAudio (ting);
-alert (JSON.stringify (xml.responseText, null, 2));
+//  console.log (xml.status);
+//  console.log (typeof xml.responseText);
+//  console.log (xml.responseText);
+                peopleId = JSON.parse(xml.responseText).insertId;
+                setCookie ("peopleId", peopleId, 3600);
+                createMode = false;
+                doPersonData (
+                    {   add: false,
+                        change: true,
+                        results: [ postData ]
+                    });
             }
             else
             {
@@ -825,7 +836,6 @@ alert (JSON.stringify (xml.responseText, null, 2));
         },
         postData);
     }
-//  01  ends
 
     function submitNamesValidate ()
     {
@@ -871,12 +881,10 @@ alert (JSON.stringify (xml.responseText, null, 2));
             return false;
         }
 
-//  01  begins
         if (createMode)
             submitNamesNew ();
         else
             submitNamesChange ();
-//  01  ends
     }
 
     function submitPrivledges (event)

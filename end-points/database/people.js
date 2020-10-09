@@ -253,7 +253,7 @@ const db =
                 const query = "insert into People "
                             + "(surname, given, middle, email, password, change_by, change_date) "
                             + "values (?, ?, ?, ?, 'unassigned', ?, now());";
-                return select (query, [ surname, middle, given, email, admin ]);
+                return select (query, [ surname, given, middle, email, admin ]);
             })
             .then (result =>
             {
