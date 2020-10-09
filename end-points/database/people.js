@@ -269,6 +269,31 @@ const db =
         })
     },
 
+    deactivatePerson (admin, user)
+    {
+        return new Promise ((resolve, reject) =>
+        {
+            hasAdminPrivledge (admin, "Add/remove people")
+            .then (result =>
+            {   //  Okay, so the currently authenticated user has the appropriate privledge to do this...
+
+                const query = "update People set active=false where peopleId=?;";
+                return select (query, user);
+            })
+            .then (result =>
+            {
+                resolve (result);
+            })
+            .catch (error =>
+            {
+                console.log (chalk.redBright("PAWS ERROR 102"));
+                console.log (chalk.redBright("people.createPerson()"));
+                console.log (chalk.redBright(error));
+                reject (process.env.PAWS_MESSAGE_500);
+            })
+        })
+    },
+
     getAdminPrivledges (admin, user)
     {   //  Returns the list of Admin privledges (which may well be zero) that have been granted to this user
         //

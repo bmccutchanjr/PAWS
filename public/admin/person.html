@@ -721,6 +721,25 @@
 
     //  These are API requests to POST data to the server.
 
+    function submitDeactivate (event)
+    {   event.preventDefault ();
+
+        AJAX ("GET", "/api/people/deactivatePerson/" + getCookie ("peopleId"), xml =>
+        {
+            if (xml.status == 205)
+            {
+                playAudio (ting);
+                alert (document.names.give.value + " " + document.names.surname.value + " has been deactivated.");
+                window.location.href="/admin/people-picker";
+            }
+            else
+            {
+                playAudio (buzz);
+                alert (xml.responseText);
+            }
+        })
+    }
+
     function submitLock (event)
     {   event.preventDefault ();
 
@@ -816,9 +835,6 @@ alert (JSON.stringify (xml.responseText, null, 2));
             if (xml.status == 200)
             {
                 playAudio (ting);
-//  console.log (xml.status);
-//  console.log (typeof xml.responseText);
-//  console.log (xml.responseText);
                 peopleId = JSON.parse(xml.responseText).insertId;
                 setCookie ("peopleId", peopleId, 3600);
                 createMode = false;

@@ -204,6 +204,39 @@ router
         })
     })
 
+    .get("/people/deactivatePerson/:user", (request, response, next) =>
+    {   //  Deactivate a person record in People for the specified user.  This application does not actually delete
+        //  rows from People chielfy to preserve the name for interactin reports.  Rows are deactivated by setting
+        //  the field active to 'false'.  All queries that operate on People select rows where active=true.
+
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+
+        const admin = request.user.peopleId;
+        const user = request.params.user;
+
+        people.hasPeoplePrivledges (admin)
+        .then (result =>
+        {
+            if (!result)
+                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+
+            return people.deactivatePerson (admin, user);
+        })
+        .then(result =>
+        {
+            //  send a 205 status: completed successfully, no data is returned and requesting client reload
+            response.status(205).send();
+        })
+        .catch (error =>
+        {
+            console.log (chalk.redBright("PAWS ERROR"));
+            console.log (chalk.redBright("/api/people/updatePerson"));
+            console.log (chalk.redBright(error))
+            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+        })
+    })
+
     .get("/people/isAdmin", (request, response, next) =>
     {   //  Return a boolean value indicating whether the authenticated user has admin privledges.
 
@@ -217,10 +250,7 @@ router
         .catch (error =>
         {   
             console.log (chalk.red(error));
-//  01              response.status(500).send(message500);
-//  01  begins
             return response.status(500).send(process.env.PAWS_MESSAGE_500);
-//  01  ends
         })
     })
 
@@ -235,10 +265,7 @@ router
     {   //  Retrieve and return all data for one person.
 
         if (!request.user)
-//  01              return response.status(200).send(false);
-//  01  begins
             return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
 
         const admin = request.user.peopleId;
         const user = request.params.user;
@@ -247,10 +274,7 @@ router
         .then (result =>
         {
             if (!result)
-//  01                  return response.status(403).send(message403);
-//  01  begins
                 return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
             else                
                 return people.getAdminPrivledges (admin, user)
         })
@@ -260,10 +284,7 @@ router
         })
         .catch (error =>
         {
-//  01              response.status(500).send(message500);
-//  01  begins
             return response.status(500).send(process.env.PAWS_MESSAGE_500);
-//  01  ends
         })
     })
 
@@ -271,10 +292,7 @@ router
     {   //  Retrieve and return all data for one person.
 
         if (!request.user)
-//  01              return response.status(200).send(false);
-//  01  begins
             return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
 
         const admin = request.user.peopleId;
         const user = request.params.user;
@@ -283,10 +301,7 @@ router
         .then (result =>
         {
             if (!result)
-//  01                  return response.status(403).send(message403);
-//  01  begins
                 return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
             else                
                 return people.getAnimalPermissions (admin, user)
         })
@@ -296,10 +311,7 @@ router
         })
         .catch (error =>
         {
-//  01              response.status(500).send(message500);
-//  01  begins
             return response.status(500).send(process.env.PAWS_MESSAGE_500);
-//  01  ends
         })
     })
 
@@ -307,10 +319,7 @@ router
     {   //  Retrieve and return all data for one person.
 
         if (!request.user)
-//  01              return response.status(400).send(false);
-//  01  begins
             return response.status(400).send(process.env.PAWS_MESSAGE_400);
-//  01  ends
 
         const admin = request.user.peopleId;
         const user = request.params.peopleId;
@@ -319,10 +328,7 @@ router
         .then (result =>
         {
             if (!result)
-//  01                  return response.status(403).send(message403);
-//  01  begins
                 return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
             else                
                 return people.getPerson (admin, user)
         })
@@ -335,10 +341,7 @@ router
             console.log (chalk.redBright("PAWS ERROR"));
             console.log (chalk.redBright("/api/people/getPerson"));
             console.log (chalk.redBright(error))
-//  01              response.status(500).send(message500);
-//  01  begins
             return response.status(500).send(process.env.PAWS_MESSAGE_500);
-//  01  ends
         })
     })
 
@@ -347,10 +350,7 @@ router
     {   //  Retrieve and return all data for one person.
 
         if (!request.user)
-//  01              return response.status(401).send(message401);
-//  01  begins
             return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
 
         const admin = request.user.peopleId;
         const lock = request.params.lock;
@@ -360,10 +360,7 @@ router
         .then (result =>
         {
             if (!result)
-//  01                  return response.status(401).send(message401);
-//  01  begins
                 return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
 
             return people.lockPerson (admin, user, lock);
         })
@@ -376,10 +373,7 @@ router
             console.log (chalk.redBright("PAWS ERROR"));
             console.log (chalk.redBright("/api/people/getPerson"));
             console.log (chalk.redBright(error))
-//  01              response.status(500).send(message500);
-//  01  begins
             return response.status(500).send(process.env.PAWS_MESSAGE_500);
-//  01  ends
         })
     })
 
@@ -395,56 +389,35 @@ router
         .then (result =>
         {
             if (!result)
-//  01                  return response.status(403).send(message403);
-//  01  begins
                 return response.status(401).send(process.env.PAWS_MESSAGE_401);
-//  01  ends
             else                
                 return response.status(200).send(result);
         })
         .catch (error =>
         {
-//  01              response.status(500).send(message500);
-//  01  begins
             return response.status(500).send(process.env.PAWS_MESSAGE_500);
-//  01  ends
         })
     })
 
     .post("/people/login", (request, response, next) =>
     {
-//  01          const responseText = "Oops!  There is error on this page that prevents the server from processing your attempt to "
-//  01                             + "authenticate with PAWS.  Contact your IT support for assistance.";
-
         //  So first things first...verify the client actually sent us data
 
         if (Object.entries(request.body).length != 2)
         {   console.log (chalk.redBright("PAWS AUTHORIZATION ERROR 101: The server has received invalid authorization credentials"));
-//  01              response.status(400).send(responseText);
-//  01              return;
-//  01  begins
             return response.status(400).send(process.env.PAWS_MESSAGE_400);
-//  01  ends
         }
 
         //  And verify the data sent are valid login credentials
 
         if (!request.body.email)
         {   console.log (chalk.redBright("PAWS AUTHORIZATION ERROR 102: The server has received invalid authorization credentials"));
-//  01              response.status(400).send(responseText);
-//  01              return;
-//  01  begins
             return response.status(400).send(process.env.PAWS_MESSAGE_400);
-//  01  ends
         }
 
         if (!request.body.password)
         {   console.log (chalk.redBright("PAWS AUTHORIZATION ERROR 104: The server has received invalid authorization credentials"));
-//  01              response.status(400).send(responseText);
-//  01              return;
-//  01  begins
             return response.status(400).send(process.env.PAWS_MESSAGE_400);
-//  01  ends
         }
 
         //  So far so good...let's verify authentication
