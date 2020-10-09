@@ -194,50 +194,38 @@ function openSidebar (event)
 {   //  The 'menu-icon' option has been selected.  Either display or hide the menu depending on
     //  it's current state.
 
-    event.preventDefault ();
+    if (event) event.preventDefault ();
 
-    const icon = event.target;
+    const icon = document.getElementById ("menu-icon");
     const expanded = icon.getAttribute ("expanded");
     const menu = document.getElementById ("menu");
 
     if (expanded == "true")
-    {   menu.style.display = "none";
-        menu.setAttribute ("class", menu.getAttribute ("class").replace (" menu-show", ""));
+    {   
+        menu.setAttribute ("class", menu.getAttribute ("class").replace (" menu-show", " menu-hide"));
         icon.setAttribute ("expanded", "false");
-        icon.innerText = "►";
+        icon.firstChild.innerText = "►";
     }
     else
-    {   menu.style.display = "block";
+    {   
+        setTimeout (() =>
+        {   //  Automatically close the side bar after one minute...some menu options will close the side bar when selected,
+            //  and some menu options will load another page, so I only want to do this if the side bar is expanded.  That
+            //  means testing the custom attribute on the menu-icon.  Unfortunately, it appear that I cannot pass a DOM
+            //  element to setTimeout's callback.  So I'll just have to grab a reference to it now...
+
+            const icon = document.getElementById ("menu-icon");
+            const expanded = icon.getAttribute ("expanded");
+            if (expanded == "true")
+                openSidebar ();
+        },
+        60000);
+
         menu.setAttribute ("class", menu.getAttribute ("class") + " menu-show");
         icon.setAttribute ("expanded", "true");
-        icon.innerText = "◄";
+        icon.firstChild.innerText = "◄";
     }
 }
-
-// function hideAdmin (isAuthenticated)
-// {   //  Set the CSS display attribute to hide or display the Admin option.  The parameter indicates whether the user
-//     //  is authenticated.  It remains to be seen if they have admin privledges.
-
-//     if (checkAdmin ())
-//         document.getElementById ("menu-admin").style.display = "inline-block";
-//     else
-//         document.getElementById ("menu-admin").style.display = "none";
-// }
-
-// function hideLogin (isAuthenticated)
-// {   //  Set the CSS display attribute to hide or display the Login and Logout options as indicated by the parameter
-
-//     if (checkAuthenticated ())
-//     {   
-//         document.getElementById ("menu-login").style.display = "inline-block";
-//         document.getElementById ("menu-logout").style.display = "none";
-//     }
-//     else
-//     {   
-//         document.getElementById ("menu-login").style.display = "none";
-//         document.getElementById ("menu-logout").style.display = "inline-block";
-//     }
-// }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

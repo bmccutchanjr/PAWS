@@ -43,26 +43,44 @@ body
 {
     background: lightgrey;
     border-right: 3px solid grey;
-    display: none;
+    /* display: none; */
     height: 100%;
     min-height: 100%;
     padding: 5px;
     padding-top: 50px;
     position: fixed;
-    left: 0px;
+    /* left: 0px; */
+    left: -200px;
     top: -17px;
-    width: 0px;
+    /* width: 0px; */
+    width: 200px;
     z-index: 50;
+}
+
+@keyframes hidemenu
+{
+    from
+    {   left: 0px;
+    }
+    to
+    {   left: -200px;
+    }
+}
+
+.menu-hide
+{   animation-name: hidemenu;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
 }
 
 @keyframes showmenu
 {
     from
-    {   width: 0px;
+    {   left: -200px;
         background: grey;
     }
     to
-    {   width: 200px;
+    {   left: 0px;
         background: lightgrey;
     }
 }
