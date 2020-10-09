@@ -254,6 +254,8 @@
         document.getElementById ("permissions").style.display = "none";
 
         document.getElementById ("create-option").style.display = "inline-block";
+        document.getElementById ("change-option").style.display = "none";
+        document.getElementById ("delete-option").style.display = "none";
 
         allowPersonInputs ();
     }
@@ -299,20 +301,20 @@
             allowPersonInputs ();
     }
 
-    function getCookie (cookie)
-    {   //  Parse the cookie string and return the value of the selected cookie
-
-        let value = undefined;
-
-        const cookies = document.cookie.split (";");
-        cookies.forEach (c =>
-        {
-            const cPrime = c.split ("=");
-            if (cPrime[0].trim() == cookie) value = cPrime[1];
-        })
-
-        return value;
-    }
+//  02      function getCookie (cookie)
+//  02      {   //  Parse the cookie string and return the value of the selected cookie
+//  02  
+//  02          let value = undefined;
+//  02  
+//  02          const cookies = document.cookie.split (";");
+//  02          cookies.forEach (c =>
+//  02          {
+//  02              const cPrime = c.split ("=");
+//  02              if (cPrime[0].trim() == cookie) value = cPrime[1];
+//  02          })
+//  02  
+//  02          return value;
+//  02      }
 
     function hideOption (option)
     {   option.style.display = "none";

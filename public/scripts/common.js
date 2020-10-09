@@ -143,6 +143,34 @@ function configureElement (elementType, object, parent = undefined)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//  cookies
+
+function getCookie (cookie)
+{   //  Parse the cookie string and return the value of the selected cookie
+
+    let value = undefined;
+
+    const cookies = document.cookie.split (";");
+    const length = cookies.length;
+    for (let x=0; x<length; x++)
+    {
+        const cPrime = cookies[x].split ("=");
+        if (cPrime[0].trim() == cookie) return cPrime[1];
+    }
+
+    return false;
+}
+
+function setCookie (name, value, maxAge=86400, path="/")
+{
+    document.cookie = name + "=" + value + ";"
+                    + "path=" + path + ";"
+                    + "maxAge=" + maxAge + ";"
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 function removeModal (event)
 {   event.preventDefault ();
 

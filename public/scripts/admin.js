@@ -26,7 +26,10 @@ function newPerson (event)
 //
 //  I should check that the current user has the "Create people" privledge first...
 //
-    document.cookie = "peopleId=0;path=/;maxAge=3600";
+//  01      document.cookie = "peopleId=0;path=/;maxAge=3600";
+//  01  begins
+        setCookie ("peopleId", 0, 3600);
+//  01  ends
 
     window.iframe.location = "/admin/person/new";
 }
