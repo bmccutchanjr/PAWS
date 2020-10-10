@@ -1,7 +1,34 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  These functions create, populate and implement the menu.
+//  Various functions that add elements to the page.
+
+function addFooter ()
+{   //  Populate the footer...
+
+    const div = document.body.getElementsByTagName ("footer")[0];
+
+    const inner = configureElement ("div",
+        {
+            "class": "inner-footer",
+            "id": "inner-footer"
+        },
+        div);
+
+    configureElement ("div",
+        {
+            "class": "left",
+            "innerText": "PAWS Interaction Log"
+        },
+        inner);
+
+    configureElement ("div",
+        {
+            "class": "right",
+            "innerHTML": "&copy All Rights Reserved"
+        },
+        inner);
+}
 
 function addMenu ()
 {   //  Create the side-bar menu
@@ -591,6 +618,7 @@ window.addEventListener ("load", (event) =>
     status.page = true;
 
     showAnimals ();
+    addFooter ();
     addMenu ();
 });
 
