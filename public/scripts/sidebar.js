@@ -83,13 +83,13 @@ function configureSidebar (commonOptions, additionalOptions)
 
     const icon = configureElement ("div",
         {   "class": "menu-icon",
+            "expanded": "false",
             "id": "menu-icon"
         },
         document.body);
 
     configureElement ("a",
         {   "class": "menu-option",
-            "expanded": "false",
             "href": "#",
             "innerText": "►",
             "onclick": "openSidebar (event)"
@@ -190,44 +190,81 @@ function configureSidebar (commonOptions, additionalOptions)
         menu);
 }
 
-function openSidebar (event)
-{   //  The 'menu-icon' option has been selected.  Either display or hide the menu depending on
-    //  it's current state.
-
-    if (event) event.preventDefault ();
+function closeSidebar ()
+{   //  Hide the side bar...this function may be called from event handlers for various menu options or from the internal
+    //  callback of a setTimeout, but it is not directly invoked by an event handler witha reference to either the sidebar
+    //  or the menu-icon
 
     const icon = document.getElementById ("menu-icon");
     const expanded = icon.getAttribute ("expanded");
+
+    //  It would not be an error for this function to be invoked after the siderbar has been hidden.  The user may have closed
+    //  the sidebar explicitly by clicking on menu-icon, or implicitly by clicking on a menu-option that invokes this function.
+    //  In any case, the sidebar may not be on screen when this function is invoked.  If the sidebar is not on screen, there
+    //  is nothing to do here...
+
+    if (expanded != "true") return;
+
     const menu = document.getElementById ("menu");
 
-    if (expanded == "true")
-    {   
-        menu.setAttribute ("class", menu.getAttribute ("class").replace (" menu-show", " menu-hide"));
-        icon.setAttribute ("expanded", "false");
-        icon.firstChild.innerText = "►";
+    menu.setAttribute ("class", menu.getAttribute ("class").replace (" menu-show", " menu-hide"));
+    icon.setAttribute ("expanded", "false");
+    icon.firstChild.innerText = "►";
+}
+
+const sidebar =
+{   expanded: false,
+    delay: 60000,
+    time: undefined
+}
+
+function sidebarTimeout ()
+{   //  Automatically close the side bar after one minute of inactivity, but only if the sidebar is actually on the screen.
+
+    //  Some menu options will close the sidebar when selected, and some menu options will load another page, so I only want
+    //  to do this if the side bar is expanded.
+
+    const icon = document.getElementById ("menu-icon");
+    const expanded = icon.getAttribute ("expanded");
+    if (expanded != "true") return;
+
+    //  If it has been less than 60 seconds since the user last interacted with the sidebar, set another timeout.  Set the
+    //  delay to be 60 seconds from the last interaction (current time - previous time)
+
+    const milliseconds = Date.now() - sidebar.time;
+    if (milliseconds < sidebar.delay)
+    {   //  If it hasn't been 60 seconds set a new timeout for the remaining time
+
+        setTimeout (sidebarTimeout, (sidebar.delay - milliseconds));
+        return;
     }
+
+    //  finally close the sidebar
+    closeSidebar ();
+}
+
+function openSidebar (event)
+{   //  Show the sidebar and set a timeout to close it automatically after 60 seconds...
+
+    event.preventDefault ();
+    const icon = event.target.parentNode;
+    const expanded = icon.getAttribute ("expanded");
+    const menu = document.getElementById ("menu");
+
+    //  sidebar.time is not a Date object, but the number of seconds since Jan 1, 1970.  I don't really need a Date object, 
+    //  but I do need a number to do some math in sidebarTimeOut().  setTimeout doesn't want a Date either, but a number of
+    //  milliseconds.  So a number is less work...
+
+    sidebar.time = Date.now ();
+
+    setTimeout (sidebarTimeout, sidebar.delay);
+
+    if (menu.getAttribute ("class").indexOf ("menu-hide") == -1)
+        menu.setAttribute ("class", menu.getAttribute ("class") + " menu-show");
     else
-    {   
-        setTimeout (() =>
-        {   //  Automatically close the side bar after one minute...some menu options will close the side bar when selected,
-            //  and some menu options will load another page, so I only want to do this if the side bar is expanded.  That
-            //  means testing the custom attribute on the menu-icon.  Unfortunately, it appear that I cannot pass a DOM
-            //  element to setTimeout's callback.  So I'll just have to grab a reference to it now...
-
-            const icon = document.getElementById ("menu-icon");
-            const expanded = icon.getAttribute ("expanded");
-            if (expanded == "true")
-                openSidebar ();
-        },
-        60000);
-
-        if (menu.getAttribute ("class").indexOf ("menu-hide") == -1)
-            menu.setAttribute ("class", menu.getAttribute ("class") + " menu-show");
-        else
-            menu.setAttribute ("class", menu.getAttribute ("class").replace (" menu-hide", " menu-show"));
-        icon.setAttribute ("expanded", "true");
-        icon.firstChild.innerText = "◄";
-    }
+        menu.setAttribute ("class", menu.getAttribute ("class").replace (" menu-hide", " menu-show"));
+    icon.setAttribute ("expanded", "true");
+    icon.firstChild.innerText = "◄";
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
