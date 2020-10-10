@@ -158,9 +158,9 @@ router
 
     .get("/logout", (request, response) =>
     {
-console.log (chalk.blueBright("serving /logout"));
+console.log ("serving /logout");
         request.logout();
-console.log (chalk.blueBright(request.user ? "still logged in" : "buh-bye"));
+console.log (request.user ? "still logged in" : "buh-bye");
         response.sendFile(path.join(__dirname, "../public/log.html"));
     })
 

@@ -457,6 +457,26 @@ router
         })(request, response, next);
     })
 
+    .post("/people/updateColorPermissions/:user/:species", (request, response) =>
+    {
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+
+        const admin = request.user.peopleId;
+        const species = request.params.species;
+        const user = request.params.user;
+
+        people.updateColorPermissions (admin, user, species, request.body)
+        .then (data =>
+        {
+            response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+        })
+    })
+
     .post("/people/updatePerson/:user", (request, response, next) =>
     {   //  Updates personal data (name and email address) for one person.
 

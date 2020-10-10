@@ -221,7 +221,10 @@ function openSidebar (event)
         },
         60000);
 
-        menu.setAttribute ("class", menu.getAttribute ("class") + " menu-show");
+        if (menu.getAttribute ("class").indexOf ("menu-hide") == -1)
+            menu.setAttribute ("class", menu.getAttribute ("class") + " menu-show");
+        else
+            menu.setAttribute ("class", menu.getAttribute ("class").replace (" menu-hide", " menu-show"));
         icon.setAttribute ("expanded", "true");
         icon.firstChild.innerText = "◄";
     }

@@ -205,10 +205,10 @@
                 },
                 div);
 
-            if (p.species == species)
+            if (p[species])
             {
-                if (p["species"] == true) input.setAttribute ("checked", "");
-                if (data.allow != true) input.setAttribute ("disabled", "");
+                input.setAttribute ("checked", "checked");
+                if (data.allow != true) input.setAttribute ("disabled", "true");
             }
 
             configureElement ("label",
@@ -309,10 +309,14 @@
             hideOption (document.getElementById ("lock-option"));
 
         document.getElementById ("create-option").remove();
+        if (!data.add)
+            document.getElementById ("delete-option").remove();
 
         if (!data.change)
         {   document.getElementById ("change-option").remove();
             document.getElementById ("change-spacer").remove();
+            document.getElementById ("lock-section").remove();
+            document.getElementById ("name-section").style.marginTop = "0px";
         }
         else
             allowPersonInputs ();
@@ -372,6 +376,7 @@
         {
             if (xml.status == 200)
             {
+//  alert (JSON.stringify(JSON.parse(xml.responseText), null, 2));
                 doColors (JSON.parse(xml.responseText), "cat");
                 doColors (JSON.parse(xml.responseText), "dog");
             }
@@ -720,6 +725,50 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //  These are API requests to POST data to the server.
+
+    function submitColors (event)
+    {   event.preventDefault ();
+
+        let postData = [];
+
+        let changed = 0;
+
+        const target = event.target;
+        const section = target.parentNode;
+        const colors = section.getElementsByTagName ("input");
+
+        const length = colors.length;
+        for (let x=0; x<length; x++)
+        {
+            const checked = colors[x].checked;
+            const selected = colors[x].getAttribute ("selected") == "true" ? true : false;
+
+            if ((checked == selected) == false)
+            {   changed++;
+                let obj = { [colors[x].name] : checked }
+                postData.push (obj);
+            }
+        }
+
+        if (changed > 0)
+        {
+            const user = getCookie ("peopleId");
+            const species = target.getAttribute ("species");
+            AJAX ("POST", "/api/people/updateColorPermissions/" + user + "/" + species, xml =>
+            {
+                if (xml.status == 200)
+                {   playAudio (ting);
+                    alert ("Successfully updated color permissions");
+                }
+                else
+                {
+                    playAudio (buzz);
+                    alert (xml.responseText);
+                }
+            },
+            postData);
+        }
+    }
 
     function submitDeactivate (event)
     {   event.preventDefault ();

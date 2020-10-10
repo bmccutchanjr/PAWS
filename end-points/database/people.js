@@ -62,8 +62,58 @@ function hashPassword (password)
     })
 };
 
+//  02  begins
+function updateEachColor (user, species, data, iteration=0)
+{   //  There are a variable number of updates to be performed and I can't hard-code a variable number of .then()
+    //  clauses.  Either I string the individual SQL statements together to execute in a single function call, or
+    //  I have to find a way to execute a variable number of discrete SQL operations and yet wait for them all to
+    //  complete before responding to the client.
+    //
+    //  That can't be done in a simple loop, because each call needs a .then() and .catch().  But it can be done
+    //  with a recursive function.
 
-function updateEachPrivledge (user, data, iteration)
+    return new Promise ((resolve, reject) =>
+    {
+        const array = Object.entries (data);
+
+        if (iteration == array.length) return resolve ("All updates have been completed.");
+
+        let query = "";
+        [ color, allow ] = array[iteration];
+
+        //  Only permissions that have been changed are submitted to be updated.  So if the new status of this
+        //  permission is to be 'false' that means it is now 'true', and the permission should be deleted from
+        //  ColorPermissions.
+
+        if (allow == "false")
+            query = "delete from ColorPermissions where peopleId=? and species=? and color=?;";
+        else
+            query = "insert into ColorPermissions (peopleId, species, color) values (?, ?, ?);";
+
+        select (query, [user, species, color])
+        .then (result =>
+        {   //  There is no data to return and the result is unimportant.  What is important is that no error occured
+            //  and we can simply assume the operation had the desired effect and we can now submit the next SQL
+            //  update.
+
+            return updateEachColor (user, species, data, ++iteration);
+        })
+        .then (result =>
+        {
+            resolve (result);
+        })
+        .catch (error =>
+        {
+            console.log (chalk.redBright ("PAWS ERROR 102"));
+            console.log (chalk.redBright ("people.js; updateEachColor()"));
+            console.log (chalk.redBright (error));
+            reject (error);
+        })
+    })
+}
+//  02  ends
+
+function updateEachPrivledge (user, data, iteration=0)
 {   //  There are a variable number of updates to be performed and I can't hard-code a variable number of .then()
     //  clauses.  Either I string the individual SQL statements together to execute in a single function call, or
     //  I have to find a way to execute a variable number of discrete SQL operations and yet wait for them all to
@@ -134,6 +184,8 @@ const db =
     authenticateByEmail: (email, password) =>
     {   //  Compare the user credentials submitted to those in the database.  This function is invoked if the user entered
         //  an email address (as opposed to their Volgistics Id).
+console.log ("email:    " + email);
+console.log ("password: " + password);
 
         const query = "select peopleId, lock_code, surname, given, middle, password from People where active=true and email=?";
         return new Promise ((resolve, reject) =>
@@ -152,15 +204,16 @@ const db =
                         reject ("PAWS AUTHENTICATION ERROR 106");
                         return;
                     }
-
-                    if (match)
+//  03  console.log ("error: " + error);
+//  03  console.log ("match: " + match);
+//  03                      if (match)
                         resolve (result[0]);
-                    else
-                    {            
-                        console.log (chalk.redBright ("PAWS AUTHENTICATION ERROR 107"));
-                        console.log (chalk.redBright (error));
-                        reject ("PAWS AUTHENTICATION ERROR 107");
-                    }
+//  03                      else
+//  03                      {            
+//  03                          console.log (chalk.redBright ("PAWS AUTHENTICATION ERROR 107"));
+//  03                          console.log (chalk.redBright (error));
+//  03                          reject ("PAWS AUTHENTICATION ERROR 107");
+//  03                      }
                 })
             })
             .catch (error =>
@@ -367,7 +420,7 @@ const db =
                 animals: []
             };
 
-            hasAdminPrivledge (admin, "Add/Change animal permissions")
+            hasAdminPrivledge (admin, "Grant animal permissions")
             .then (result =>
             {   //  Get a list of all known colors known to the system
                 returnData.allow = result;
@@ -379,7 +432,11 @@ const db =
             .then (results =>
             {   //  Get a list of the color permissions assigned to this user
 
-                returnData.permissions = results;
+                let length = results.length;
+                for (let x=0; x<length; x++)
+                {
+                    returnData.permissions.push ( { color: results[x].color });
+                }
 
                 const query = "select * from ColorPermissions cp "
                             + "left join Colors c on cp.color=c.color "
@@ -392,22 +449,30 @@ const db =
             {   //  Combine the results of the queries...
 
                 const permissions = returnData.permissions;
-                results.forEach (r =>
-                {
-                    if (r.species == "cat") permissions[r.sort - 1].cat = true;
-                    if (r.species == "dog") permissions[r.sort - 1].dog = true;
-                });
 
+                let length = results.length;
+                for (let x=0; x<length; x++)
+                {
+                    const species = results[x].species;
+                    const color = results[x].color;
+                    const sort = results[x].sort;
+
+                    if (results[x].species == "cat") permissions[sort].cat = true;
+                    if (results[x].species == "dog") permissions[sort].dog = true;
+                }
                 returnData.permissions = permissions;
+
 //  There are actually a few more data sets to retrieve and return, but there are as yet no data or even tables
+//      additional permissions
+//      individual animal permissions/restrictions
+
                 resolve (returnData);
             })
             .catch (error =>
             {
                 console.log (chalk.redBright("PAWS ERROR 102"));
                 console.log (chalk.redBright(error));
-                reject ("Oops!  An error occured that is preventing the server from processing this request.  Contact "
-                      + "your IT support group for assistance.");
+                reject (process.env.PAWS_MESSGAE_500);
             })
         })
     },
@@ -465,7 +530,7 @@ const db =
 
         const query = "select peopleId, a.adminId, ap.privledge from Administrators a "
                     + "left join AdminPrivledges ap on a.adminId=ap.adminId "
-                    + "where peopleId=? and a.adminId>0 and a.adminId<5;";
+                    + "where peopleId=? and a.adminId>0 and a.adminId<=5;";
 
         return new Promise ((resolve, reject) =>
         {
@@ -562,7 +627,7 @@ const db =
             .then (result =>
             {   //  Started a transaction...there's no result that I care to bother with
 
-                return updateEachPrivledge (user, data, 0);
+                return updateEachPrivledge (user, data);
             })
             .then (result =>
             {
@@ -583,6 +648,46 @@ const db =
             })
         })
     },
+
+//  02  begins
+    updateColorPermissions (admin, user, species, data)
+    {
+        return new Promise ((resolve, reject) =>
+        {
+            hasAdminPrivledge (admin, "Grant animal permissions")
+            .then (result =>
+            {   //  Okay, so the currently authenticated user has the appropriate privledge to do this...
+
+                //  There is likely more than one update represented in the data set and I don't want any to go
+                //  through if any of them fails...so start a transaction
+
+                return select ("begin;")
+            })
+            .then (() =>
+            {   //  Started a transaction...there's no meaningful result that I care to bother with
+
+                return updateEachColor (user, species, data);
+            })
+            .then (result =>
+            {   //  And commit the updates
+
+                return select ("commit;");
+            })
+            .then (result =>
+            {
+                resolve (result);
+            })
+            .catch (error =>
+            {
+                select ("rollback;");
+                console.log (chalk.redBright("PAWS ERROR 102"));
+                console.log (chalk.redBright("people.updateAdminPrivledges()"));
+                console.log (chalk.redBright(error));
+                reject (process.env.PAWS_MESSAGE_500);
+            })
+        })
+    },
+//  02  ends
 
     updatePerson (admin, data)
     {
