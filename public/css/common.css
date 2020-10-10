@@ -10,7 +10,7 @@
 {
     --bg-color: black;
     --fg-color: black;
-    --width: 95vw;
+    --width: 95%;
 }
 
 body
@@ -91,10 +91,8 @@ body
 .menu-option
 {   color: grey;
     display: inline-block;
-    /* height: 20px; */
     height: auto;
     width: 100%;
-    /* overflow: hidden; */
     text-decoration: none;
 }
 
@@ -129,7 +127,7 @@ body
     position: fixed;
     left: 0px;
     top: 60px;
-    width: 100vw;
+    width: 100%;
     z-index: 100;
 }
 
@@ -140,7 +138,7 @@ body
     display: flex;
     flex-direction: column;
     margin: 0px auto;
-    width: 90vw;
+    width: 90%;
     max-width: 500px;
 }
 
@@ -207,14 +205,12 @@ html
 {   height: auto;
     min-height: 100%;
     margin: 0px auto;
-    /* margin-bottom: -30px; */
     margin-bottom: -25px;
-    width: 95vw;
+    width: var(--width);
 }
 
 .push
 {   
-    /* height: 30px; */
     height: 40px;
 }
 
@@ -228,11 +224,10 @@ footer
     font-weight: inherit;
     height: 25px;
     margin: 0px;
-    /* margin-top: 5px; */
     padding: 5px;
-    padding-left: 2.5vw;
-    padding-right: 2.5vw;
-    width: 100vw;
+    padding-left: 2.5%;
+    padding-right: 2.5%;
+    width: 100%;
 }
 
 footer .left

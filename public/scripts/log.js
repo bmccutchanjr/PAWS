@@ -281,7 +281,7 @@ function switchToGroup (group)
         document.getElementById ("cat-button").setAttribute("title", "Switch to cat data");
         document.getElementById ("cat-option").style.display = "inline-block";
 
-        document.getElementById ("cat-button").setAttribute("title", "Sort list by name");
+        document.getElementById ("dog-button").setAttribute("title", "Sort list by name");
         document.getElementById ("dog-option").style.display = "none";
     }
 }
