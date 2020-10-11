@@ -248,7 +248,12 @@ function openSidebar (event)
 
     event.preventDefault ();
     const icon = event.target.parentNode;
-    const expanded = icon.getAttribute ("expanded");
+    const expanded = icon.getAttribute ("expanded") == "true";
+    if (expanded)
+    {   closeSidebar ();
+        return;
+    }
+
     const menu = document.getElementById ("menu");
 
     //  sidebar.time is not a Date object, but the number of seconds since Jan 1, 1970.  I don't really need a Date object, 
