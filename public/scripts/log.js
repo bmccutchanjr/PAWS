@@ -96,6 +96,84 @@ function addMenu ()
         });
 }
 
+function addIconDiv (header)
+{
+    const outer = configureElement ("div",
+        {
+            "class": "sort-icon-outer"
+        },
+        header);
+
+    return configureElement ("div",
+        {
+            "class": "sort-icon-inner"
+        },
+        outer);
+}
+
+function addSortBar ()
+{
+    const header = document.getElementsByTagName ("header")[0];
+    const bar = configureElement ("div",
+        {
+            "class": "sort-bar",
+        },
+        header);
+
+    configureElement ("img",
+        {
+            "group": "cat",
+            "id": "cat-button",
+            "name": "cat-button",
+            "onclick": "animalHandler(event);",
+            "src": "images/kitty.svg",
+            "title": "Switch to cat data"
+        },
+        addIconDiv (bar));
+
+    bar.firstChild.style.width = "200px";
+
+    configureElement ("img",
+        {
+            "group": "dog",
+            "id": "dog-button",
+            "name": "dog-button",
+            "onclick": "animalHandler(event);",
+            "src": "images/puppy.svg",
+            "title": "Sort list by name (reverse order)"
+        },
+        addIconDiv (bar));
+
+    configureElement ("img",
+        {
+            // "id": "color-button",
+            // "name": "color-button",
+            "onclick": "sortByColor(event);",
+            "src": "images/color.svg",
+            "title": "Sort list by color"
+        },
+        addIconDiv (bar));
+
+    configureElement ("img",
+        {
+            // "id": "clock-button",
+            // "name": "cat-button",
+            "onclick": "sortByTime(event);",
+            "src": "images/clock.svg",
+            "title": "Sort list by accumulated length of walks"
+        },
+        addIconDiv (bar));
+
+    configureElement ("img",
+        {
+            // "id": "calendar-button",
+            // "name": "calendar-button",
+            "onclick": "sortByMostRecent(event);",
+            "src": "images/calendar.svg",
+            "title": "Sort list by most recent date"
+        },
+        addIconDiv (bar));
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -620,6 +698,7 @@ window.addEventListener ("load", (event) =>
     showAnimals ();
     addFooter ();
     addMenu ();
+    addSortBar ();
 });
 
 function getAnimalData (group)
