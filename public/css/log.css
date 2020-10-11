@@ -3,46 +3,39 @@
 /*                                                                  */
 
 .sort-bar
-{   
-    /* background: rgba(0,255,0,0.5); */
-    display: flex;
+{   display: flex;
     flex-direction: row;
     margin: 0px auto;
     width: 100%;
-    max-width: 850px;
+    max-width: 950px;
 }
 
 .sort-icon-outer
-{   
-    /* border: 2px solid blue; */
-    display: flex;
+{   display: flex;
     flex-direction: column;
     justify-content: center;
     flex-grow: 1;
     flex-shrink: 1;
     height: auto;
-    width: 150px;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 125px;
 }
 
 .cat-box
-{
-    width: 250px;
+{   width: 250px;
 }
 
 .sort-icon-inner
-{   
-    /* border: 2px solid yellow; */
-    margin: 5%;
+{   margin: 5%;
 }
 
 .sort-icon-inner:hover
-{   
-    margin: 0px;
+{   margin: 0px;
 }
 
 .sort-icon-inner img
-{   
-    width: 100%;
+{   width: 100%;
 }
 
 /* page specific style setting for the sidebar options              */
