@@ -1,34 +1,33 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  The sidebar menu and event handlers that are specific to this page
+//  Various functions that add elements to the page.
 
-function newPerson (event)
-{   event.preventDefault ();
+function addFooter ()
+{   //  Populate the footer...
 
-    const target = event.target;
-    
-    //  This sucks, but it's how cookies work.  I need to get the value of the index for the selected person to 
-    //  person.html, but client processes cannot read cookies set by the server and vice versa.  That means this
-    //  page must set a cookie for person.html to read and that means I can't simpley use a link and set the cookie
-    //  on the server (which would be one line of code, if I could do it that way).
-    //
-    //  I need an event handler to set a cookie and reload the page...
-    
-    //  peopleId represents the index of a record in the People table and is used by severl fincutins in /admin/person.html
-    //  to get retrieve data specific to some individual.  Since all indices are positive integers, anindex of '0' will
-    //  not appear in any tables.  Those queries will function without error but return no results.
-    //
-    //  Seems the cleanest way to signal that it should configure to create a new user rather than modify an existing
-    //  user.  And better than writing a second page just for the new user since almost everything about creating or
-    //  modifying users is the same.
+    const div = document.body.getElementsByTagName ("footer")[0];
 
-//
-//  I should check that the current user has the "Create people" privledge first...
-//
-        setCookie ("peopleId", 0, 3600);
+    const inner = configureElement ("div",
+        {
+            "class": "inner-footer",
+            "id": "inner-footer"
+        },
+        div);
 
-    window.iframe.location = "/admin/person/new";
+    configureElement ("div",
+        {
+            "class": "left",
+            "innerText": "PAWS Administration"
+        },
+        inner);
+
+    configureElement ("div",
+        {
+            "class": "right",
+            "innerHTML": "&copy All Rights Reserved"
+        },
+        inner);
 }
 
 function addMenu ()
@@ -113,9 +112,42 @@ function addMenu ()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//  Various functions and event handlers that are specific to this page
+
+function newPerson (event)
+{   event.preventDefault ();
+
+    const target = event.target;
+    
+    //  This sucks, but it's how cookies work.  I need to get the value of the index for the selected person to 
+    //  person.html, but client processes cannot read cookies set by the server and vice versa.  That means this
+    //  page must set a cookie for person.html to read and that means I can't simpley use a link and set the cookie
+    //  on the server (which would be one line of code, if I could do it that way).
+    //
+    //  I need an event handler to set a cookie and reload the page...
+    
+    //  peopleId represents the index of a record in the People table and is used by severl fincutins in /admin/person.html
+    //  to get retrieve data specific to some individual.  Since all indices are positive integers, anindex of '0' will
+    //  not appear in any tables.  Those queries will function without error but return no results.
+    //
+    //  Seems the cleanest way to signal that it should configure to create a new user rather than modify an existing
+    //  user.  And better than writing a second page just for the new user since almost everything about creating or
+    //  modifying users is the same.
+
+//
+//  I should check that the current user has the "Create people" privledge first...
+//
+    setCookie ("peopleId", 0, 3600);
+
+    window.iframe.location = "/admin/person/new";
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //  various event handlers for the window object
 
-window.addEventListener ("load", (event) =>
+document.addEventListener ("DOMContentLoaded", (event) =>
 {   
     const hasPeoplePrivledge = true;
     if (hasPeoplePrivledge)
@@ -123,6 +155,7 @@ window.addEventListener ("load", (event) =>
     else
         window.iframe.location = "/admin/animal-picker";
 
+    addFooter ();
     addMenu ();
 });
 

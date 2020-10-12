@@ -238,6 +238,7 @@ footer
     font-weight: inherit;
     margin: 0px auto;
     width: var(--width);
+    /* width: 25%; */
 }
 
 .inner-footer .left

@@ -62,7 +62,6 @@ function hashPassword (password)
     })
 };
 
-//  02  begins
 function updateEachColor (user, species, data, iteration=0)
 {   //  There are a variable number of updates to be performed and I can't hard-code a variable number of .then()
     //  clauses.  Either I string the individual SQL statements together to execute in a single function call, or
@@ -111,7 +110,6 @@ function updateEachColor (user, species, data, iteration=0)
         })
     })
 }
-//  02  ends
 
 function updateEachPrivledge (user, data, iteration=0)
 {   //  There are a variable number of updates to be performed and I can't hard-code a variable number of .then()
@@ -184,8 +182,6 @@ const db =
     authenticateByEmail: (email, password) =>
     {   //  Compare the user credentials submitted to those in the database.  This function is invoked if the user entered
         //  an email address (as opposed to their Volgistics Id).
-console.log ("email:    " + email);
-console.log ("password: " + password);
 
         const query = "select peopleId, lock_code, surname, given, middle, password from People where active=true and email=?";
         return new Promise ((resolve, reject) =>
@@ -204,16 +200,8 @@ console.log ("password: " + password);
                         reject ("PAWS AUTHENTICATION ERROR 106");
                         return;
                     }
-//  03  console.log ("error: " + error);
-//  03  console.log ("match: " + match);
-//  03                      if (match)
-                        resolve (result[0]);
-//  03                      else
-//  03                      {            
-//  03                          console.log (chalk.redBright ("PAWS AUTHENTICATION ERROR 107"));
-//  03                          console.log (chalk.redBright (error));
-//  03                          reject ("PAWS AUTHENTICATION ERROR 107");
-//  03                      }
+
+                    resolve (result[0]);
                 })
             })
             .catch (error =>
@@ -317,7 +305,7 @@ console.log ("password: " + password);
                 console.log (chalk.redBright("PAWS ERROR 102"));
                 console.log (chalk.redBright("people.createPerson()"));
                 console.log (chalk.redBright(error));
-                reject (process.env.PAWS_MESSAGE_500);
+                reject (process.env.PAWS_500_STATUS_MESSAGE);
             })
         })
     },
@@ -342,7 +330,7 @@ console.log ("password: " + password);
                 console.log (chalk.redBright("PAWS ERROR 102"));
                 console.log (chalk.redBright("people.createPerson()"));
                 console.log (chalk.redBright(error));
-                reject (process.env.PAWS_MESSAGE_500);
+                reject (process.env.PAWS_500_STATUS_MESSAGE);
             })
         })
     },
@@ -465,14 +453,62 @@ console.log ("password: " + password);
 //  There are actually a few more data sets to retrieve and return, but there are as yet no data or even tables
 //      additional permissions
 //      individual animal permissions/restrictions
+//  04  begins
+                //  Now get a list of testable restrictions over and above color.  These are things like 'must have
+                //  20 hours or more with blue dogs' that can be tested.  Other restrictions may be informative or
+                //  require the walker to get assistance that this application can't test.
+
+                const query = "select * from Restrictions "
+                            + "where testable = true "
+                            + "order by restrictId;"
+
+                return select (query)
+            })
+            .then (results =>
+            {   //  Get a list of the restrictions that have been assigned to this user.  If an animal has a restriction,
+                //  the application will only begin a session if the user has the same restriction assigned to them
+
+                let length = results.length;
+                for (let x=0; x<length; x++)
+                {
+                    returnData.additional.push ( { restriction: results[x].restriction });
+                }
+
+                const query = "select * from AdditionalPermissions where peopleId=?;"
+
+                return select (query, user)
+            })
+            .then (results =>
+            {   //  Combine the results of the queries...
+
+                // const permissions = returnData.permissions;
+
+                let length = results.length;
+                for (let x=0; x<length; x++)
+                {
+//  04                      const species = results[x].species;
+//  04                      const color = results[x].color;
+//  04                      const sort = results[x].sort;
+//  04  
+//  04                      if (results[x].species == "cat") permissions[sort].cat = true;
+//  04                      if (results[x].species == "dog") permissions[sort].dog = true;
+                    returnData.additional[x].allow = true;
+                }
+//  04                  returnData.permissions = permissions;
+//  04  ends
+//  There are actually a few more data sets to retrieve and return, but there are as yet no data or even tables
+//      additional permissions
+//      individual animal permissions/restrictions
 
                 resolve (returnData);
             })
             .catch (error =>
             {
                 console.log (chalk.redBright("PAWS ERROR 102"));
+                console.log (chalk.redBright("module:   people.js"));
+                console.log (chalk.redBright("function: getAnimalPermissions()"));
                 console.log (chalk.redBright(error));
-                reject (process.env.PAWS_MESSGAE_500);
+                reject (process.env.PAWS_500_STATUS_MESSAGE);
             })
         })
     },
@@ -649,7 +685,6 @@ console.log ("password: " + password);
         })
     },
 
-//  02  begins
     updateColorPermissions (admin, user, species, data)
     {
         return new Promise ((resolve, reject) =>
@@ -683,11 +718,10 @@ console.log ("password: " + password);
                 console.log (chalk.redBright("PAWS ERROR 102"));
                 console.log (chalk.redBright("people.updateAdminPrivledges()"));
                 console.log (chalk.redBright(error));
-                reject (process.env.PAWS_MESSAGE_500);
+                reject (process.env.PAWS_500_STATUS_MESSAGE);
             })
         })
     },
-//  02  ends
 
     updatePerson (admin, data)
     {
@@ -711,7 +745,7 @@ console.log ("password: " + password);
                 console.log (chalk.redBright("PAWS ERROR 102"));
                 console.log (chalk.redBright("people.updatePerson()"));
                 console.log (chalk.redBright(error));
-                reject (process.env.PAWS_MESSAGE_500);
+                reject (process.env.PAWS_500_STATUS_MESSAGE);
             })
         })
     }

@@ -44,7 +44,7 @@ function addMenu ()
                     "href": "#",
                     "id": "cat-option",
                     "innerText": "Switch to the Cats",
-                    "onclick": "switchToGroup('cat');"
+                    "onclick": "closeSidebar();switchToGroup('cat');"
                 },
                 menu);
 
@@ -53,7 +53,7 @@ function addMenu ()
                     "href": "#",
                     "id": "dog-option",
                     "innerText": "Switch to the Dogs",
-                    "onclick": "switchToGroup('dog');"
+                    "onclick": "closeSidebar();switchToGroup('dog');"
                 },
                 menu);
 
@@ -66,7 +66,7 @@ function addMenu ()
                 {   "class": "menu-option",
                     "href": "#",
                     "innerText": "Sort by Names",
-                    "onclick": "sortByName(event)"
+                    "onclick": "closeSidebar();sortByName(event);"
                 },
                 menu);
 
@@ -74,7 +74,7 @@ function addMenu ()
                 {   "class": "menu-option",
                     "href": "#",
                     "innerText": "Sort by Color",
-                    "onclick": "sortByColor(event)"
+                    "onclick": "closeSidebar();sortByColor(event);"
                 },
                 menu);
 
@@ -82,7 +82,7 @@ function addMenu ()
                 {   "class": "menu-option",
                     "href": "#",
                     "innerText": "Sort by Total Time",
-                    "onclick": "sortByTime(event)"
+                    "onclick": "closeSidebar();sortByTime(event);"
                 },
                 menu);
 
@@ -90,7 +90,7 @@ function addMenu ()
                 {   "class": "menu-option",
                     "href": "#",
                     "innerText": "Sort by Most Recent Date",
-                    "onclick": "sortByMostRecent(event)"
+                    "onclick": "closeSidebar();sortByMostRecent(event);"
                 },
                 menu);
         });

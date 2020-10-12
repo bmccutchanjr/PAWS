@@ -20,10 +20,14 @@
     margin-left: 10px;
     margin-right: 10px;
     width: 125px;
+    /* max-width: 125px; */
+    min-width: 40px;
 }
 
 .cat-box
 {   width: 250px;
+    /* max-width: 5000px; */
+    min-width: 85px;
 }
 
 .sort-icon-inner

@@ -84,7 +84,7 @@ router
     {   //  Return a boolean value indicating whether the authenticated user has admin privledges.
 
         if (!request.user)
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
         people.hasPeoplePrivledges (request.user.peopleId)
         .then (results =>
@@ -96,20 +96,20 @@ router
         .then (data =>
         {
             if (!data)
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
             response.status(200).send(data);
         })
         .catch (error =>
         {
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
     .post("/people/changeAdminPrivledges/:user", (request, response) =>
     {
         if (!request.user)
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
         const admin = request.user.peopleId;
         const user = request.params.user;
@@ -118,7 +118,7 @@ router
         .then (result =>
         {
             if (!result)
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
             else
                 return people.updateAdminPrivledges (admin, user, request.body)
         })
@@ -128,14 +128,14 @@ router
         })
         .catch (error =>
         {
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
     .post("/people/changePassword/:user", (request, response) =>
     {
         if (!request.user)
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
         const admin = request.user.peopleId;
         const user = request.params.user;
@@ -144,21 +144,21 @@ router
         {   console.log (chalk.redBright("PAWS ERROR 103"));
             console.log (chalk.redBright("api.js: /api/people/changePassword"));
             console.log (chalk.redBright("PAWS server received invalid data: no property 'password' in request.body"));
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
         }
 
         if (!request.body.password)
         {   console.log (chalk.redBright("PAWS ERROR 104"));
             console.log (chalk.redBright("api.js: /api/people/changePassword"));
             console.log (chalk.redBright("PAWS server received invalid data: password does meet minimum requirements"));
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         }
 
         people.hasPeoplePrivledges (admin)
         .then (result =>
         {
             if (!result)
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
             else
                 return people.changePassword (admin, user, request.body.password)
         })
@@ -171,7 +171,7 @@ router
             console.log (chalk.redBright("PAWS ERROR 102"));
             console.log (chalk.redBright("api.js: /api/people/changePassword"));
             console.log (chalk.redBright(error));
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
@@ -179,7 +179,7 @@ router
     {   //  Create a new record in People with the personal data (name and email address) provided.
 
         if (!request.user)
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
         const admin = request.user.peopleId;
 
@@ -187,7 +187,7 @@ router
         .then (result =>
         {
             if (!result)
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
             return people.createPerson (admin, request.body);
         })
@@ -200,7 +200,7 @@ router
             console.log (chalk.redBright("PAWS ERROR"));
             console.log (chalk.redBright("/api/people/updatePerson"));
             console.log (chalk.redBright(error))
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
@@ -210,7 +210,7 @@ router
         //  the field active to 'false'.  All queries that operate on People select rows where active=true.
 
         if (!request.user)
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
         const admin = request.user.peopleId;
         const user = request.params.user;
@@ -219,7 +219,7 @@ router
         .then (result =>
         {
             if (!result)
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
             return people.deactivatePerson (admin, user);
         })
@@ -233,7 +233,7 @@ router
             console.log (chalk.redBright("PAWS ERROR"));
             console.log (chalk.redBright("/api/people/updatePerson"));
             console.log (chalk.redBright(error))
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
@@ -250,7 +250,7 @@ router
         .catch (error =>
         {   
             console.log (chalk.red(error));
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
@@ -265,7 +265,7 @@ router
     {   //  Retrieve and return all data for one person.
 
         if (!request.user)
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
         const admin = request.user.peopleId;
         const user = request.params.user;
@@ -274,7 +274,7 @@ router
         .then (result =>
         {
             if (!result)
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
             else                
                 return people.getAdminPrivledges (admin, user)
         })
@@ -284,7 +284,7 @@ router
         })
         .catch (error =>
         {
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
@@ -292,7 +292,7 @@ router
     {   //  Retrieve and return all data for one person.
 
         if (!request.user)
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
         const admin = request.user.peopleId;
         const user = request.params.user;
@@ -301,7 +301,7 @@ router
         .then (result =>
         {
             if (!result)
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
             else                
                 return people.getAnimalPermissions (admin, user)
         })
@@ -311,7 +311,7 @@ router
         })
         .catch (error =>
         {
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
@@ -319,7 +319,7 @@ router
     {   //  Retrieve and return all data for one person.
 
         if (!request.user)
-            return response.status(400).send(process.env.PAWS_MESSAGE_400);
+            return response.status(400).send(process.env.PAWS_400_STATUS_MESSAGE);
 
         const admin = request.user.peopleId;
         const user = request.params.peopleId;
@@ -328,7 +328,7 @@ router
         .then (result =>
         {
             if (!result)
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
             else                
                 return people.getPerson (admin, user)
         })
@@ -341,7 +341,7 @@ router
             console.log (chalk.redBright("PAWS ERROR"));
             console.log (chalk.redBright("/api/people/getPerson"));
             console.log (chalk.redBright(error))
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
@@ -350,7 +350,7 @@ router
     {   //  Retrieve and return all data for one person.
 
         if (!request.user)
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
         const admin = request.user.peopleId;
         const lock = request.params.lock;
@@ -360,7 +360,7 @@ router
         .then (result =>
         {
             if (!result)
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
             return people.lockPerson (admin, user, lock);
         })
@@ -373,7 +373,7 @@ router
             console.log (chalk.redBright("PAWS ERROR"));
             console.log (chalk.redBright("/api/people/getPerson"));
             console.log (chalk.redBright(error))
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
@@ -389,13 +389,13 @@ router
         .then (result =>
         {
             if (!result)
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
             else                
                 return response.status(200).send(result);
         })
         .catch (error =>
         {
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
@@ -405,19 +405,19 @@ router
 
         if (Object.entries(request.body).length != 2)
         {   console.log (chalk.redBright("PAWS AUTHORIZATION ERROR 101: The server has received invalid authorization credentials"));
-            return response.status(400).send(process.env.PAWS_MESSAGE_400);
+            return response.status(400).send(process.env.PAWS_400_STATUS_MESSAGE);
         }
 
         //  And verify the data sent are valid login credentials
 
         if (!request.body.email)
         {   console.log (chalk.redBright("PAWS AUTHORIZATION ERROR 102: The server has received invalid authorization credentials"));
-            return response.status(400).send(process.env.PAWS_MESSAGE_400);
+            return response.status(400).send(process.env.PAWS_400_STATUS_MESSAGE);
         }
 
         if (!request.body.password)
         {   console.log (chalk.redBright("PAWS AUTHORIZATION ERROR 104: The server has received invalid authorization credentials"));
-            return response.status(400).send(process.env.PAWS_MESSAGE_400);
+            return response.status(400).send(process.env.PAWS_400_STATUS_MESSAGE);
         }
 
         //  So far so good...let's verify authentication
@@ -460,7 +460,7 @@ router
     .post("/people/updateColorPermissions/:user/:species", (request, response) =>
     {
         if (!request.user)
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
         const admin = request.user.peopleId;
         const species = request.params.species;
@@ -473,7 +473,7 @@ router
         })
         .catch (error =>
         {
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
@@ -481,7 +481,7 @@ router
     {   //  Updates personal data (name and email address) for one person.
 
         if (!request.user)
-            return response.status(401).send(process.env.PAWS_MESSAGE_401);
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
         const admin = request.user.peopleId;
 
@@ -489,7 +489,7 @@ router
         .then (result =>
         {
             if (!result)
-                return response.status(401).send(process.env.PAWS_MESSAGE_401);
+                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
             return people.updatePerson (admin, request.body);
         })
@@ -502,7 +502,7 @@ router
             console.log (chalk.redBright("PAWS ERROR"));
             console.log (chalk.redBright("/api/people/updatePerson"));
             console.log (chalk.redBright(error))
-            return response.status(500).send(process.env.PAWS_MESSAGE_500);
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
 
@@ -517,7 +517,7 @@ router
 
         console.log (chalk.redBright("PAWS ERROR 404"));
         console.log (chalk.redBright("Some client made an attempt to access an invalid end-point."));
-        response.status(404).send(process.env.PAWS_MESSAGE_404);
+        response.status(404).send(process.env.PAWS_404_STATUS_MESSAGE);
     });
 
 module.exports = router;

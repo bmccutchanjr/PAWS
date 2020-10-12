@@ -27,6 +27,7 @@ router
         // I use it for is to debug routes, but it could be something more useful.
 
         // console.log(chalk.blue("html.js"));
+//  console.log (request.user.peopleId);
         console.log(chalk.blue("html.js says client is requesting ", request.url));
         
         next();
@@ -118,6 +119,12 @@ router
             response.status(500).send("Oops!  An error occured that is preventing the server from processing this request.  Contact "
                                     + "your IT support group for assistance.");
         })
+    })
+
+    .get("/admin/person/script/:script", (request, response) =>
+    {   //  Honest to God, I thought the Express framework was supposed to MAKE THINGS EASIER!.
+
+                response.status(200).sendFile(path.join(__dirname, "../public/admin/script/" + request.params.script));
     })
 
     .get("/admin/:folder/:route", (request, response) =>

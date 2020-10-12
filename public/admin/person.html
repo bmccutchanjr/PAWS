@@ -1,0 +1,211 @@
+<head>
+    <link href="../css/common.css" rel="stylesheet" type="text/css">
+    <style>
+        /*  the error class is used to add style settings to the <input> field on the page                    */
+        /*                                                                                                    */
+
+        .error
+        {
+            border-color: red;
+            color: red;
+        }
+
+        .error-text
+        {
+            color: red;
+        }
+
+        /*  these are style settings that apply to the sections                                               */
+        /*                                                                                                    */
+
+        .frame-section
+        {   border: 2px solid grey;
+            border-radius: 3px;
+            padding: 5px;
+            margin: 0px;
+            vertical-align: bottom;
+        }
+
+        #permissions
+        {
+            border: none;
+            /* display: flex; */
+            /* flex-direction: row; */
+            /* justify-content: space-between; */
+            padding: 0px;
+        }
+
+        .permissions-div
+        {
+            border: 2px solid grey;
+            border-radius: 3px;
+            /* display: inline-block; */
+            /* flex-grow: 1; */
+            /* flex-shrink: 1; */
+            margin-top: 10px;
+            padding: 5px;
+            /* width: 32%; */
+            /* min-width: 300px; */
+        }
+
+        #lock-section,
+        #password-section,
+        #permissions
+        {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .section-header
+        {
+            background: grey;
+            border: 1px solid black;
+            border-radius: 3px;
+            color: black;
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+
+        /*  these are style settings that to all of the buttons or links that enable users interact with the  */
+        /*  application                                                                                       */
+        /*                                                                                                    */
+
+        .menu-option
+        {   
+            /* background: rgba(255,0,0,0.5); */
+            /* display: inline-block; */
+            display: none;
+            padding: 2px;
+            width: auto;
+        }
+
+        .spacer
+        {   display: inline-block;
+            width: 20px;
+        }
+
+        /*  style used by elements in the the names section                                                   */
+        /*                                                                                                    */
+
+        .email-input
+        {
+            width: 50%;
+        }
+
+        .name-div
+        {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .name-input
+        {
+            flex-grow: 0;
+            flex-shrink: 0;
+            width: 32%;
+        }
+    </style>
+</head>
+<body>
+    <div id=frame-wrapper>
+        <form class=frame-section id=name-section name=names>
+            <div class=name-div>
+                <input class=name-input id=name-given name=given onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(given name is required)" readonly>
+                <input class=name-input id=name-middle name=middle onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(middle name)" readonly>
+                <input class=name-input id=name-surname name=surname onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(surname is required)" readonly>
+            </div>
+            <input class=email-input id=email-input name=email onchange="emailValidation(event);" onfocus="nameClearError(event)" placeholder="(email address is required)" readonly>
+            <div>
+                <a class=menu-option href=# id=create-option onclick="postNames(event)" name=create>Submit</a>
+                <a class=menu-option href=# id=change-option onclick="postNames(event)" name=change>Submit Changes</a>
+            </div>
+        </form>
+
+        <section class=frame-section id=lock-section>
+            <a class=menu-option href=# id=lock-option name=lock onclick="sendLock(event);">Lock This User</a>
+            <a class=menu-option href=# id=unlock-option name=unlock onclick="sendLock(event);">Unlock This User</a>
+            <div class=spacer id=change-spacer></div>
+            <a class=menu-option href=# id=delete-option onclick="sendDeactivate(event)" name=delete>Delete/Deactivate</a>
+        </section>
+
+        <section class="frame-section" id=password-section>
+            <input id=password name=password onfocus="passwordClearError(event)" placeholder="(new password)">
+            <a class=menu-option href=# id=password-option name=password onclick="postPassword(event)">Change Password</a>
+        </section>
+
+        <section class="frame-section" id=permissions>
+            <div class=permissions-div id=admin-privledges></div>
+            <div class=permissions-div id=cat-permissions></div>
+            <div class=permissions-div id=dog-permissions></div>
+        </section>
+    </div>
+</body>
+
+<script language=JavaScript src="../scripts/common.js"></script>
+<script language=JavaScript src="script/color.js"></script>
+<script language=JavaScript src="script/password.js"></script>
+<script language=JavaScript src="script/privledges.js"></script>
+<script language=JavaScript src="script/person.js"></script>
+<script language=JavaScript>
+
+    //  functions that are common to (or independent of) all of the modules
+
+    function setErrorClass (div, error)
+    {
+        if (error)
+            div.setAttribute ("class", div.getAttribute ("class") + " error");
+        else
+        {   let classlist = div.getAttribute ("class");
+            if (classlist != null) div.setAttribute ("class", div.getAttribute ("class").replace (" error", ""));
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //  retrieve data from the server and initialize the page
+
+    document.addEventListener ("DOMContentLoaded", event =>
+    {
+        //  These classes are all dependent on asynchronous methods to retrieve data from the server.  Those APIs
+        //  could be requested before the DOM is loaded, except that they also add one or more HTML elements
+        //  to the DOM, and therefore need the DOM.
+        //
+        //  I think it would be too complex to try to separate the API request from the DOM updates and coordinate
+        //  with DOMContentLoaded to insure both the data and the DOM are ready to be manipulated.  And the APIs
+        //  are fast, so it seems like little benefit to try.
+        //
+        //  So wait for the DOM before creating the classes.
+
+        const privledgeSection = new PrivledgeSection (getCookie ("peopleId"));
+
+        const colorSection = new ColorSection (getCookie ("peopleId"));
+
+        const passwordSection = new PasswordSection (getCookie ("peopleId"));
+
+        const personSection = new PersonSection (getCookie ("peopleId"))
+        personSection.retrievePersonData (getCookie ("peopleId"))
+        .then (() =>
+        {
+            if (personSection.getChangePermission ())
+            {
+                passwordSection.setChangeMode ();
+                // privledgeSection.setChangeMode ();
+            }
+        })
+        .catch (error =>
+        {
+            console.log (error);
+        })
+
+        const observer = new ResizeObserver (entries =>
+        {   for (const entry of entries)
+            {   if (entry.contentBoxSize)
+                {   window.parent.postMessage (document.getElementById("frame-wrapper").clientHeight);
+                }
+            }
+        });
+
+        observer.observe (document.getElementById ("frame-wrapper"));
+    })
+</script>

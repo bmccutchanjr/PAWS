@@ -1,6 +1,38 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//  Various functions that add elements to the page.
+
+function addFooter ()
+{   //  Populate the footer...
+
+    const div = document.body.getElementsByTagName ("footer")[0];
+
+    const inner = configureElement ("div",
+        {
+            "class": "inner-footer",
+            "id": "inner-footer"
+        },
+        div);
+
+    configureElement ("div",
+        {
+            "class": "left",
+            "innerText": "PAWS Log in"
+        },
+        inner);
+
+    configureElement ("div",
+        {
+            "class": "right",
+            "innerHTML": "&copy All Rights Reserved"
+        },
+        inner);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 function handleLoginOption (event)
 {   //  This is the event handler for the 'Log In' option.
 
@@ -190,3 +222,7 @@ function validateUser(event)
     }
 }
 
+document.addEventListener ("DOMContentLoaded", event =>
+{
+    addFooter ();
+});
