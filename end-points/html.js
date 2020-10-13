@@ -165,10 +165,9 @@ router
 
     .get("/logout", (request, response) =>
     {
-console.log ("serving /logout");
         request.logout();
-console.log (request.user ? "still logged in" : "buh-bye");
-        response.sendFile(path.join(__dirname, "../public/log.html"));
+//  01          response.sendFile(path.join(__dirname, "../public/log.html"));
+        response.redirect("/");
     })
 
     .get("/profile",  (request, response, next) =>

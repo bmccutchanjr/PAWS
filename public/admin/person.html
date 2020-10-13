@@ -150,6 +150,13 @@
 
     //  functions that are common to (or independent of) all of the modules
 
+    const errors =
+    {
+        email: false,
+        names: false,
+        password: false
+    }
+
     function setErrorClass (div, error)
     {
         if (error)
@@ -158,6 +165,24 @@
         {   let classlist = div.getAttribute ("class");
             if (classlist != null) div.setAttribute ("class", div.getAttribute ("class").replace (" error", ""));
         }
+    }
+
+    function toProperCase (string)
+    {
+        string = string.trim();
+        let newString = "";
+
+        const array = string.split (" ");
+        let length = array.length;
+
+        for (let x=0; x<length; x++)
+        {
+            const char = array[x].charAt(0);
+            array[x] = array[x].toLowerCase();
+            newString = newString + " " + array[x].replace (char, char.toUpperCase());
+        }
+
+        return newString.trim();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////

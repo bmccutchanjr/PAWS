@@ -113,8 +113,9 @@ class PasswordSection
                 this.hasPrivledge = (xml.responseText == "true" ? true : false);
                 this.initialize (this.hasPrivledge);
             }
-            else
-                alert ("/hasPasswordPrivledge\n\n" + xml.responseText);
+//  01  This is not an error condition...it is normal and expected and there is nothing to do here
+//  01              else
+//  01                  alert ("/hasPasswordPrivledge\n\n" + xml.responseText);
         });
     }
 

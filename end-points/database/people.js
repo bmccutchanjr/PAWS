@@ -111,6 +111,63 @@ function updateEachColor (user, species, data, iteration=0)
     })
 }
 
+//  01  begins
+function updateEachPermission (user, species, data, iteration=0)
+{   //  There are a variable number of updates to be performed and I can't hard-code a variable number of .then()
+    //  clauses.  Either I string the individual SQL statements together to execute in a single function call, or
+    //  I have to find a way to execute a variable number of discrete SQL operations and yet wait for them all to
+    //  complete before responding to the client.
+    //
+    //  That can't be done in a simple loop, because each call needs a .then() and .catch().  But it can be done
+    //  with a recursive function.
+
+    return new Promise ((resolve, reject) =>
+    {
+//  02          const array = Object.entries (data);
+//  02  
+//  02          if (iteration == array.length) return resolve ("All updates have been completed.");
+//  02  
+//  02          let query = "";
+//  02          [ restrictId, allow ] = array[iteration];
+//  02  begins
+        if (iteration == data.length) return resolve ("All updates have been completed.");
+
+        let query = "";
+        [ restrictId, allow ] = data[iteration];
+//  02  end
+
+        //  Only permissions that have been changed are submitted to be updated.  So if the new status of this
+        //  permission is to be 'false' that means it is now 'true', and the permission should be deleted from
+        //  ColorPermissions.
+
+        if (allow == "false")
+            query = "delete from AdditionalPermissions where peopleId=? and species=? and restrictId=?;";
+        else
+            query = "insert into AdditionalPermissions (peopleId, restrictId) values (?, ?);";
+
+        select (query, [user, restrictId])
+        .then (result =>
+        {   //  There is no data to return and the result is unimportant.  What is important is that no error occured
+            //  and we can simply assume the operation had the desired effect and we can now submit the next SQL
+            //  update.
+
+            return updateEachPermission (user, species, data, ++iteration);
+        })
+        .then (result =>
+        {
+            resolve (result);
+        })
+        .catch (error =>
+        {
+            console.log (chalk.redBright ("PAWS ERROR 102"));
+            console.log (chalk.redBright ("people.js; updateEachColor()"));
+            console.log (chalk.redBright (error));
+            reject (error);
+        })
+    })
+}
+//  01  ends
+
 function updateEachPrivledge (user, data, iteration=0)
 {   //  There are a variable number of updates to be performed and I can't hard-code a variable number of .then()
     //  clauses.  Either I string the individual SQL statements together to execute in a single function call, or
@@ -450,10 +507,6 @@ const db =
                 }
                 returnData.permissions = permissions;
 
-//  There are actually a few more data sets to retrieve and return, but there are as yet no data or even tables
-//      additional permissions
-//      individual animal permissions/restrictions
-//  04  begins
                 //  Now get a list of testable restrictions over and above color.  These are things like 'must have
                 //  20 hours or more with blue dogs' that can be tested.  Other restrictions may be informative or
                 //  require the walker to get assistance that this application can't test.
@@ -471,7 +524,12 @@ const db =
                 let length = results.length;
                 for (let x=0; x<length; x++)
                 {
-                    returnData.additional.push ( { restriction: results[x].restriction });
+                    returnData.additional.push ( 
+                        {   
+                            restriction: results[x].restriction,
+                            cat: results[x].cats,
+                            dog: results[x].dogs
+                        });
                 }
 
                 const query = "select * from AdditionalPermissions where peopleId=?;"
@@ -481,24 +539,15 @@ const db =
             .then (results =>
             {   //  Combine the results of the queries...
 
-                // const permissions = returnData.permissions;
-
                 let length = results.length;
                 for (let x=0; x<length; x++)
                 {
-//  04                      const species = results[x].species;
-//  04                      const color = results[x].color;
-//  04                      const sort = results[x].sort;
-//  04  
-//  04                      if (results[x].species == "cat") permissions[sort].cat = true;
-//  04                      if (results[x].species == "dog") permissions[sort].dog = true;
                     returnData.additional[x].allow = true;
                 }
-//  04                  returnData.permissions = permissions;
-//  04  ends
 //  There are actually a few more data sets to retrieve and return, but there are as yet no data or even tables
-//      additional permissions
-//      individual animal permissions/restrictions
+//      -   a list of individual animals this user is either expressly restricted or permitted to walk regarless of
+//          any other permission settings.  Once implemented, this condition will be tested FIRST and if it exists
+//          will return its result to the end-point handler and browser.  No other permissions will be considered.
 
                 resolve (returnData);
             })
@@ -684,6 +733,57 @@ const db =
             })
         })
     },
+
+//  01  begins
+    updateAdditionalPermissions (admin, user, species, data)
+    {   //  updates AdditionalPermissions table for the specified user.  AdditionalPermissions coorespond to rows
+        //  in Restrictions that are marked as 'testable'.  A person is not authorized to interact with an animal if
+        //  a restriction has been associated with that individual and not associated with the person.
+        //
+        //  In other words:
+        //  -   a restriction associated with an animal is an additional constraint beyond color
+        //  -   a restriction associated with a person qualifies that person to interact with restricted animals
+
+        return new Promise ((resolve, reject) =>
+        {
+            hasAdminPrivledge (admin, "Grant animal permissions")
+            .then (result =>
+            {   //  Okay, so the currently authenticated user has the appropriate privledge to do this...
+
+                //  There is likely more than one update represented in the data set and I don't want any to go
+                //  through if any of them fails...so start a transaction
+
+                return select ("begin;")
+            })
+            .then (() =>
+            {   //  Started a transaction.  There's no meaningful result that I care to bother with.  It either
+                //  worked or it didn't, and if it didn't the .catch() method is fired...
+
+//  02                  return updateEachPermission (user, species, data);
+//  02  begins
+                return updateEachPermission (user, species, Object.entries (data));
+            })
+//  02  ends
+            .then (result =>
+            {   //  And commit the updates
+
+                return select ("commit;");
+            })
+            .then (result =>
+            {
+                resolve (result);
+            })
+            .catch (error =>
+            {
+                select ("rollback;");
+                console.log (chalk.redBright("PAWS ERROR 102"));
+                console.log (chalk.redBright("people.updateAdminPrivledges()"));
+                console.log (chalk.redBright(error));
+                reject (process.env.PAWS_500_STATUS_MESSAGE);
+            })
+        })
+    },
+//  01  ends
 
     updateColorPermissions (admin, user, species, data)
     {

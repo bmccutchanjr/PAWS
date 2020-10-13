@@ -39,8 +39,10 @@ create table if not exists Restrictions
 (   --  'Master' table of additional restrictions
     --
     --  These entries DO NOT DEFINE the restriction, rather they are text describing the
-    --  restriction.  They are implemented in the application as a <select> or <input>
-    --  element.
+    --  restriction.  If a restriction is applied to an animal, the application will require the
+    --  restriction be applied to a person for them to be authorized.
+    --
+    --  Restrictions are are implemented in the application as a <select> or <input> element.
 
     restrictId      tinyint (2)
                     auto_increment
@@ -52,6 +54,12 @@ create table if not exists Restrictions
 
     testable        boolean
                     default true,
+
+    cats            boolean                 --  Does this restriction apply to cats?
+                    default false,
+
+    dogs            boolean                 --  Does this restriction apply to dogs?
+                    default false,
 
     primary key (restrictId)
 );
@@ -206,12 +214,17 @@ create table if not exists ColorPermissions
 );
 
 create table if not exists AdditionalPermissions
-(   --  List of additional permissions associated with individual people.  These permissions
-    --  coorespond to AdditionalRestrictions.
+(   --  List of additional permissions associated with individual people.  These permissions coorespond to the data
+    --  in table Restrictions that are marked as 'testable'.  A person is not authorized to interact with an animal if
+    --  a restriction has been associated with that animal and not associated with the person.
     --
-    --  Additional restrictions is potentially a many-to-one relationship.  One person
-    --  may have multiple additional permissions
-    
+    --  In other words:
+    --  -   a restriction associated with an animal is an additional constraint beyond color
+    --  -   a restriction associated with a person qualifies that person to interact with animals assigned the same
+    --      restriction
+
+    --  AdditionalRestrictions is a one-to-many relationship.  One person may have multiple additional permissions
+
     peopleId        smallint (6)
                     not null,
 

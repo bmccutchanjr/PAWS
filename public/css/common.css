@@ -122,6 +122,11 @@ header
     display: none;
 }
 
+#suggest-a-name
+{
+    margin-top: 20px;
+}
+
 /********************************************************************/
 /* style settings for the modal message                             */
 /*                                                                  */

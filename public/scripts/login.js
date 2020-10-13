@@ -225,4 +225,5 @@ function validateUser(event)
 document.addEventListener ("DOMContentLoaded", event =>
 {
     addFooter ();
+    document.getElementById("email").focus();
 });

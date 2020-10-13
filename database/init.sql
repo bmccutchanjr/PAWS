@@ -8,12 +8,12 @@ insert into Colors values
     ("red", 4),
     ("black", 5);
 
-insert into Restrictions values
-    (null, "Experienced 'blue' dog walker; 20+ hours experience with 'blue' dogs", true),
-    (null, "Difficult to leash.  Ask for staff assistance.", false),
-    (null, "Has a resource.  Ask for staff assistance leashing.", false),
-    (null, "Special handling instructions.  Talk with Behavior Group before leashing.", false),
-    (null, "Experienced 'blue' dog walker; 30+ hours experience with 'blue' dogs", true);
+insert into Restrictions (restriction, testable, dogs) values
+    ("Experienced 'blue' dog walker; 20+ hours experience with 'blue' dogs", true, true),
+    ("Difficult to leash.  Ask for staff assistance.", false, true),
+    ("Has a resource.  Ask for staff assistance leashing.", false, true),
+    ("Special handling instructions.  Talk with Behavior Group before leashing.", false, true),
+    ("Experienced 'blue' dog walker; 30+ hours experience with 'blue' dogs", true, true);
 
 insert into Animals values
     (null, true, "dog", "Geronimo", "blue", 10, null, "Bill", "2020-09-05"),

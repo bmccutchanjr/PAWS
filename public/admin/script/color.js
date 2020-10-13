@@ -103,9 +103,11 @@ console.log (JSON.stringify(data, null, 2));
         configureElement ("div",
         {
             "class": "section-header",
-            "innerText": species + " Permissions"
+            "innerText": toProperCase(species) + " Permissions"
         },
         div);
+
+        //  create <input> elements for color permissions
 
         data.permissions.forEach (p =>
         {
@@ -130,7 +132,7 @@ console.log (JSON.stringify(data, null, 2));
             configureElement ("label",
                 {
                     "for": p.color,
-                    "innerText": p.color
+                    "innerText": toProperCase(p.color)
                 },
                 box);
         });
@@ -143,6 +145,64 @@ console.log (JSON.stringify(data, null, 2));
                     "id": "post-color-permissions",
                     "innerText": "SUBMIT",
                     "onclick": "postColorUpdates(event);",
+                    "species": species
+                },
+                div);
+        }
+
+        //  create <input> elements for additional permissions
+
+        let hr = false;
+
+        data.additional.forEach ((add, index) =>
+        {
+            if (add[species])
+            {
+                if (!hr)
+                {
+                    hr = true;
+                    configureElement ("hr", {}, div);
+                }
+
+                const box = configureElement ("div",
+                    {
+                    },
+                    div);
+ 
+                configureElement ("input",
+                    {
+                        "name": index,
+                        "type": "checkbox"
+                    },
+                    box);
+
+//  This is where I set the status of the checkbox (is it preselected or not) based on the property
+//  'allowed' in the data set
+                if (add[allow])
+                {
+                    input.setAttribute ("checked", "checked");
+                    input.setAttribute ("originalvalue", "checked");
+                    // if (data.allow != true) input.setAttribute ("disabled", "true");
+                }
+
+
+                configureElement ("label",
+                    {
+                        "for": index,
+                        "innerText": add.restriction
+                    },
+                    box);
+            }
+        })
+
+        if (hr && this.hasPrivledge)
+        {   configureElement ("a",
+                {
+                    "class": "menu-option",
+                    "href": "#",
+                    "id": "post-additional-permissions",
+                    "innerText": "Submit Changes",
+                    "onclick": "postAdditionalPermissions(event);",
                     "species": species
                 },
                 div);

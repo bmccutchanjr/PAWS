@@ -434,7 +434,8 @@ class PersonSection
         }
 
         if (!this.permission.add)
-            document.getElementById ("delete-option").remove();
+            if (document.getElementById ("delete-option"))
+                document.getElementById ("delete-option").remove();
     }
 
     setCreateMode (peopleId)

@@ -172,20 +172,31 @@ function configureSidebar (commonOptions, additionalOptions)
 
     //  There are additional menu options that are common to all pages and appear at the end of the menu.
 
-    configureElement ("input",
-        {   "class": "menu-option",
-            "id": "suggest-a-name",
-            "name": "suggest-a-name",
-            "onchange": "submitNames (event)",
-            "placeholder": "Suggest a name",
-            "title": "Suggest a name for the animals.  Suggest multiple names by separating them with a comma."
-        },
-        menu);
-
     configureElement ("a",
         {   "class": "menu-option",
             "href": "#",
             "innerText": "About"
+        },
+        menu);
+
+    configureElement ("input",
+        {   "class": "menu-option",
+            "id": "suggest-a-name",
+            "name": "suggest-a-name",
+            // "onchange": "submitNames (event)",
+            "placeholder": "(suggest a name)",
+            "title": "Suggest a name for the animals.  Suggest multiple names by separating them with a comma."
+        },
+        menu);
+
+    configureElement ("div",
+        {   "class": "menu-option",
+            "id": "post-suggest-name",
+            "innerText": "Suggest Name",
+            // "name": "suggest-a-name",
+            "onclick": "postNameJar(event)"
+            // "placeholder": "(suggest a name)",
+            // "title": "Suggest a name for the animals.  Suggest multiple names by separating them with a comma."
         },
         menu);
 }
