@@ -3,6 +3,45 @@
 
 //  Various functions that add elements to the page.
 
+function addFooter ()
+{   //  Populate the footer...
+
+    //  It may be possible (although I think not) that the API to retrieve data for this animal from the server
+    //  to complete before the DOMContentLoaded event to invoke this function (or even before the DOMContentLoaded
+    //  event fires).  If so, these elements will not be in the DOM when the API event handler tries to access
+    //  them and the page will blow up.  I think it is very unlikely, two network transactions and a database
+    //  select have to take longer than rendering six elements to the DOM.
+
+    const div = document.body.getElementsByTagName ("footer")[0];
+
+    configureElement ("div",
+        {
+            "class": "name",
+            "id": "footer-name",
+        },
+        div);
+
+    configureElement ("div",
+        {
+            "class": "color",
+            "id": "footer-color",
+        },
+        div);
+}
+
+function enableOptions ()
+{   //  enable menu options if the current user is authenticatded with the server
+
+    if (checkAuthenticated ())
+    {
+        document.getElementById ("post-color-comments").style.display = "block";
+        document.getElementById ("post-public-comments").style.display = "block";
+        document.getElementById ("post-comments").style.display = "block";
+        document.getElementById ("start-walking").style.display = "block";
+        document.getElementById ("walk-separator").style.display = "block";
+    }
+}
+
 function addMenu ()
 {   //  Create the side-bar menu
 
@@ -10,23 +49,34 @@ function addMenu ()
     //  the same.  So call a function to create the menu and return a reference to the DOM element
     //  so we can put the appropriate menu option in it.
 
-    configureSidebar ( { MyProfile: true, AdminFunctions: true }, () =>
+    configureSidebar ( { HomePage: false, MyProfile: true, AdminFunctions: true }, () =>
         {
             configureElement ("a",
                 {   "class": "menu-option",
                     "href": "#",
+                    "id": "start-walking",
                     "innerText": "Start Walking"
+                },
+                menu);
+
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "id": "stop-walking",
+                    "innerText": "Stop Walking"
                 },
                 menu);
 
             configureElement ("hr",
                 {   "class": "menu-separator",
+                    "id": "walk-separator",
                 },
                 menu);
 
             configureElement ("a",
                 {   "class": "menu-option",
                     "href": "#",
+                    "id": "view-comments",
                     "innerText": "View Comments",
                 },
                 menu);
@@ -34,6 +84,7 @@ function addMenu ()
             configureElement ("a",
                 {   "class": "menu-option",
                     "href": "#",
+                    "id": "post-comments",
                     "innerText": "Add Comments",
                 },
                 menu);
@@ -41,6 +92,7 @@ function addMenu ()
             configureElement ("a",
                 {   "class": "menu-option",
                     "href": "#",
+                    "id": "post-public-comments",
                     "innerText": "Add Public Comments",
                 },
                 menu);
@@ -48,10 +100,13 @@ function addMenu ()
             configureElement ("a",
                 {   "class": "menu-option",
                     "href": "#",
+                    "id": "post-color-comments",
                     "innerText": "Color-Test Notes"
                 },
                 menu);
             });
+
+    enableOptions ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -184,6 +239,7 @@ console.log (JSON.stringify (dataset, null, 2))
 document.addEventListener ("DOMContentLoaded", event =>
 {   //  When the page is fully rendered in the DOM...
 
+    addFooter ()
     addMenu ();
 })
 

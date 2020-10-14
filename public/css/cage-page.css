@@ -1,6 +1,19 @@
-/********************************************************************/
-/* style settings for ...                                           */
-/*                                                                  */
+/******************************************************************************************************/
+/* settings for page specific menu options (hide the options by default)                              */
+/*                                                                                                    */
+
+#post-color-comments,
+#post-public-comments,
+#post-comments,
+#start-walking,
+#stop-walking
+{
+    display: none;
+}
+
+/******************************************************************************************************/
+/* settings for additional restrictions                                                               */
+/*                                                                                                    */
 
 .restriction-wrapper
 {   
@@ -27,9 +40,9 @@
     text-align: left;
 }
 
-/********************************************************************/
-/* style settings for sticky footer                                 */
-/*                                                                  */
+/******************************************************************************************************/
+/* style settings for sticky footer                                                                   */
+/*                                                                                                    */
 
 body,
 html

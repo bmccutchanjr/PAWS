@@ -16,6 +16,8 @@ function checkAdmin ()
         });
 }
 
+let isAuthenticated = undefined;
+
 function checkAuthenticated ()
 {   //  Determines if the user is authenticated with the server and return an appropriate boolean value
 
@@ -27,6 +29,8 @@ function checkAuthenticated ()
     //  And I can't just delete the cookie either.  The Logout function is a route and on success, redirects to "/log".
     //  The original page and its script will no longer exist and there's no way for me to know if "/log" was served because
     //  the user clicked on the Log Out option or if they hit the browser's back button.
+
+    if (isAuthenticated != undefined) return isAuthentecated;
 
     return AJAX ("GET", "/api/people/isAuthenticated", xml =>
         {
@@ -171,6 +175,13 @@ function configureSidebar (commonOptions, additionalOptions)
     }
 
     //  There are additional menu options that are common to all pages and appear at the end of the menu.
+
+    configureElement ("a",
+        {   "class": "menu-option",
+            "href": "/help",
+            "innerText": "Help"
+        },
+        menu);
 
     configureElement ("a",
         {   "class": "menu-option",
