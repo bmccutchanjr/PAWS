@@ -363,29 +363,45 @@ class PersonSection
     {
         this.lockMode = data.results.lock_code == undefined ? "unlocked" : "locked";
 
-        if (data.results[0].given != "")
-        {   
+//  01          if (data.results[0].given != "")
+//  01          {   
+//  01              document.names.given.value = data.results[0].given;
+//  01              document.getElementById ("name-given").setAttribute ("value", data.results[0].given);
+//  01          }
+//  01  
+//  01          if (data.results.middle != "")
+//  01          {   
+//  01              document.names.middle.value = data.results[0].middle;
+//  01              document.getElementById ("name-middle").setAttribute ("value", data.results[0].middle);
+//  01          }
+//  01  
+//  01          if (data.results.surname != "")
+//  01          {   
+//  01              document.names.surname.value = data.results[0].surname;
+//  01              document.getElementById ("name-surname").setAttribute ("value", data.results[0].surname);
+//  01          }
+//  01  
+//  01          if (data.results.email != "")
+//  01          {   
+//  01              document.names.email.value = data.results[0].email;
+//  01              document.getElementById ("email-input").setAttribute ("value", data.results[0].email);
+//  01          }
+//  01  begins
+        if (data.results.length > 0)
+        {
             document.names.given.value = data.results[0].given;
             document.getElementById ("name-given").setAttribute ("value", data.results[0].given);
-        }
 
-        if (data.results.middle != "")
-        {   
             document.names.middle.value = data.results[0].middle;
             document.getElementById ("name-middle").setAttribute ("value", data.results[0].middle);
-        }
 
-        if (data.results.surname != "")
-        {   
             document.names.surname.value = data.results[0].surname;
             document.getElementById ("name-surname").setAttribute ("value", data.results[0].surname);
-        }
 
-        if (data.results.email != "")
-        {   
             document.names.email.value = data.results[0].email;
             document.getElementById ("email-input").setAttribute ("value", data.results[0].email);
         }
+//  01  ends
 
         this.allowInputs ();
     }
@@ -397,6 +413,7 @@ class PersonSection
             if (xml.status == 200)
             {
                 const data = JSON.parse(xml.responseText);
+console.log (JSON.stringify(data, null, 2));
                 this.setAddPermission (data.add);
                 this.setChangePermission (data.change);
                 this.initializeInputs (data);

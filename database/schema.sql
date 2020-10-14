@@ -95,7 +95,7 @@ create table if not exists Animals
     cage_num        tinyint(3)
                     default null,
 
-    image           char (10)
+    image           varchar (70)
                     default null,
 
     change_by       smallint (6)

@@ -55,7 +55,6 @@ function addMenu ()
                     "href": "/admin/people-picker",
                     "id": "select-person",
                     "innerText": "Select a person",
-                    // "onclick": "selectPerson(event);",
                     "target": "iframe"
                 },
                 people);
@@ -65,7 +64,7 @@ function addMenu ()
                     "href": "",
                     "id": "new-person",
                     "innerText": "Add a new person",
-                    "onclick": "newPerson(event);"
+                    "onclick": "closeSidebar();newPerson(event);"
                 },
                 people);
 

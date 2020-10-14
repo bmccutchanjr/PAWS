@@ -1,7 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  01  begins
+//  functions that request APIs to update data
+
 function postAdditionalPermissions (event)
 {   event.preventDefault ();
 
@@ -34,8 +35,6 @@ function postAdditionalPermissions (event)
         {   changed++;
             let obj =
                 {
-//  02                      "restrictId": permissions[x].getAttribute ("restrictId"),
-//  02                      "allow": currentstate
                     [ permissions[x].getAttribute ("restrictId") ]: currentstate
                 };
 
@@ -62,7 +61,6 @@ function postAdditionalPermissions (event)
         postData);
     }
 }
-//  01  ends
 
 function postColorUpdates (event)
 {   event.preventDefault ();
@@ -140,7 +138,6 @@ class ColorSection
             if (xml.status == 200)
             {
                 const data = JSON.parse(xml.responseText);
-console.log (JSON.stringify(data, null, 2));
                 this.hasPrivledge = data.allow;
                 this.initialize (data, "cat");
                 this.initialize (data, "dog");
@@ -194,10 +191,8 @@ console.log (JSON.stringify(data, null, 2));
 
             const input = configureElement ("input",
                 {
-//  01  begins
                     "class": "color-permission",
                     "disabled": "disabled",
-//  01  ends
                     "name": p.color,
                     "type": "checkbox",
                 },
