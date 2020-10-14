@@ -251,7 +251,8 @@ footer
     /* background: grey; */
     background: var(--footer-background);
     display: flex;
-    flex-direction: row;
+    /* flex-direction: row; */
+    flex-direction: column;
     justify-content: center;
     height: 25px;
     margin: 0px;

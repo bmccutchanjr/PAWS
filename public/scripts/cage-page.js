@@ -15,19 +15,19 @@ function addMenu ()
             configureElement ("a",
                 {   "class": "menu-option",
                     "href": "#",
-                    "innerText": "View Comments",
-                },
-                menu);
-
-            configureElement ("a",
-                {   "class": "menu-option",
-                    "href": "#",
                     "innerText": "Start Walking"
                 },
                 menu);
 
             configureElement ("hr",
                 {   "class": "menu-separator",
+                },
+                menu);
+
+            configureElement ("a",
+                {   "class": "menu-option",
+                    "href": "#",
+                    "innerText": "View Comments",
                 },
                 menu);
 
@@ -57,72 +57,74 @@ function addMenu ()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function closeModal (event)
-{
-    event.preventDefault ();
+//  01  function closeModal (event)
+//  01  {
+//  01      event.preventDefault ();
+//  01  
+//  01      const modal = document.getElementById ("modal");
+//  01      modal.remove (modal);
+//  01  }
 
-    const modal = document.getElementById ("modal");
-    modal.remove (modal);
-}
-
-function createModal (message)
-{   //  Create a modal message and add it to the DOM
-
-    const modal = configureElement ("div",
-        {   "class": "modal",
-            "id": "modal"
-        },
-        document.body);
-
-    const msg = configureElement ("div",
-        {   "class": "modal-message",
-        },
-        modal);
-
-    configureElement ("div",
-        {
-            "class": "modal-text",
-            "innerText": message
-        },
-        msg);
-
-    const div = configureElement ("div",
-        {   "class": "modal-options",
-        },
-        msg);
-
-    configureElement ("a",
-        {   "class": "modal-option",
-            "href": "#",
-            "innerText": "CLOSE",
-            "onclick": "closeModal(event)"
-        },
-        div)
-}
+//  02  function createModal (message)
+//  02  {   //  Create a modal message and add it to the DOM
+//  02  
+//  02      const modal = configureElement ("div",
+//  02          {   "class": "modal",
+//  02              "id": "modal"
+//  02          },
+//  02          document.body);
+//  02  
+//  02      const msg = configureElement ("div",
+//  02          {   "class": "modal-message",
+//  02          },
+//  02          modal);
+//  02  
+//  02      configureElement ("div",
+//  02          {
+//  02              "class": "modal-text",
+//  02              "innerText": message
+//  02          },
+//  02          msg);
+//  02  
+//  02      const div = configureElement ("div",
+//  02          {   "class": "modal-options",
+//  02          },
+//  02          msg);
+//  02  
+//  02      configureElement ("a",
+//  02          {   "class": "modal-option",
+//  02              "href": "#",
+//  02              "innerText": "CLOSE",
+//  02              "onclick": "closeModal(event)"
+//  02          },
+//  02          div)
+//  02  }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 let dataset = [];
 
-function parseCookies (cookie)
-{   //  Parse the cookie string and return the value of the selected cookie
+function animalImage (source)
+{   //  Sets the background image of the page to a picture of the animal as indicated by the data set returned by
+    //  the server.
 
-    let value = undefined;
+    const body = document.body;
+    body.style.backgroundImage = "url(" + source + ")";
 
-    const cookies = document.cookie.split (";");
-    cookies.forEach (c =>
-    {
-        const cPrime = c.split ("=");
-        if (cPrime[0].trim() == cookie) value = cPrime[1];
-    })
+    //  These properties of the background image are constant and wouldn't need to be set here, except that setting
+    //  the source URL overrides all other background image properties set in CSS.  As this is the behavior I want, I
+    //  have to set these properties here.
 
-    return value;
+    body.style.backgroundRepeat = "no-repeat";
+    body.style.backgroundPosition = "center";
+    body.style.backgroundSize = "contain"
 }
 
 function buildPage ()
 {
     document.body.style.background = dataset[0].color;
+    animalImage (dataset[0].image)
 
     if (dataset[0].restriction != null)
     { 
@@ -154,39 +156,35 @@ function buildPage ()
 function getAnimalData (animalId)
 {   //  Retrieve data from server for the selected animal
 
-    const xml = new XMLHttpRequest ();
-    xml.onreadystatechange = () =>
+    AJAX ("GET", "/api/animals/get/" + animalId, xml =>
     {
-        if (xml.readyState == 4)
-        {   switch (xml.status)
-            {   case 200:
-                {
-                    dataset = JSON.parse(xml.responseText);
+        if (xml.status == 200)
+        {
+            dataset = JSON.parse(xml.responseText);
 console.log (JSON.stringify (dataset, null, 2))
-                    buildPage();
-                    break;
-                }
-                default:
-                {
-                    createModal ("PAWS was unable to complete this action.  An unspecified "
-                               + "internal error occured on the server.  Please contact your "
-                               + "IT support for assistance.");
-                }
-            }
+            buildPage();
         }
-    }
-
-    xml.open ("GET", "/api/animals/get/" + animalId, true);
-    xml.send ();
+        else
+        {
+//  02              createModal ("PAWS was unable to complete this action.  An unspecified "
+//  02                          + "internal error occured on the server.  Please contact your "
+//  02                          + "IT support for assistance.");
+//  02  begins
+            modal ("PAWS was unable to complete this action.  An unspecified "
+                 + "internal error occured on the server.  Please contact your "
+                 + "IT support for assistance.");
+//  02  ends
+        }
+    });
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-window.addEventListener ("load", () =>
+document.addEventListener ("DOMContentLoaded", event =>
 {   //  When the page is fully rendered in the DOM...
 
     addMenu ();
 })
 
-getAnimalData (parseCookies ("animalId"));
+getAnimalData (getCookie ("animalId"));
