@@ -30,30 +30,38 @@ function AJAX (method, route, result, data)
 
         if (typeof result != "function") reject ("'result' is not a function.");
 
-        let requestData = "";
+        let postData = "";
 
         if (method == "POST")
         {   if (data == undefined) reject ("'request data' is required for POST requests.");
             if (typeof data != "object") reject ("'request data' is not JSON object.");
 
-            if (data.forEach)
-            {   data.forEach (d =>
-                {   
-                    if (requestData.length != 0) requestData += "&";
+            let post = [];
 
+            try
+            {   data.forEach (d =>
+                {
                     Object.entries (d).forEach (entry =>
                     {
-                        requestData += entry[0] + "=" + entry[1];
+                        post.push (entry[0] + "=" + entry[1]);
                     });
                 })
             }
-            else
-            {   Object.entries (data).forEach (entry =>
+            catch (error)
+            {   //  This is not actually an error.  The data passed to this function is either an array or an object.  I
+                //  can iterate an array with .forEach(), but JavaScript will throw an error if I try to use it on an object.
+                //  Use .forAll() with objects.
+                //
+                //  Simply put, if JavaScript throws an error when I try to use .forEach() I have an object and I
+                //  want to use this code.
+                
+                Object.entries (data).forEach (entry =>
                 {
-                    if (requestData.length != 0) requestData += "&";
-                    requestData += entry[0] + "=" + entry[1];
+                    post.push (entry[0] + "=" + entry[1]);
                 });
             }
+
+            postData = post.join ("&");
         }
 
         const xml = new XMLHttpRequest ();
@@ -64,7 +72,7 @@ function AJAX (method, route, result, data)
         else
         {
             xml.setRequestHeader ("Content-Type", "application/x-www-form-urlencoded");
-            xml.send (requestData);
+            xml.send (postData);
         }
 
         xml.onreadystatechange = () =>

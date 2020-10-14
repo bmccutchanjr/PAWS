@@ -13,7 +13,7 @@
 .restriction-text
 {   
     margin: 0px auto;
-    width: var(--width);
+    width: var(--page-width);
 }
 
 .restriction
@@ -59,13 +59,13 @@ footer
     border: 3px solid black;
     border-radius: 5px;
     color: black;
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
     justify-content: space-between;
     height: 50px;
     margin: 10px auto 5px;
     padding: 5px;
-    width: var(--width);
+    width: var(--page-width);
 }
 
 footer .name

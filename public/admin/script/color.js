@@ -1,6 +1,69 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//  01  begins
+function postAdditionalPermissions (event)
+{   event.preventDefault ();
+
+    let postData = [];
+
+    let changed = 0;
+
+    const target = event.target;
+    const section = target.parentNode;
+    const permissions = section.getElementsByClassName ("additional-permission");
+
+    const length = permissions.length;
+    for (let x=0; x<length; x++)
+    {
+        //  checked is supposed to be the state of the checkbox at the time the element was added to the DOM, and it is 
+        //  not changed by clicking on the checkbox.  It would make an excellent way to check the original state of the
+        //  checkbox, except (apparently) you can't access the attribute.  So I had to add a custom attribute to do the
+        //  same thing.
+        //
+        //  To make thisngs even less intuitive, the value of the checkbox is stored in a property of the HTML element
+        //  called -- wait for it -- checked!
+
+        const originalstate = permissions[x].getAttribute ("originalstate") == "checked" ? true : false;
+
+        //  The checked property (not to be confused with the checked attribute) is the current state of the checkbox
+        
+        const currentstate = permissions[x].checked;
+
+        if ((currentstate == originalstate) == false)
+        {   changed++;
+            let obj =
+                {
+//  02                      "restrictId": permissions[x].getAttribute ("restrictId"),
+//  02                      "allow": currentstate
+                    [ permissions[x].getAttribute ("restrictId") ]: currentstate
+                };
+
+            postData.push (obj);
+        }
+    }
+
+    if (changed > 0)
+    {
+        const user = getCookie ("peopleId");
+        const species = target.getAttribute ("species");
+        AJAX ("POST", "/api/people/updateAdditionalPermissions/" + user + "/" + species, xml =>
+        {
+            if (xml.status == 200)
+            {   playAudio (ting);
+                alert ("Successfully updated additional permissions");
+            }
+            else
+            {
+                playAudio (buzz);
+                alert (xml.responseText);
+            }
+        },
+        postData);
+    }
+}
+//  01  ends
+
 function postColorUpdates (event)
 {   event.preventDefault ();
 
@@ -10,17 +73,28 @@ function postColorUpdates (event)
 
     const target = event.target;
     const section = target.parentNode;
-    const colors = section.getElementsByTagName ("input");
+    const colors = section.getElementsByClassName ("color-permission");
 
     const length = colors.length;
     for (let x=0; x<length; x++)
     {
-        const checked = colors[x].checked;
-        const selected = colors[x].getAttribute ("selected") == "true" ? true : false;
+        //  checked is supposed to be the state of the checkbox at the time the element was added to the DOM, and it is 
+        //  not changed by clicking on the checkbox.  It would make an excellent way to check the original state of the
+        //  checkbox, except (apparently) you can't access the attribute.  So I had to add a custom attribute to do the
+        //  same thing.
+        //
+        //  To make thisngs even less intuitive, the value of the checkbox is stored in a property of the HTML element
+        //  called -- wait for it -- checked!
 
-        if ((checked == selected) == false)
+        const originalstate = colors[x].getAttribute ("originalstate") == "checked" ? true : false;
+
+        //  The checked property (not to be confused with the checked attribute) is the current state of the checkbox
+        
+        const currentstate = colors[x].checked;
+
+        if ((currentstate == originalstate) == false)
         {   changed++;
-            let obj = { [colors[x].name] : checked }
+            let obj = { [colors[x].name] : currentstate }
             postData.push (obj);
         }
     }
@@ -107,7 +181,9 @@ console.log (JSON.stringify(data, null, 2));
         },
         div);
 
+        //
         //  create <input> elements for color permissions
+        //
 
         data.permissions.forEach (p =>
         {
@@ -118,16 +194,30 @@ console.log (JSON.stringify(data, null, 2));
 
             const input = configureElement ("input",
                 {
+//  01  begins
+                    "class": "color-permission",
+                    "disabled": "disabled",
+//  01  ends
                     "name": p.color,
                     "type": "checkbox",
                 },
                 box);
 
+//  01              if (p[species])
+//  01              {
+//  01                  input.setAttribute ("checked", "checked");
+//  01                  if (data.allow != true) input.setAttribute ("disabled", "true");
+//  01              }
+//  01  begins
             if (p[species])
             {
                 input.setAttribute ("checked", "checked");
-                if (data.allow != true) input.setAttribute ("disabled", "true");
+                input.setAttribute ("originalstate", "checked");
+                // if (!data.allow) input.setAttribute ("disabled", "true");
             }
+
+            if (this.hasPrivledge)
+                input.removeAttribute ("disabled");
 
             configureElement ("label",
                 {
@@ -138,7 +228,8 @@ console.log (JSON.stringify(data, null, 2));
         });
 
         if (this.hasPrivledge)
-        {   configureElement ("a",
+        {   
+            const button = configureElement ("a",
                 {
                     "class": "menu-option",
                     "href": "#",
@@ -148,9 +239,13 @@ console.log (JSON.stringify(data, null, 2));
                     "species": species
                 },
                 div);
+
+            button.style.display = "inline-block";
         }
 
+        //
         //  create <input> elements for additional permissions
+        //
 
         let hr = false;
 
@@ -169,22 +264,26 @@ console.log (JSON.stringify(data, null, 2));
                     },
                     div);
  
-                configureElement ("input",
+                const input = configureElement ("input",
                     {
+                        "class": "additional-permission",
+                        "disabled": "disabled",
                         "name": index,
+                        "restrictId": add["restrictId"],
                         "type": "checkbox"
                     },
                     box);
 
 //  This is where I set the status of the checkbox (is it preselected or not) based on the property
 //  'allowed' in the data set
-                if (add[allow])
+                if (add["allow"])
                 {
                     input.setAttribute ("checked", "checked");
-                    input.setAttribute ("originalvalue", "checked");
-                    // if (data.allow != true) input.setAttribute ("disabled", "true");
+                    input.setAttribute ("originalstate", "checked");
                 }
 
+                if (this.hasPrivledge)
+                    input.removeAttribute ("disabled");
 
                 configureElement ("label",
                     {
@@ -196,7 +295,8 @@ console.log (JSON.stringify(data, null, 2));
         })
 
         if (hr && this.hasPrivledge)
-        {   configureElement ("a",
+        {   
+            const button = configureElement ("a",
                 {
                     "class": "menu-option",
                     "href": "#",
@@ -206,6 +306,16 @@ console.log (JSON.stringify(data, null, 2));
                     "species": species
                 },
                 div);
+
+            button.style.display = "inline-block";
         }
+
+        //
+        //  create <input> elements for animal restrictions/permissions
+        //
+
+//
+//  This is not implemented as yet, but when it is...this is where it will go
+//
     }
 }

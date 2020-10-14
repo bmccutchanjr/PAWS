@@ -10,7 +10,22 @@
 {
     --bg-color: black;
     --fg-color: black;
-    --width: 95%;
+    --light-gray: rgb(196, 196, 196);
+
+    --div-border: 1px solid grey;
+    --div-border-radius: 3px;
+    --div-margin: 10px;
+    --div-padding: 2px;
+
+    --footer-background: grey;
+    --footer-color: white;
+
+    --page-width: 95%;
+
+    --section-border: 2px solid grey;
+    --section-border-radius: 5px;
+    --section-margin: 15px;
+    --section-padding: 5px;
 }
 
 body
@@ -20,6 +35,13 @@ body
 
 header
 {   width: 100%;
+}
+
+input
+{
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
 }
 
 /********************************************************************/
@@ -215,7 +237,8 @@ html
     min-height: 100%;
     margin: 0px auto;
     margin-bottom: -25px;
-    width: var(--width);
+    /* width: var(--width); */
+    width: var(--page-width);
 }
 
 .push
@@ -224,9 +247,11 @@ html
 }
 
 footer
-{   background: grey;
+{   
+    /* background: grey; */
+    background: var(--footer-background);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     height: 25px;
     margin: 0px;
@@ -235,15 +260,15 @@ footer
 
 .inner-footer
 {   
-    color: white;
+    /* color: white; */
+    color: var(--footer-color);
     display: flex;
     flex-direction: row;
     font-family: inherit;
     font-size: 10px;
     font-weight: inherit;
     margin: 0px auto;
-    width: var(--width);
-    /* width: 25%; */
+    width: var(--page-width);
 }
 
 .inner-footer .left

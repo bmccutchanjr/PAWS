@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  These functions create, populate and implement the menu.
+//  Various functions that add elements to the page.
 
 function addMenu ()
 {   //  Create the side-bar menu
@@ -124,7 +124,7 @@ function buildPage ()
 {
     document.body.style.background = dataset[0].color;
 
-    if (dataset[0].text != null)
+    if (dataset[0].restriction != null)
     { 
         const modal = configureElement ("div",
             {   "class": "restriction-wrapper"
@@ -138,10 +138,10 @@ function buildPage ()
 
         dataset.forEach (d =>
         {
-            if (d.text != null)
+            if (d.restriction != null)
                 configureElement ("div",
                     {   "class": "restriction",
-                        "innerText": d.text
+                        "innerText": d.restriction
                     },
                     div)
         })
@@ -161,8 +161,8 @@ function getAnimalData (animalId)
         {   switch (xml.status)
             {   case 200:
                 {
-//  01                      console.log (xml.responseText)
                     dataset = JSON.parse(xml.responseText);
+console.log (JSON.stringify (dataset, null, 2))
                     buildPage();
                     break;
                 }

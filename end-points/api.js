@@ -24,6 +24,8 @@ router
         // I use it for is to debug routes, but it could be something more useful.
 
         console.log(chalk.yellow("api.js says client is requesting: ", request.url));
+if (request.user)
+    console.log ("peopleId: " + request.user.peopleId);
         // console.log(chalk.yellow(JSON.stringify(request.body, null, 2)));
 
         next();
@@ -456,6 +458,28 @@ router
             });
         })(request, response, next);
     })
+
+//  01  begins
+    .post("/people/updateAdditionalPermissions/:user/:species", (request, response) =>
+    {
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
+
+        const admin = request.user.peopleId;
+        const species = request.params.species;
+        const user = request.params.user;
+
+        people.updateAdditionalPermissions (admin, user, species, request.body)
+        .then (data =>
+        {
+            response.status(200).send(data);
+        })
+        .catch (error =>
+        {
+            return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
+        })
+    })
+//  01  ends
 
     .post("/people/updateColorPermissions/:user/:species", (request, response) =>
     {

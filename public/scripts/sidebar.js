@@ -174,7 +174,7 @@ function configureSidebar (commonOptions, additionalOptions)
 
     configureElement ("a",
         {   "class": "menu-option",
-            "href": "#",
+            "href": "/about",
             "innerText": "About"
         },
         menu);

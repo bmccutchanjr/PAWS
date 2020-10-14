@@ -240,7 +240,8 @@ function buildAnimals ()
         configureElement ("div",
             {
                 "class": "animal-color",
-                "innerText": index[x].color.toUpperCase ()
+//  01                  "innerText": index[x].color.toUpperCase ()
+                "innerText": "(" + index[x].color.toLowerCase () + ")"
             },
             animal);
 

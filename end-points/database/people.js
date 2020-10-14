@@ -111,7 +111,6 @@ function updateEachColor (user, species, data, iteration=0)
     })
 }
 
-//  01  begins
 function updateEachPermission (user, species, data, iteration=0)
 {   //  There are a variable number of updates to be performed and I can't hard-code a variable number of .then()
     //  clauses.  Either I string the individual SQL statements together to execute in a single function call, or
@@ -123,29 +122,21 @@ function updateEachPermission (user, species, data, iteration=0)
 
     return new Promise ((resolve, reject) =>
     {
-//  02          const array = Object.entries (data);
-//  02  
-//  02          if (iteration == array.length) return resolve ("All updates have been completed.");
-//  02  
-//  02          let query = "";
-//  02          [ restrictId, allow ] = array[iteration];
-//  02  begins
         if (iteration == data.length) return resolve ("All updates have been completed.");
 
         let query = "";
         [ restrictId, allow ] = data[iteration];
-//  02  end
 
         //  Only permissions that have been changed are submitted to be updated.  So if the new status of this
         //  permission is to be 'false' that means it is now 'true', and the permission should be deleted from
         //  ColorPermissions.
 
         if (allow == "false")
-            query = "delete from AdditionalPermissions where peopleId=? and species=? and restrictId=?;";
+            query = "delete from AdditionalPermissions where peopleId=? and restrictId=?;";
         else
             query = "insert into AdditionalPermissions (peopleId, restrictId) values (?, ?);";
 
-        select (query, [user, restrictId])
+        select (query, [ user, restrictId ])
         .then (result =>
         {   //  There is no data to return and the result is unimportant.  What is important is that no error occured
             //  and we can simply assume the operation had the desired effect and we can now submit the next SQL
@@ -166,7 +157,6 @@ function updateEachPermission (user, species, data, iteration=0)
         })
     })
 }
-//  01  ends
 
 function updateEachPrivledge (user, data, iteration=0)
 {   //  There are a variable number of updates to be performed and I can't hard-code a variable number of .then()
@@ -526,6 +516,7 @@ const db =
                 {
                     returnData.additional.push ( 
                         {   
+                            restrictId: results[x].restrictId,
                             restriction: results[x].restriction,
                             cat: results[x].cats,
                             dog: results[x].dogs
@@ -542,8 +533,14 @@ const db =
                 let length = results.length;
                 for (let x=0; x<length; x++)
                 {
-                    returnData.additional[x].allow = true;
+                const aLength = returnData.additional.length;
+                for (let y=0; y<aLength; y++)
+                {
+                    if (returnData.additional[y].restrictId == results[x].restrictId)
+                        returnData.additional[y].allow = true;
                 }
+            }
+
 //  There are actually a few more data sets to retrieve and return, but there are as yet no data or even tables
 //      -   a list of individual animals this user is either expressly restricted or permitted to walk regarless of
 //          any other permission settings.  Once implemented, this condition will be tested FIRST and if it exists
@@ -734,7 +731,6 @@ const db =
         })
     },
 
-//  01  begins
     updateAdditionalPermissions (admin, user, species, data)
     {   //  updates AdditionalPermissions table for the specified user.  AdditionalPermissions coorespond to rows
         //  in Restrictions that are marked as 'testable'.  A person is not authorized to interact with an animal if
@@ -759,11 +755,8 @@ const db =
             {   //  Started a transaction.  There's no meaningful result that I care to bother with.  It either
                 //  worked or it didn't, and if it didn't the .catch() method is fired...
 
-//  02                  return updateEachPermission (user, species, data);
-//  02  begins
                 return updateEachPermission (user, species, Object.entries (data));
             })
-//  02  ends
             .then (result =>
             {   //  And commit the updates
 
@@ -783,7 +776,6 @@ const db =
             })
         })
     },
-//  01  ends
 
     updateColorPermissions (admin, user, species, data)
     {
