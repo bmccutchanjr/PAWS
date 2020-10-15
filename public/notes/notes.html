@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title></title>
+
+    <link href="../css/common.css" rel="stylesheet" type="text/css">
+    <style>
+        section
+        {
+            background: rgba(255,255,255,0.75);
+            border: var(--section-border);
+            border-radius: var(--section-border-radius);
+            padding: var(--section-padding);
+            width: 100%;
+        }
+
+        #color-section
+        {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: var(--section-margin);
+        }
+
+        #color-section p
+        {
+            background: grey;
+            border: var(--div-border);
+            border-radius: var(--div-border-radius);
+            margin: 0px;
+            margin-bottom: 10px;
+            padding: var(--div-padding);
+            text-align: center;
+            width: 100%;
+            min-width: 100%;
+        }
+
+        /* #note-section */
+        /* { */
+        /*     margin-top: var(--section-margin); */
+        /* } */
+
+        .color
+        {
+            border: var(--div-border);
+            border-radius: var(--div-border-raduis);
+            flex-grow: 0;
+            flex-shrink: 0;
+            padding: var(--div-padding);
+            width: 150px;
+        }
+
+        .color.green
+        {
+            background: green;
+            border-color: green;
+        }
+
+        .color.orange
+        {
+            background: orange;
+            border-color: orange;
+        }
+
+        .color.blue
+        {
+            background: blue;
+            border-color: blue;
+        }
+
+        .color.purple
+        {
+            background: purple;
+            border-color: purple;
+        }
+
+        textarea
+        {
+            height: 200px;
+            width: 100%;
+        }
+
+        button
+        {
+            background: none;
+            border: none;
+            color: var(--color);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover
+        {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="frame-wrapper" id="frame-wrapper">
+        <section id=color-section>
+            <p>The color you would assign</p>
+            <div class="color green">
+                <input id=green name=color type=radio> Green
+            </div>
+            <div class="color orange">
+                <input id=orange name=color type=radio> Orange
+            </div>
+            <div class="color blue">
+                <input id=blue name=color type=radio> Blue
+            </div>
+            <div class="color purple">
+                <input id=purple name=color type=radio> Purple
+            </div>
+        </section>
+        <section id=note-section>
+            <div id=public-note>
+                <input class=public-note name=public type=checkbox>
+                <label for=public>Make this note available to the general public</label>
+            </div>
+            <textarea id=notes></textarea>
+            <button>Submit</button>
+        </section>
+    </div>
+</body>
+
+<script language="JavaScript" src="../scripts/common.js"></script>
+<script>
+
+    let colorTestMode = false;
+    let dataset = [];
+
+    AJAX ("GET", "/api/animals/get/" + getCookie ("animalId"), xml =>
+    {
+        if (xml.status == 200)
+        {
+            dataset = JSON.parse(xml.responseText);
+console.log (JSON.stringify (dataset, null, 2))
+            if (dataset[0].color == "black")
+            {   //  set 'color test mode'
+            
+                document.getElementById ("color-section").style.display = "flex";
+                document.getElementById ("public-note").style.display = "none";
+                colorTestMode = true;
+            }
+            else
+                document.getElementById ("color-section").style.display = "none";
+        }
+        else
+        {
+            modal (xml.responseText);
+        }
+    });
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    function postParentMessage (message)
+    {   //  This page is intended to be displayed within an inline frame (<iframe>) element in cagepage.html.  Something
+        //  has happened (probably this page loaded causing the rendered height of the <div> frame-wrapper to change) on
+        //  this page that requires cagepage.html to handle it.
+
+        window.parent.postMessage (message);
+    }
+
+    document.addEventListener ("DOMContentLoaded", event =>
+    {
+        const observer = new ResizeObserver (elements =>
+        {
+            for (const elem of elements)
+            {
+                if (elem.contentBoxSize)
+//
+//  This page has at least two events that need action from cagepage.html
+//
+//      The height of frame wrapper has changed
+//
+//      Data was sent to the server and the database successfuly updates.  cagepage.html should remove the <iframe>
+//      element (and this page) from the DOM.
+//
+//                      postParentMessage (
+//                          {
+//                              "new-height": elem.clientHeight
+//                          }
+//                      )
+                    window.parent.postMessage (document.getElementById("frame-wrapper").clientHeight);
+            }
+        });
+
+        observer.observe (document.getElementById("frame-wrapper"));
+    })
+</script>
+</html>

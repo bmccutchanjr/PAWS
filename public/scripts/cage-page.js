@@ -34,8 +34,8 @@ function enableOptions ()
 
     if (checkAuthenticated ())
     {
-        document.getElementById ("post-color-comments").style.display = "block";
-        document.getElementById ("post-public-comments").style.display = "block";
+//  02          document.getElementById ("post-color-comments").style.display = "block";
+//  02          document.getElementById ("post-public-comments").style.display = "block";
         document.getElementById ("post-comments").style.display = "block";
         document.getElementById ("start-walking").style.display = "block";
         document.getElementById ("walk-separator").style.display = "block";
@@ -85,25 +85,26 @@ function addMenu ()
                 {   "class": "menu-option",
                     "href": "#",
                     "id": "post-comments",
-                    "innerText": "Add Comments",
+                    "innerText": "Enter Comments",
+                    "onclick": "closeSidebar();addNoteFrame(event)"
                 },
                 menu);
 
-            configureElement ("a",
-                {   "class": "menu-option",
-                    "href": "#",
-                    "id": "post-public-comments",
-                    "innerText": "Add Public Comments",
-                },
-                menu);
-
-            configureElement ("a",
-                {   "class": "menu-option",
-                    "href": "#",
-                    "id": "post-color-comments",
-                    "innerText": "Color-Test Notes"
-                },
-                menu);
+//  01              configureElement ("a",
+//  01                  {   "class": "menu-option",
+//  01                      "href": "#",
+//  01                      "id": "post-public-comments",
+//  01                      "innerText": "Add Public Comments",
+//  01                  },
+//  01                  menu);
+//  01  
+//  01              configureElement ("a",
+//  01                  {   "class": "menu-option",
+//  01                      "href": "#",
+//  01                      "id": "post-color-comments",
+//  01                      "innerText": "Color-Test Notes"
+//  01                  },
+//  01                  menu);
             });
 
     enableOptions ();
@@ -112,48 +113,34 @@ function addMenu ()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  01  function closeModal (event)
-//  01  {
-//  01      event.preventDefault ();
-//  01  
-//  01      const modal = document.getElementById ("modal");
-//  01      modal.remove (modal);
-//  01  }
+//  event handlers for menu options
 
-//  02  function createModal (message)
-//  02  {   //  Create a modal message and add it to the DOM
-//  02  
-//  02      const modal = configureElement ("div",
-//  02          {   "class": "modal",
-//  02              "id": "modal"
-//  02          },
-//  02          document.body);
-//  02  
-//  02      const msg = configureElement ("div",
-//  02          {   "class": "modal-message",
-//  02          },
-//  02          modal);
-//  02  
-//  02      configureElement ("div",
-//  02          {
-//  02              "class": "modal-text",
-//  02              "innerText": message
-//  02          },
-//  02          msg);
-//  02  
-//  02      const div = configureElement ("div",
-//  02          {   "class": "modal-options",
-//  02          },
-//  02          msg);
-//  02  
-//  02      configureElement ("a",
-//  02          {   "class": "modal-option",
-//  02              "href": "#",
-//  02              "innerText": "CLOSE",
-//  02              "onclick": "closeModal(event)"
-//  02          },
-//  02          div)
-//  02  }
+function addNoteFrame (event)
+{   event.preventDefault ();
+
+    const outer = configureElement ("div",
+        {
+            "class": "outer-wrapper",
+            "id": "note-wrapper"
+        },
+        document.body);
+
+    const inner = configureElement ("div",
+        {
+            "class": "inner-wrapper",
+        },
+        outer);
+
+    const frame = configureElement ("iframe",
+        {
+            "class": "note-frame",
+            "id": "note-frame",
+            "name": "iframe"
+        },
+        inner);
+
+    window.iframe.location = "notes/notes.html";
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -216,19 +203,15 @@ function getAnimalData (animalId)
         if (xml.status == 200)
         {
             dataset = JSON.parse(xml.responseText);
-console.log (JSON.stringify (dataset, null, 2))
+// console.log (JSON.stringify (dataset, null, 2))
             buildPage();
         }
         else
         {
-//  02              createModal ("PAWS was unable to complete this action.  An unspecified "
-//  02                          + "internal error occured on the server.  Please contact your "
-//  02                          + "IT support for assistance.");
-//  02  begins
-            modal ("PAWS was unable to complete this action.  An unspecified "
-                 + "internal error occured on the server.  Please contact your "
-                 + "IT support for assistance.");
-//  02  ends
+//  01              modal ("PAWS was unable to complete this action.  An unspecified "
+//  01                   + "internal error occured on the server.  Please contact your "
+//  01                   + "IT support for assistance.");
+            modal (xml.responseText);
         }
     });
 }
@@ -241,6 +224,12 @@ document.addEventListener ("DOMContentLoaded", event =>
 
     addFooter ()
     addMenu ();
+})
+
+window.addEventListener ("message", event =>
+{   //  The page that's active in the <iframe> needs cagepage.html to do something
+
+    document.getElementById("note-frame").style.height = event.data + "px";
 })
 
 getAnimalData (getCookie ("animalId"));

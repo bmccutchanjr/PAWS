@@ -2,11 +2,17 @@
 /* settings for page specific menu options (hide the options by default)                              */
 /*                                                                                                    */
 
+:root
+{
+    --page-width: 80%;
+}
+
 #post-color-comments,
 #post-public-comments,
 #post-comments,
 #start-walking,
-#stop-walking
+#stop-walking,
+#walk-separator
 {
     display: none;
 }
@@ -20,7 +26,7 @@
     position: fixed;
     left: 0px;
     bottom: 75px;
-    width: 100vw;
+    width: 100%;
 }
 
 .restriction-text
@@ -39,6 +45,34 @@
     padding: 2px 5px 0px 5px;
     text-align: left;
 }
+
+/******************************************************************************************************/
+/* settings for inline-frame element                                                                  */
+/*                                                                                                    */
+
+    .outer-wrapper
+    {
+        /* background: white; */
+        position: fixed;
+        left: 0px;
+        top: 100px;
+        width: 100%;
+    }
+
+    .inner-wrapper
+    {
+        /* background: yellow; */
+        /* border: none; */
+        margin: 0px auto;
+        width: var(--page-width);
+        /* width: 800px; */
+    }
+
+    .note-frame
+    {
+        border: none;
+        width: 100%;
+    }
 
 /******************************************************************************************************/
 /* style settings for sticky footer                                                                   */

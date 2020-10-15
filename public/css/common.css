@@ -1,6 +1,6 @@
-/********************************************************************/
-/* This code sets default style and is common to several pages      */
-/*                                                                  */
+/******************************************************************************************************/
+/* This code sets default style and is common to several pages                                        */
+/*                                                                                                    */
 
 *
 {   box-sizing: border-box;
@@ -45,9 +45,9 @@ input
     font-weight: inherit;
 }
 
-/********************************************************************/
-/* style settings for the menu                                      */
-/*                                                                  */
+/******************************************************************************************************/
+/* settings for the menu                                                                              */
+/*                                                                                                    */
 
 .menu-icon
 {   background: lightgrey;
@@ -150,9 +150,9 @@ input
     margin-top: 20px;
 }
 
-/********************************************************************/
-/* style settings for the modal message                             */
-/*                                                                  */
+/******************************************************************************************************/
+/* settings for the modal message                                                                     */
+/*                                                                                                    */
 
 .modal
 {   display: block;
@@ -221,9 +221,9 @@ input
     text-decoration: none;
 }
 
-/********************************************************************/
-/* style settings for sticky footer                                 */
-/*                                                                  */
+/******************************************************************************************************/
+/* settings for sticky footer                                                                         */
+/*                                                                                                    */
 
 body,
 html
