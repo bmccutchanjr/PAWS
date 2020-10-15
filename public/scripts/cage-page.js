@@ -34,8 +34,6 @@ function enableOptions ()
 
     if (checkAuthenticated ())
     {
-//  02          document.getElementById ("post-color-comments").style.display = "block";
-//  02          document.getElementById ("post-public-comments").style.display = "block";
         document.getElementById ("post-comments").style.display = "block";
         document.getElementById ("start-walking").style.display = "block";
         document.getElementById ("walk-separator").style.display = "block";
@@ -89,22 +87,6 @@ function addMenu ()
                     "onclick": "closeSidebar();addNoteFrame(event)"
                 },
                 menu);
-
-//  01              configureElement ("a",
-//  01                  {   "class": "menu-option",
-//  01                      "href": "#",
-//  01                      "id": "post-public-comments",
-//  01                      "innerText": "Add Public Comments",
-//  01                  },
-//  01                  menu);
-//  01  
-//  01              configureElement ("a",
-//  01                  {   "class": "menu-option",
-//  01                      "href": "#",
-//  01                      "id": "post-color-comments",
-//  01                      "innerText": "Color-Test Notes"
-//  01                  },
-//  01                  menu);
             });
 
     enableOptions ();
@@ -139,7 +121,7 @@ function addNoteFrame (event)
         },
         inner);
 
-    window.iframe.location = "notes/notes.html";
+    window.iframe.location = "cagepage/notes.html";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,14 +185,10 @@ function getAnimalData (animalId)
         if (xml.status == 200)
         {
             dataset = JSON.parse(xml.responseText);
-// console.log (JSON.stringify (dataset, null, 2))
             buildPage();
         }
         else
         {
-//  01              modal ("PAWS was unable to complete this action.  An unspecified "
-//  01                   + "internal error occured on the server.  Please contact your "
-//  01                   + "IT support for assistance.");
             modal (xml.responseText);
         }
     });

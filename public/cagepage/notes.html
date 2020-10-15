@@ -8,6 +8,7 @@
 
     <link href="../css/common.css" rel="stylesheet" type="text/css">
     <style>
+        form,
         section
         {
             background: rgba(255,255,255,0.75);
@@ -37,6 +38,17 @@
             text-align: center;
             width: 100%;
             min-width: 100%;
+        }
+
+        .error
+        {
+            border: var(--div-border);
+            border-color: red;
+            border-radius: var(--div-border-radius);
+            margin-bottom: 1px;
+            margin-top: 1px;
+            padding: var(--div-padding);
+            width: 100%;
         }
 
         /* #note-section */
@@ -102,34 +114,126 @@
 
 <body>
     <div class="frame-wrapper" id="frame-wrapper">
-        <section id=color-section>
-            <p>The color you would assign</p>
+        <form id=color-section>
+            <p>Select the color you would assign</p>
             <div class="color green">
-                <input id=green name=color type=radio> Green
+                <input id=green name=color onclick="clearErrorMessage(event);" type=radio value=green> Green
             </div>
             <div class="color orange">
-                <input id=orange name=color type=radio> Orange
+                <input id=orange name=color onclick="clearErrorMessage(event);" type=radio value=orange> Orange
             </div>
             <div class="color blue">
-                <input id=blue name=color type=radio> Blue
+                <input id=blue name=color onclick="clearErrorMessage(event);" type=radio value=blue> Blue
             </div>
             <div class="color purple">
-                <input id=purple name=color type=radio> Purple
+                <input id=purple name=color onclick="clearErrorMessage(event);" type=radio value=purple> Purple
             </div>
-        </section>
+        </form>
         <section id=note-section>
             <div id=public-note>
                 <input class=public-note name=public type=checkbox>
                 <label for=public>Make this note available to the general public</label>
             </div>
-            <textarea id=notes></textarea>
-            <button>Submit</button>
+            <textarea id=textarea onfocus="clearErrorMessage(event)"></textarea>
+            <button onclick="postNotes(event);">Submit</button>
         </section>
     </div>
 </body>
 
 <script language="JavaScript" src="../scripts/common.js"></script>
 <script>
+
+    function clearErrorMessage (event)
+    {
+        const target = event.target;
+
+        //  It seems the parentNode of a radio button is itself, so maybe what I need is the grandparent??!
+
+        let section = target.parentNode;
+        if (section.tag != "section")
+            section = section.parentNode;
+
+        const errors = section.getElementsByClassName ("error");
+
+        const length = errors.length;
+        for (let x=0; x<length; x++)
+        {
+            errors[x].remove();
+            playAudio (ting);
+        }
+    }
+
+    function setErrorMessage (id, message)
+    {
+        playAudio (buzz);
+
+        const section = document.getElementById (id);
+
+        configureElement ("div",
+            {
+                "class": "error",
+                "innerText": message
+            },
+            section);
+    }
+    
+    function colorValidation ()
+    {   //  validate the color selection
+
+        if (!colorTestMode) return true;
+
+        //  is this is 'color test mode', a color must be selected.
+
+        let color = undefined;
+        let valid = false;
+
+        const colors = document.getElementsByName("color");
+        colors.forEach (c =>
+        {
+            if (c.checked)
+            {   color = c.value;
+                valid = true;
+            }
+        })
+
+        if (!valid)
+        {
+            setErrorMessage ("color-section", "A color selection is required");
+            return false;
+        }
+
+        return color;
+    }
+
+    function noteValidation ()
+    {   //  validate the note selection
+
+        //  a note must be entered...it's the whole point
+
+        if (document.getElementById("textarea").value == "")
+        {   setErrorMessage ("note-section", "A note is required");
+            return false;
+        }
+
+        return true;
+    }
+
+    function postNotes (event)
+    {   event.preventDefault();
+
+        let errors = false;
+
+        const color = colorValidation();
+
+        const validNote = noteValidation();
+        if (color && validNote)
+        {
+//  do something            
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     let colorTestMode = false;
     let dataset = [];
@@ -139,7 +243,7 @@
         if (xml.status == 200)
         {
             dataset = JSON.parse(xml.responseText);
-console.log (JSON.stringify (dataset, null, 2))
+//  console.log (JSON.stringify (dataset, null, 2))
             if (dataset[0].color == "black")
             {   //  set 'color test mode'
             
