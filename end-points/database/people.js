@@ -151,7 +151,8 @@ function updateEachPermission (user, species, data, iteration=0)
         .catch (error =>
         {
             console.log (chalk.redBright ("PAWS ERROR 102"));
-            console.log (chalk.redBright ("people.js; updateEachColor()"));
+            console.log (chalk.redBright ("module:   people.js"));
+            console.log (chalk.redBright ("function: updateEachColor()"));
             console.log (chalk.redBright (error));
             reject (error);
         })

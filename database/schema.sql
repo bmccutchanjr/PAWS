@@ -124,6 +124,38 @@ create table if not exists AnimalRestrictions
     foreign key (restrictId) references Restrictions (restrictId)
 );
 
+create table if not exists WalkingNotes
+(   --  Notes about animals entered by users
+
+    noteId          int(9)
+                    auto_increment
+                    not null
+                    unique,
+
+    peopleId        smallint (6)
+                    not null,
+
+    animalId        smallint (6)
+                    not null,
+
+    color           varchar (6)                     --  If this notes is comments from a 'color tester', this is the color
+                    default "black",                --  the tester sugggests for the animal.  Otherwise the value is 'null'
+                    
+    public          boolean                         --  Are this note intended to be accessable to the general public?
+                    not null
+                    default false,
+
+    date_added      date
+                    not null,
+
+    note            text
+                    not null,
+
+    primary key (noteId),
+    foreign key (animalId) references Animals (animalId),
+    foreign key (peopleId) references People (peopleId)
+);
+
 -- *********************************************************************************************
 -- *********************************************************************************************
 

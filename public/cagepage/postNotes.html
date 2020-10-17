@@ -130,8 +130,8 @@
             </div>
         </form>
         <section id=note-section>
-            <div id=public-note>
-                <input class=public-note name=public type=checkbox>
+            <div id=public-note-div>
+                <input class=public-note id=public-note name=public type=checkbox>
                 <label for=public>Make this note available to the general public</label>
             </div>
             <textarea id=textarea onfocus="clearErrorMessage(event)"></textarea>
@@ -228,7 +228,32 @@
         const validNote = noteValidation();
         if (color && validNote)
         {
-//  do something            
+            const public = document.getElementById("public-note").checked;
+            const note = document.getElementById("textarea").value;
+
+            AJAX ("POST", "/api/animals/postWalkingNotes/" + getCookie("animalId"), xml =>
+            {
+                if (xml.status == 200)
+                {
+                    playAudio (ting);
+                    postParentMessage (
+                        {
+                            "remove-iframe": true
+                        }
+                    )
+                }
+                else
+                {
+                    playAudio (buzz);
+                    modal (xml.responseText);
+                }
+            },
+            {
+                "color": color,
+                "public": public,
+                "note": note
+            })
+
         }
     }
 
@@ -248,7 +273,7 @@
             {   //  set 'color test mode'
             
                 document.getElementById ("color-section").style.display = "flex";
-                document.getElementById ("public-note").style.display = "none";
+                document.getElementById ("public-note-div").style.display = "none";
                 colorTestMode = true;
             }
             else
@@ -285,12 +310,12 @@
 //      Data was sent to the server and the database successfuly updates.  cagepage.html should remove the <iframe>
 //      element (and this page) from the DOM.
 //
-//                      postParentMessage (
-//                          {
-//                              "new-height": elem.clientHeight
-//                          }
-//                      )
-                    window.parent.postMessage (document.getElementById("frame-wrapper").clientHeight);
+                     postParentMessage (
+                         {
+                             "new-height": document.getElementById("frame-wrapper").clientHeight
+                         }
+                     )
+//                      window.parent.postMessage (document.getElementById("frame-wrapper").clientHeight);
             }
         });
 

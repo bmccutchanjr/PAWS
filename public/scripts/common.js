@@ -191,8 +191,7 @@ function removeModal (event)
     modal.remove ();    
 }
 
-//  01  begins
-function createModal (message)
+function modal (message)
 {   //  Create a modal message and add it to the DOM
 
     const modal = configureElement ("div",
@@ -222,12 +221,10 @@ function createModal (message)
         {   "class": "modal-option",
             "href": "#",
             "innerText": "CLOSE",
-//  02              "onclick": "closeModal(event)"
             "onclick": "removeModal(event)"
         },
         div)
 }
-//  01  ends
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////

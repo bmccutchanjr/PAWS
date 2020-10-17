@@ -121,7 +121,7 @@ function addNoteFrame (event)
         },
         inner);
 
-    window.iframe.location = "cagepage/notes.html";
+    window.iframe.location = "cagepage/postNotes.html";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,7 +207,28 @@ document.addEventListener ("DOMContentLoaded", event =>
 window.addEventListener ("message", event =>
 {   //  The page that's active in the <iframe> needs cagepage.html to do something
 
-    document.getElementById("note-frame").style.height = event.data + "px";
+    const keys = Object.keys (event.data);
+    switch (keys[0])
+    {   case "new-height":
+        {   document.getElementById("note-frame").style.height = event.data[keys[0]] + "px";
+            break;
+        }
+        case "remove-iframe":
+        {
+            if (event.data[keys[0]] == true)
+            {   document.getElementById("note-frame").remove();
+                playAudio (ting);
+            }
+
+            break;
+        }
+        default:
+        {   console.log ("PAWS ERROR 103");
+            console.log ("An unknown message was recieved from a child process");
+            console.log (data);
+            break;
+        }
+    }
 })
 
 getAnimalData (getCookie ("animalId"));

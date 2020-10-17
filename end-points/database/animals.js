@@ -149,6 +149,68 @@ const db =
             console.log (chalk.red(error));
             callback (500, error);
         })
+    },
+
+    getWalkingNotes (animal, allNotes)
+    {   //  get all walking notes for the indicated animal...
+
+        return new Promise ((resolve, reject) =>
+        {
+            let where = "where w.animalId=?";
+
+            if (!allNotes) where += " and w.public=true";
+            where += ";";
+
+            const query = "select a.name, p.surname, p.given, w.date_added, w.note from WalkingNotes w "
+                        + "left join Animals a "
+	                    + "on w.animalId=a.animalId "
+                        + "left join People p "
+	                    + "on w.peopleId=p.peopleId "
+                        + where;
+
+            select (query, animal)
+            .then(results =>
+            {   //  ...and return the results of the query
+
+                resolve (results);
+            })
+            .catch(error =>
+            {
+                console.log(chalk.redBright("PAWS ERROR 102"));
+                console.log(chalk.redBright("module:   animals.js"));
+                console.log(chalk.redBright("function: insertWalkingNotes()"));
+                console.log(chalk.redBright(error));
+                reject(error);
+            })
+        })
+    },
+
+    insertWalkingNotes (user, animal, data)
+    {   //  execute an SQL query to insert the notes into the database...
+
+        return new Promise ((resolve, reject) =>
+        {
+            const color = data.color;
+            const public = data.public;
+            const note = data.note;
+
+            const query = "insert into WalkingNotes (peopleId, animalId, color, public, date_added, note) values (?, ?, ?, ?, now(), ?);"
+            select (query, [ user, animal, color, public, note ])
+            .then(results =>
+            {   //  MySQL doesn't really return anything important if this operation was successful, but pass the result 
+                //  object back to the end-point handler any way.
+
+                resolve (results);
+            })
+            .catch(error =>
+            {
+                console.log(chalk.redBright("PAWS ERROR 102"));
+                console.log(chalk.redBright("module:   animals.js"));
+                console.log(chalk.redBright("function: insertWalkingNotes()"));
+                console.log(chalk.redBright(error));
+                reject(error);
+            })
+        })
     }
 }
 

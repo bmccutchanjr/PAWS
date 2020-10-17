@@ -77,6 +77,50 @@ if (request.user)
         })
     })
 
+    .get("/animals/getWalkingNotes/:animalId", (request, response) =>
+    {   //  get all walking notes for the indicated animal...
+
+//          let isAuthenticated = true;
+//          if (!request.user) isAuthenticated = false;
+        const isAuthenticated = (!request.user) ? false : true;
+
+        animals.getWalkingNotes (request.params.animalId, isAuthenticated)
+        .then(result =>
+        {
+            return response.status(200).send(result);
+        })
+        .catch(error =>
+        {
+            console.log (chalk.redBright("PAWS ERROR 102"));
+            console.log (chalk.redBright("module: api.js"));
+            console.log (chalk.redBright("route:  /animals/postWalkingNotes/animalId"));
+            console.log (chalk.redBright(error));
+            return response.status(500).send(error);
+        })
+    })
+//  01  ends
+
+    .post("/animals/postWalkingNotes/:animalId", (request, response) =>
+    {   //  The user has submitted walking notes...put them in the database...
+
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
+
+        animals.insertWalkingNotes (request.user.peopleId, request.params.animalId, request.body)
+        .then(result =>
+        {
+            return response.status(200).send(result);
+        })
+        .catch(error =>
+        {
+            console.log (chalk.redBright("PAWS ERROR 102"));
+            console.log (chalk.redBright("module: api.js"));
+            console.log (chalk.redBright("route:  /animals/postWalkingNotes/animalId"));
+            console.log (chalk.redBright(error));
+            return response.status(500).send(error);
+        })
+    })
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -459,7 +503,6 @@ if (request.user)
         })(request, response, next);
     })
 
-//  01  begins
     .post("/people/updateAdditionalPermissions/:user/:species", (request, response) =>
     {
         if (!request.user)
@@ -479,7 +522,6 @@ if (request.user)
             return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
         })
     })
-//  01  ends
 
     .post("/people/updateColorPermissions/:user/:species", (request, response) =>
     {
