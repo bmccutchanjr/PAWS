@@ -188,6 +188,8 @@ const db =
     insertWalkingNotes (user, animal, data)
     {   //  execute an SQL query to insert the notes into the database...
 
+        data.public = data.public == "true";
+
         return new Promise ((resolve, reject) =>
         {
             const color = data.color;
