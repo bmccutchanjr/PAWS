@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title></title>
+
+    <link href="../css/common.css" rel="stylesheet" type="text/css">
+    <style>
+        section
+        {   background: rgba(255,255,255,0.75);
+            border: var(--section-border);
+            margin-bottom: var(--section-margin);
+            border-radius: var(--section-border-radius);
+            padding: var(--section-padding);
+            width: 100%;
+        }
+
+        #button-section
+        {   margin-bottom: 0px;
+        }
+
+        .name-div
+        {   font-weight: bold;
+            margin-bottom: var(--div-margin);
+        }
+    </style>
+</head>
+
+<body>
+    <main class="frame-wrapper" id="frame-wrapper"></main>
+</body>
+
+<script language="JavaScript" src="../scripts/common.js"></script>
+<script>
+
+    function removePage (event)
+    {   //  This page resides in an inline-frame (<iframe>) element in another page, it's parent.  This page does not
+        //  have direct access to the <iframe> to remove itself and container elements from the DOM.  Instead, we have
+        //  to send a message to the parent page (in this case cagepage.html) to tell it to do the job.
+
+        window.parent.postMessage ( { "remove-iframe": true } );
+    }
+
+    function page (dataset)
+    {   //  get the data into the DOM...
+
+        const main = document.getElementById ("frame-wrapper");
+
+        dataset.forEach (d =>
+        {
+            const section = configureElement ("section",
+                {
+                    "class": "note-section",
+                },
+                main);
+
+                const date = new Date (d.created);
+                const dateString = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+
+            configureElement ("div",
+                {
+                    "class": "name-div",
+                    "innerText": "On " + dateString + " " + d.given + " " + d.surname + " wrote:"
+                },
+                section);
+
+            configureElement ("div",
+                {
+                    "class": "note-paragraph",
+                    "innerText": d.note
+                },
+                section);
+        });
+
+        const section = configureElement ("section",
+            {
+                "id": "button-section"
+            },
+            main);
+
+        configureElement ("button",
+            {
+                "id": "button-remove-iframe",
+                "innerText": "Close",
+                "onclick": "removePage(event);"
+            },
+            section);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    function postParentMessage (message)
+    {   //  This page is intended to be displayed within an inline frame (<iframe>) element in cagepage.html.  Something
+        //  has happened (probably this page loaded causing the rendered height of the <div> frame-wrapper to change) on
+        //  this page that requires cagepage.html to handle it.
+
+        window.parent.postMessage (message);
+    }
+
+    document.addEventListener ("DOMContentLoaded", event =>
+    {
+        AJAX ("GET", "/api/animals/getWalkingNotes/" + getCookie("animalId"), xml =>
+        {
+            if (xml.status == 200)
+                page (JSON.parse(xml.responseText));
+            else
+                alert (xml.responseText);
+        })
+
+        const observer = new ResizeObserver (elements =>
+        {
+            for (const elem of elements)
+            {
+                if (elem.contentBoxSize)
+                    postParentMessage (
+                        {
+                            "new-height": document.getElementById("frame-wrapper").clientHeight
+                        }
+                    )
+            }
+        });
+
+        observer.observe (document.getElementById("frame-wrapper"));
+    })
+</script>
+</html>

@@ -45,40 +45,25 @@ function handleLoginOption (event)
 
     AJAX ("POST", "/api/people/login/", xml =>
         {
-alert ("status: 200");
             switch (xml.status)
             {   case 200:
                 {
-//  01                             status.data = true;
-//  I'm not sure I have anything to do here...if the user has properly authenticated with the server there's no need to receive and
-//  handle data from the server.  I'm just going to reload the page, and that's a status 205 not 200 (although 200 isn't exactly
-//  incorrect, it just implies that data was sent data with the response.)
-console.log ("status: 200");
-// console.log (xml.status);
-// console.log (xml.responseText);
-// console.log (xml.getAllResponseHeaders());
-// window.location.reload();
-playAudio (ting);
-playAudio (ting);
+                    //  This shoould be supperflous -- the API is supposed to return a status of 205 on success
                     break;
                 }
                 case 205:
                 {
-//  01                             status.data = true;
-// console.log ("status: 205");
-console.log (xml.status);
-//  02  console.log (xml.responseText);
-// console.log (JSON.stringify(xml.getAllResponseHeaders(), null, 2));
-//  02  console.log (xml.getAllResponseHeaders());
-playAudio (ting);
-window.location.reload();
+//  During this development cycle, I don't want to redirect the page so I don't have to keep loading the page everytime
+//  nodemon restarts the server.
+                    if (window.location.href.indexOf("/login") > 0)
+//                          window.location.href = "/";
+                            alert ("you're in!");
+                    else
+                        window.location.href.reload();
                     break;
                 }
                 default:
                 {   
-// console.log ("status: default");
-// console.log (xml.status);
-// console.log (xml.responseText);
                     alert (xml.responseText);
                     break;
                 }

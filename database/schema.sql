@@ -145,7 +145,7 @@ create table if not exists WalkingNotes
                     not null
                     default false,
 
-    date_added      date
+    created         datetime
                     not null,
 
     note            text

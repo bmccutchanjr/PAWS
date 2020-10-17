@@ -9,21 +9,20 @@ function addFooter ()
     //  It may be possible (although I think not) that the API to retrieve data for this animal from the server
     //  to complete before the DOMContentLoaded event to invoke this function (or even before the DOMContentLoaded
     //  event fires).  If so, these elements will not be in the DOM when the API event handler tries to access
-    //  them and the page will blow up.  I think it is very unlikely, two network transactions and a database
-    //  select have to take longer than rendering six elements to the DOM.
+    //  them and the page will blow up.  I think it is very unlikely, all <script> tags follow the the <body> tag
+    //  and the API request triggers two network transactions and a database transaction.   That has to take longer
+    //  than rendering six elements to the DOM.
 
     const div = document.body.getElementsByTagName ("footer")[0];
 
     configureElement ("div",
-        {
-            "class": "name",
+        {   "class": "name",
             "id": "footer-name",
         },
         div);
 
     configureElement ("div",
-        {
-            "class": "color",
+        {   "class": "color",
             "id": "footer-color",
         },
         div);
@@ -33,8 +32,7 @@ function enableOptions ()
 {   //  enable menu options if the current user is authenticatded with the server
 
     if (checkAuthenticated ())
-    {
-        document.getElementById ("post-comments").style.display = "block";
+    {   document.getElementById ("post-comments").style.display = "block";
         document.getElementById ("start-walking").style.display = "block";
         document.getElementById ("walk-separator").style.display = "block";
     }
@@ -48,8 +46,7 @@ function addMenu ()
     //  so we can put the appropriate menu option in it.
 
     configureSidebar ( { HomePage: false, MyProfile: true, AdminFunctions: true }, () =>
-        {
-            configureElement ("a",
+        {   configureElement ("a",
                 {   "class": "menu-option",
                     "href": "#",
                     "id": "start-walking",
@@ -76,6 +73,7 @@ function addMenu ()
                     "href": "#",
                     "id": "view-comments",
                     "innerText": "View Comments",
+                    "onclick": "closeSidebar();getNotes(event)"
                 },
                 menu);
 
@@ -84,7 +82,7 @@ function addMenu ()
                     "href": "#",
                     "id": "post-comments",
                     "innerText": "Enter Comments",
-                    "onclick": "closeSidebar();addNoteFrame(event)"
+                    "onclick": "closeSidebar();postNote(event)"
                 },
                 menu);
             });
@@ -97,30 +95,56 @@ function addMenu ()
 
 //  event handlers for menu options
 
-function addNoteFrame (event)
-{   event.preventDefault ();
+function addNoteFrame ()
+{   //  Add an <iframe> element to the DOM.  The <iframe> is used to load an execute another page as a child
+    //  process of cagepage.html.  This seems the most intuitive way to handle these pages for the user and seems
+    //  to be the easiest to implement as well.
+
+    //  It seems that an <iframe> cannot be positioned directly with CSS.  The rendering engine appear to ignore
+    //  properties like 'margin: 0px auto' and 'left: 10%' when applied to an <iframe> element.  So the <iframe>
+    //  must be placed inside a container that can be positioned.  And the container must be placed inside yet
+    //  another to use 'margin: 0px auto'.
+    //
+    //  Isn't CSS just grand!
 
     const outer = configureElement ("div",
-        {
-            "class": "outer-wrapper",
+        {   "class": "outer-wrapper",
             "id": "note-wrapper"
         },
         document.body);
 
     const inner = configureElement ("div",
-        {
-            "class": "inner-wrapper",
+        {   "class": "inner-wrapper",
         },
         outer);
 
     const frame = configureElement ("iframe",
-        {
-            "class": "note-frame",
+        {   "class": "note-frame",
             "id": "note-frame",
             "name": "iframe"
         },
         inner);
+}
 
+function getNotes (event)
+{   event.preventDefault ();
+
+    //  Add an <iframe> element to the DOM to load the page "getNotes.html".  getNotes.html includes scripts which
+    //  will only be executed if the content is loaded into an <iframe> element (as opposed to any other container
+    //  element such as a <div> or <section>).
+
+    addNoteFrame();
+    window.iframe.location = "cagepage/getNotes.html";
+}
+
+function postNote (event)
+{   event.preventDefault ();
+
+    //  Add an <iframe> element to the DOM to load the page "postNote.html".  postNote.html includes scripts which
+    //  will only be executed if the content is loaded into an <iframe> element (as opposed to any other container
+    //  element such as a <div> or <section>).
+    
+    addNoteFrame();
     window.iframe.location = "cagepage/postNotes.html";
 }
 
@@ -216,7 +240,7 @@ window.addEventListener ("message", event =>
         case "remove-iframe":
         {
             if (event.data[keys[0]] == true)
-            {   document.getElementById("note-frame").remove();
+            {   document.getElementById("note-wrapper").remove();
                 playAudio (ting);
             }
 

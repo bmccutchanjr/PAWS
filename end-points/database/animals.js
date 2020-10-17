@@ -156,17 +156,16 @@ const db =
 
         return new Promise ((resolve, reject) =>
         {
-            let where = "where w.animalId=?";
+            let where = "where w.animalId=? ";
+            if (!allNotes) where += "and w.public=true ";
 
-            if (!allNotes) where += " and w.public=true";
-            where += ";";
-
-            const query = "select a.name, p.surname, p.given, w.date_added, w.note from WalkingNotes w "
+            const query = "select a.name, p.surname, p.given, w.created, w.note from WalkingNotes w "
                         + "left join Animals a "
 	                    + "on w.animalId=a.animalId "
                         + "left join People p "
 	                    + "on w.peopleId=p.peopleId "
-                        + where;
+                        + where
+                        + "order by w.created desc;";
 
             select (query, animal)
             .then(results =>
@@ -196,7 +195,7 @@ const db =
             const public = data.public;
             const note = data.note;
 
-            const query = "insert into WalkingNotes (peopleId, animalId, color, public, date_added, note) values (?, ?, ?, ?, now(), ?);"
+            const query = "insert into WalkingNotes (peopleId, animalId, color, public, created, note) values (?, ?, ?, ?, now(), ?);"
             select (query, [ user, animal, color, public, note ])
             .then(results =>
             {   //  MySQL doesn't really return anything important if this operation was successful, but pass the result 

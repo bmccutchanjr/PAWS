@@ -8,8 +8,8 @@
 
 :root
 {
-    --bg-color: black;
-    --fg-color: black;
+    --background-color: black;
+    --color: black;
     --light-gray: rgb(196, 196, 196);
 
     --div-border: 1px solid grey;
@@ -29,8 +29,23 @@
 }
 
 body
-{   font-family: sans-serif;
+{   color: var(--color);
+    font-family: sans-serif;
     font-size: 14px;
+}
+
+button
+{   background: none;
+    border: none;
+    color: var(--color);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: bold;
+}
+
+button:hover
+{   color: red;
 }
 
 header
@@ -50,25 +65,28 @@ input
 /*                                                                                                    */
 
 .menu-icon
-{   background: lightgrey;
+{   background: var(--light-gray);
     border: 3px solid grey;
-    border-radius: 5px;
+    /* border-radius: 5px; */
+    /* border: var(--section-border); */
+    /* border-radius: var(--section-border-radius); */
+    border-radius: 10px;
     color: grey;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     font-weight: bold;
     height: 35px;
     position: absolute;
     left: 3px;
     top: 3px;
-    padding-bottom: 5px;
-    padding-top: 6px;
     text-align: center;
     width: 35px;
     z-index: 100;
 }
 
 .menu
-{
-    background: lightgrey;
+{   background: var(--light-gray);
     border-right: 3px solid grey;
     height: 100%;
     min-height: 100%;
@@ -82,8 +100,7 @@ input
 }
 
 @keyframes hidemenu
-{
-    from
+{   from
     {   left: 0px;
     }
     to
@@ -98,8 +115,7 @@ input
 }
 
 @keyframes showmenu
-{
-    from
+{   from
     {   left: -200px;
         background: grey;
     }
@@ -141,13 +157,11 @@ input
 #menu-logout,
 #menu-profile,
 #menu-admin
-{
-    display: none;
+{   display: none;
 }
 
 #suggest-a-name
-{
-    margin-top: 20px;
+{   margin-top: 20px;
 }
 
 /******************************************************************************************************/
@@ -243,16 +257,12 @@ html
 }
 
 .push
-{   
-    height: 40px;
+{   height: 40px;
 }
 
 footer
-{   
-    /* background: grey; */
-    background: var(--footer-background);
+{   background: var(--footer-background);
     display: flex;
-    /* flex-direction: row; */
     flex-direction: column;
     justify-content: center;
     height: 25px;
@@ -261,9 +271,7 @@ footer
 }
 
 .inner-footer
-{   
-    /* color: white; */
-    color: var(--footer-color);
+{   color: var(--footer-color);
     display: flex;
     flex-direction: row;
     font-family: inherit;
