@@ -358,33 +358,33 @@ const db =
         })
     },
 
-//  05  begins
-    hasOpenSession (peopleId)
-    {   //  Find out if this user has an open session and return a boolean 
-
-        return new Promise ((resolve, reject) =>
-        {
-            const queryString = "select * from Interactions where peopleId=? and end is null;";
-            query (queryString, peopleId)
-            .then(result =>
-            {   //  The results are in...but what are they?
-
-                if (result.length == 0)
-                    resolve (false);
-                else
-                    resolve (true);
-            })
-            .catch(error =>
-            {
-                console.log(chalk.redBright("PAWS ERROR 102"));
-                console.log(chalk.redBright("module:   animals.js"));
-                console.log(chalk.redBright("function: hasOpenSession()"));
-                console.log(chalk.redBright(error));
-                reject(error);
-            })
-        })
-    },
-//  05  ends
+//  06  //  05  begins
+//  06      hasOpenSession (peopleId)
+//  06      {   //  Find out if this user has an open session and return a boolean 
+//  06  
+//  06          return new Promise ((resolve, reject) =>
+//  06          {
+//  06              const queryString = "select * from Interactions where peopleId=? and end is null;";
+//  06              query (queryString, peopleId)
+//  06              .then(result =>
+//  06              {   //  The results are in...but what are they?
+//  06  
+//  06                  if (result.length == 0)
+//  06                      resolve (false);
+//  06                  else
+//  06                      resolve (true);
+//  06              })
+//  06              .catch(error =>
+//  06              {
+//  06                  console.log(chalk.redBright("PAWS ERROR 102"));
+//  06                  console.log(chalk.redBright("module:   animals.js"));
+//  06                  console.log(chalk.redBright("function: hasOpenSession()"));
+//  06                  console.log(chalk.redBright(error));
+//  06                  reject(error);
+//  06              })
+//  06          })
+//  06      },
+//  06  //  05  ends
 
     insertWalkingNotes (user, animal, data)
     {   //  execute an SQL query to insert the notes into the database...

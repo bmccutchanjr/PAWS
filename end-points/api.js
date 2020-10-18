@@ -340,7 +340,7 @@ if (request.user)
 
         const peopleId = request.user.peopleId;
 
-        animals.hasOpenSession (peopleId)
+        people.hasOpenSession (peopleId)
         .then(results =>
         {   
             response.status(200).send(results);
@@ -349,7 +349,7 @@ if (request.user)
         {
             console.log (chalk.redBright("PAWS ERROR 102"));
             console.log (chalk.redBright("module: api.js"));
-            console.log (chalk.redBright("route:  /animals/startSession/animalId"));
+            console.log (chalk.redBright("route:  /people/hasOpenSession"));
             console.log (chalk.redBright(error));
             return response.status(500).send(error);
         })

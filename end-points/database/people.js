@@ -640,6 +640,34 @@ const db =
         })
     },
 
+//  02  begins
+    hasOpenSession (peopleId)
+    {   //  Find out if this user has an open session and return a boolean 
+
+        return new Promise ((resolve, reject) =>
+        {
+            const queryString = "select * from Interactions where peopleId=? and end is null;";
+            query (queryString, peopleId)
+            .then(result =>
+            {   //  The results are in...but what are they?
+
+                if (result.length == 0)
+                    resolve (false);
+                else
+                    resolve (true);
+            })
+            .catch(error =>
+            {
+                console.log(chalk.redBright("PAWS ERROR 102"));
+                console.log(chalk.redBright("module:   animals.js"));
+                console.log(chalk.redBright("function: hasOpenSession()"));
+                console.log(chalk.redBright(error));
+                reject(error);
+            })
+        })
+    },
+//  02  begins
+
     isAdmin (peopleId)
     {   //  Retrieve list af admin privledges for the selected user
 
