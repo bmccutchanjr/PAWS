@@ -118,26 +118,51 @@ if (request.user)
         })
     })
 
-//  01  begins
     .get("/animals/startSession/:animalId", (request, response) =>
     {
-//  I'm developing and testing this route with PostMan (its quicker and easier than using with the web page) so I can't reject
-//  requests if the request.user doesn'o't exist yet.  I don't think PostMan can authenticate.  I want to eventually...
-//          if (!request.user)
-//              return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
-const peopleId = 3;
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
+
+        const peopleId = request.user.peopleId;
 
         animals.startSession (peopleId, request.params.animalId)
         .then(results =>
         {
-response.status(200).send(results);
+            response.status(200).send(results);
         })
         .catch(error =>
+        {   //  Not everything that I rejected is a runtime error, most are authorization issues.  Test that and send an
+            //  appropriate message
+
+            if (error.status !=500)
+                response.status(error.status).send(error.message);
+            else
+            {
+                console.log (chalk.redBright("PAWS ERROR 102"));
+                console.log (chalk.redBright("module: api.js"));
+                console.log (chalk.redBright("route:  /animals/startSession/animalId"));
+                console.log (chalk.redBright(error));
+                return response.status(500).send(error);
+            }
+        })
+    })
+    
+    .get("/animals/stopSession/:animalId", (request, response) =>
+    {
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
+
+        const peopleId = request.user.peopleId;
+
+        animals.stopSession (peopleId, request.params.animalId)
+        .then(results =>
+        {   //  Any result stopSession() returns (actually resolves) are not important if it did not fail.  If this
+            //  then-block is invoked, there were no errors
+
+            response.status(200).send(results);
+        })
+        .catch (error =>
         {
-//  Not everything that I rejected is a 500 error.  Most are authorization issues.  Test that and send an appropriate message
-//  if error.status !=500
-//      sendfile
-//  else 
             console.log (chalk.redBright("PAWS ERROR 102"));
             console.log (chalk.redBright("module: api.js"));
             console.log (chalk.redBright("route:  /animals/startSession/animalId"));
@@ -145,17 +170,6 @@ response.status(200).send(results);
             return response.status(500).send(error);
         })
     })
-    
-    .get("/animals/stopSession/:session", (request, response) =>
-    {
-//  I'm developing and testing this route with PostMan (its quicker and easier than using testing with the web
-//  page) so I can't reject requests if the request.user does not exist yet.  I want to eventually...
-//          if (!request.user)
-//              return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
-
-response.status(200).send("bounce back!");
-    })
-    //  01  ends
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -316,6 +330,28 @@ response.status(200).send("bounce back!");
             console.log (chalk.redBright("/api/people/updatePerson"));
             console.log (chalk.redBright(error))
             return response.status(500).send(process.env.PAWS_500_STATUS_MESSAGE);
+        })
+    })
+
+    .get("/people/hasOpenSession", (request, response) =>
+    {
+        if (!request.user)
+            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
+
+        const peopleId = request.user.peopleId;
+
+        animals.hasOpenSession (peopleId)
+        .then(results =>
+        {   
+            response.status(200).send(results);
+        })
+        .catch (error =>
+        {
+            console.log (chalk.redBright("PAWS ERROR 102"));
+            console.log (chalk.redBright("module: api.js"));
+            console.log (chalk.redBright("route:  /animals/startSession/animalId"));
+            console.log (chalk.redBright(error));
+            return response.status(500).send(error);
         })
     })
 

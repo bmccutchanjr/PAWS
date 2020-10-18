@@ -99,8 +99,8 @@ function verifyWalkPermission (peopleId, animalId)
             if (result.length != 0)
             {   reject (
                     {   status: 400,
-                        message: "Opps!  You can't have two animals out at once time.  Please make sure you have selected "
-                                + "the 'Stop Walking' option to end any active sessions you have started."
+                        message: "Opps!  You can't have two animals out at once time.  Please make sure you ended any "
+                                + "sessions you have started."
                     });
                 throw ("break chain");
             }
@@ -358,6 +358,34 @@ const db =
         })
     },
 
+//  05  begins
+    hasOpenSession (peopleId)
+    {   //  Find out if this user has an open session and return a boolean 
+
+        return new Promise ((resolve, reject) =>
+        {
+            const queryString = "select * from Interactions where peopleId=? and end is null;";
+            query (queryString, peopleId)
+            .then(result =>
+            {   //  The results are in...but what are they?
+
+                if (result.length == 0)
+                    resolve (false);
+                else
+                    resolve (true);
+            })
+            .catch(error =>
+            {
+                console.log(chalk.redBright("PAWS ERROR 102"));
+                console.log(chalk.redBright("module:   animals.js"));
+                console.log(chalk.redBright("function: hasOpenSession()"));
+                console.log(chalk.redBright(error));
+                reject(error);
+            })
+        })
+    },
+//  05  ends
+
     insertWalkingNotes (user, animal, data)
     {   //  execute an SQL query to insert the notes into the database...
 
@@ -395,20 +423,30 @@ const db =
         return new Promise ((resolve, reject) =>
         {
             verifyWalkPermission (peopleId, animalId)
-            .then(result =>
-            {
-                resolve (result);
+            .then(_ =>
+            {   //  The result returned by the Promise is not actually important.  verifyWalkPermission() will invoke
+                //  a reject() if the user doesn't have permission, and only invoke a resolve() if they do.  If this
+                //  then-block is invoked, it simply means the user has permission.
+
+                const queryString = "insert into Interactions (peopleId, animalId, start) values (?, ?, now());";
+                return query (queryString, [ peopleId, animalId ]);
+            })
+            .then(_ =>
+            {   //  The result returned by the Promise is not actually importent.  If this then-block is invoked it
+                //  simply means there were no errors.
+
+                resolve ("You're good to go.  Have fun!");
             })
             .catch(error =>
             {
 //  console.log (JSON.stringify(error, null, 2));
-                if (error != "break chain")
-                {   //  The "break chain" error is NOT AN ERROR.  Despite what Dustin and Trilogy told us, .then() DOES NOT HAVE
-                    //  TO RETURN A VALUE to continue the chain.  .then() IMPLICITLY returns a value nad any value returned in
-                    //  .then() is implicitly a Promise object.  That means the Promise chain will just continue to the end, as
-                    //  long as there isn't' error.  There is no way to break out of a Promise chain before all .then() block,
-                    //  short of an error.  So I throw an error!
-
+//  04                  if (error != "break chain")
+//  04                  {   //  The "break chain" error is NOT AN ERROR.  Despite what Dustin and Trilogy told us, .then() DOES NOT HAVE
+//  04                      //  TO RETURN A VALUE to continue the chain.  .then() IMPLICITLY returns a value nad any value returned in
+//  04                      //  .then() is implicitly a Promise object.  That means the Promise chain will just continue to the end, as
+//  04                      //  long as there isn't' error.  There is no way to break out of a Promise chain before all .then() block,
+//  04                      //  short of an error.  So I throw an error!
+//  04  
                     if (!error.status)
                     {
                         console.log(chalk.redBright("PAWS ERROR 102"));
@@ -417,13 +455,34 @@ const db =
                         console.log(chalk.redBright(error));
                     }
                     reject(error);
-                }
+//  04                  }
             })
         })
     },
 
     stopSession (peopleId, animalId)
-    {   //  Update InteractionLog with the time this session ended
+    {   //  Update Interactions with the time this session ended
+
+        return new Promise ((resolve, reject) =>
+        {
+            const queryString = "update Interactions set end=now() "
+                              + "where peopleId=? and animalId=? and end is null;";
+            query (queryString, [ peopleId, animalId ])
+            .then(_ =>
+            {   //  The result returned by the Promise is not actually importent.  If this then-block is invoked it
+                //  simply means there were no errors.
+
+                resolve ("all good");
+            })
+            .catch(error =>
+            {
+                console.log(chalk.redBright("PAWS ERROR 102"));
+                console.log(chalk.redBright("module:   animals.js"));
+                console.log(chalk.redBright("function: stopWalking()"));
+                console.log(chalk.redBright(error));
+                reject(error);
+            })
+        })
     }
 //  01  ends
 }
