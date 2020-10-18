@@ -1,11 +1,45 @@
+:root
+{   --page-width: 80%;
+}
+
+header
+{
+    /* background: red; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 50px;
+    margin: 0px;
+    padding: 15px;
+    /* text-align: center; */
+    width: 100%;
+}
+
+.timer
+{
+    background-color: black;
+    border: var(--section-border);
+    border-color: white;
+    border-radius: var(--div-border-radius);
+    color: white;
+    /* display: "inline-block"; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: bold;
+    height: 40px;
+    min-height: 40px;
+    margin: 0px auto;
+    padding: var(--div-padding);
+    text-align: center;
+    width: 150px;
+}
+
 /******************************************************************************************************/
 /* settings for page specific menu options (hide the options by default)                              */
 /*                                                                                                    */
-
-:root
-{
-    --page-width: 80%;
-}
 
 #post-color-comments,
 #post-public-comments,
@@ -13,8 +47,7 @@
 #start-walking,
 #stop-walking,
 #walk-separator
-{
-    display: none;
+{   display: none;
 }
 
 /******************************************************************************************************/
@@ -22,22 +55,19 @@
 /*                                                                                                    */
 
 .restriction-wrapper
-{   
-    position: fixed;
+{   position: fixed;
     left: 0px;
     bottom: 75px;
     width: 100%;
 }
 
 .restriction-text
-{   
-    margin: 0px auto;
+{   margin: 0px auto;
     width: var(--page-width);
 }
 
 .restriction
-{
-    background: rgba(255,255,255,0.5);
+{   background: rgba(255,255,255,0.5);
     border: 1px solid black;
     border-radius: 3px;
     margin-bottom: 2px;
@@ -53,7 +83,8 @@
     .outer-wrapper
     {
         /* background: white; */
-        position: fixed;
+        /* position: fixed; */
+        position: absolute;
         left: 0px;
         top: 100px;
         width: 100%;
@@ -69,8 +100,7 @@
     }
 
     .note-frame
-    {
-        border: none;
+    {   border: none;
         width: 100%;
     }
 
@@ -90,11 +120,12 @@ html
 {   display: flex;
     flex-direction: column;
     height: auto;
-    max-height: 100%;
+    /* max-height: 100%; */
     min-height: 100%;
     margin: 0px auto;
     margin-bottom: -65px;
-    width: 95vw;
+    /* width: 95vw; */
+    width: var(--page-width);
 }
 
 .push
@@ -107,7 +138,7 @@ footer
     border-radius: 5px;
     color: black;
     /* display: flex; */
-    flex-direction: column;
+    /* flex-direction: column; */
     justify-content: space-between;
     height: 50px;
     margin: 10px auto 5px;

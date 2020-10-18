@@ -50,7 +50,8 @@ function addMenu ()
                 {   "class": "menu-option",
                     "href": "#",
                     "id": "start-walking",
-                    "innerText": "Start Walking"
+                    "innerText": "Start Walking",
+                    "onclick": "closeSidebar();startWalk(event);"
                 },
                 menu);
 
@@ -58,7 +59,8 @@ function addMenu ()
                 {   "class": "menu-option",
                     "href": "#",
                     "id": "stop-walking",
-                    "innerText": "Stop Walking"
+                    "innerText": "Stop Walking",
+                    "onclick": "closeSidebar();stopWalk(event);"
                 },
                 menu);
 
@@ -147,6 +149,79 @@ function postNote (event)
     addNoteFrame();
     window.iframe.location = "cagepage/postNotes.html";
 }
+
+//  01  begins
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//  Various functions that to start/stop walks and timer
+
+const timer =
+{   interval: undefined,
+    startTime: undefined
+}
+
+function addWalkTimer ()
+{   //  Add a <div> to the DOM for a timer, and initialize an interval
+
+    const header = document.getElementsByTagName("header")[0];
+
+    const div = configureElement ("div",
+        {
+            "class": "timer",
+            "id": "timer",
+            "innerText": "00:00:00"
+        },
+        header);
+
+        timer.startTime = Date.now();
+
+    timer.interval = setInterval (() =>
+    {   //  Update the innerText property of the element "timer" with the number of hours, minutes and seconds since
+        //  this walk began
+
+        let timeDiff = Date.now() - timer.startTime;
+        timeDiff = Math.floor (timeDiff / 1000);
+        const seconds = (timeDiff % 60).toString().padStart(2, "0");
+        const minutes = (Math.floor(timeDiff / 60) % 60).toString().padStart(2, "0");
+        const hours = (Math.floor(timeDiff / 3600)).toString().padStart(2, "0");
+
+        document.getElementById("timer").innerText = hours + ":" + minutes + ":" + seconds;
+
+    }, 1000)
+}
+
+function startWalk (event)
+{   event.preventDefault();
+    
+    const target = event.target;
+    target.style.display = "none";
+
+    document.getElementById("stop-walking").style.display = "block";
+
+    //  Start a walk
+
+    addWalkTimer();
+}
+
+function stopWalk (event)
+{   event.preventDefault();
+    
+    const target = event.target;
+    target.style.display = "none";
+
+    document.getElementById("start-walking").style.display = "block";
+
+    //  Start a walk
+
+    document.getElementById("timer").remove();
+
+    //  Stop the interval...
+    clearInterval(timer.interval)
+
+    playAudio (ting);
+}
+//  01  ends
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////

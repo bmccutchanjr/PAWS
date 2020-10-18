@@ -268,7 +268,30 @@ create table if not exists AdditionalPermissions
     foreign key (restrictId) references Restrictions (restrictId)
 );
 
--- create table if not exists AnimalPrivledges
+create table if not exists AnimalPrivledges
+(   --  Explicitly permit/deny a person and an animal.  This overrides all other permission settings.
+
+    peopleId        smallint (6)
+                    not null,
+
+    animalId        smallint (6)
+                    not null,
+
+    permit          boolean
+                    not null
+                    default false,
+
+    adminId         smallint (6)
+                    not null,
+
+    added           datetime
+                    not null,
+
+    primary key (peopleId, animalId),
+    foreign key (adminId) references People (peopleId),
+    foreign key (animalId) references Animals (animalId),
+    foreign key (peopleId) references People (peopleId)
+);
 
 create table if not exists AdminPrivledges
 (
@@ -319,7 +342,7 @@ create table if not exists Interactions
                     not null,
 
     end             datetime
-                    not null,
+                    default null,
 
     primary key (id),
     foreign key (peopleId) references People (peopleId),

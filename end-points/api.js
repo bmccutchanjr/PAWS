@@ -99,8 +99,7 @@ if (request.user)
 
     .post("/animals/postWalkingNotes/:animalId", (request, response) =>
     {   //  The user has submitted walking notes...put them in the database...
-//  console.log (JSON.stringify(request.body, null, 2));
-//  blowUp();
+
         if (!request.user)
             return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
@@ -118,6 +117,45 @@ if (request.user)
             return response.status(500).send(error);
         })
     })
+
+//  01  begins
+    .get("/animals/startSession/:animalId", (request, response) =>
+    {
+//  I'm developing and testing this route with PostMan (its quicker and easier than using with the web page) so I can't reject
+//  requests if the request.user doesn'o't exist yet.  I don't think PostMan can authenticate.  I want to eventually...
+//          if (!request.user)
+//              return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
+const peopleId = 3;
+
+        animals.startSession (peopleId, request.params.animalId)
+        .then(results =>
+        {
+response.status(200).send(results);
+        })
+        .catch(error =>
+        {
+//  Not everything that I rejected is a 500 error.  Most are authorization issues.  Test that and send an appropriate message
+//  if error.status !=500
+//      sendfile
+//  else 
+            console.log (chalk.redBright("PAWS ERROR 102"));
+            console.log (chalk.redBright("module: api.js"));
+            console.log (chalk.redBright("route:  /animals/startSession/animalId"));
+            console.log (chalk.redBright(error));
+            return response.status(500).send(error);
+        })
+    })
+    
+    .get("/animals/stopSession/:session", (request, response) =>
+    {
+//  I'm developing and testing this route with PostMan (its quicker and easier than using testing with the web
+//  page) so I can't reject requests if the request.user does not exist yet.  I want to eventually...
+//          if (!request.user)
+//              return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
+
+response.status(200).send("bounce back!");
+    })
+    //  01  ends
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////

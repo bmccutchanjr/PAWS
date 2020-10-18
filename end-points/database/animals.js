@@ -3,6 +3,10 @@
 const chalk = require("chalk");
 const connection = require("./connect.js");
 
+//  Following are several functions used by the db object.  They are not exported by this module and as such are "private".
+//  They perform important functions for the module (some are invoked in multiple places) but should not be accessed directly
+//  by other modules.
+
 function daysDiff (today, year, month, day)
 {   //  MySQL can do a lot, but it seems one of the things it can't do is math on dates.  There is no built-in function to
     //  calculate the number of days between dates.  MySQL requires similar math as JavaScript, plus you have to embed it in
@@ -21,7 +25,7 @@ function daysDiff (today, year, month, day)
     return diff / 24 / 60 / 60 / 1000;
 }
 
-function select (query, parameters)
+function query (queryString, parameters)
 {   //  This application execute several 'select' statements to retrieve data from the server, and
     //  for the most part, they all look alike.  A connection must be made to the MySQL server, a
     //  query must be submitted and the resulting data set must be processed.  The only difference
@@ -30,13 +34,183 @@ function select (query, parameters)
 
     return new Promise ((resolve, reject) =>
     {
-        connection.query (query, parameters, (error, result) =>
+        connection.query (queryString, parameters, (error, result) =>
         {   if (error) reject (error);
 
             resolve (result);
         });
     })
 }
+
+function verifyWalkPermission (peopleId, animalId)
+{   //  Verify this person is allowed to have this animal out of its cage...
+    //
+    //  There are several conditions to check and none of them can be conbined into a single query and so I have a very
+    //  long Promise chain.  But it is not always necessary to check every condition, or execute every .then() block in
+    //  the chain.  Unfortunately a Promise chain has no way to short cut when a condition results in a definitive answer.
+    //
+    //  It doen't seem possible to write a bunch of discrete functions, because I still need to use a Promise or callback
+    //  to wait for the results of one condition before checking the next.  I don't want the thrid condition to permit a
+    //  session if the first or second would deny it.
+    //
+    //  The only solution to that seems to be to throw an error!
+    //
+    //  Maybe instead of one long chain, I need to nest Promises?  But that's a problem for another time.  It works now
+    //  and that's good enough for now.  But nested Promises might be a better way to go and I want to understand how these
+    //  things work better...so it is something I will look into.  But in this case I would be nesting Promises four or maybe
+    //  five deep (some of those nested Promises would be chains) -- not much better than just using callbacks.
+    //
+    //  The "break chain" error is NOT AN ERROR.  Despite what Dustin and Trilogy told us, .then() DOES NOT HAVE TO RETURN A
+    //  VALUE to continue the chain.  .then() IMPLICITLY returns a value and any value returned in .then() is implicitly a
+    //  Promise object.  That means the Promise chain will just continue to the end, as long as there isn't an error, which may
+    //  actually be an error itself.  There is no other way to break out of a Promise chain before all .then() blocks execute,
+    //  short of an error.
+    //
+    //  So...I throw an error!
+    //
+    //  Very clunky way to handle it, but this is JavaScript after all.
+
+    const ERROR_401_MESSAGE = "Opps!  It appears you don't have permisssion to walk this animal.  Contact "
+                            + "the behavior group if you believe this to be a mistake.";
+
+    //  First, check if there are any sessions still active for this animal
+
+    return new Promise ((resolve, reject) =>
+    {
+        const queryString = "select * from Interactions where animalId=? and end is null;";
+        query (queryString, animalId)
+        .then(result =>
+        {
+            if (result.length != 0)
+            {   reject (
+                    {   status: 400,
+                        message: "Are you sure?  Our records indicate this animal is out with another volunteer at the moment."
+                    });
+                throw ("break chain");
+            }
+
+            //  The animal appears to be available, check if there are any sessions still active for the user
+
+            const queryString = "select * from Interactions where peopleId=? and end is null;";
+            return query (queryString, peopleId);
+        })
+        .then(result =>
+        {
+            if (result.length != 0)
+            {   reject (
+                    {   status: 400,
+                        message: "Opps!  You can't have two animals out at once time.  Please make sure you have selected "
+                                + "the 'Stop Walking' option to end any active sessions you have started."
+                    });
+                throw ("break chain");
+            }
+
+            //  The user is also available...now let's start checking permissions
+
+            const queryString = "select permit from AnimalPrivledges where peopleId=? and animalId=?;";
+            return query (queryString, [ peopleId, animalId ]);
+        })
+        .then(result =>
+        {
+            if (result.length != 0)
+            {   
+                if (!result[0].permit)
+                {   reject ( { status: 401, message: ERROR_401_MESSAGE } );
+                    throw ("break chain");
+                }
+
+                if (result[0].permit)
+                {   resolve ("all good!");
+                    throw ("break chain");
+                }
+            }
+
+            //  The user has no specific permissions or restrictions with this animal.
+            //  Do they have the necessary permission for animals of this color?
+
+            const queryString = "select c.color from Animals a "
+                        + "left join ColorPermissions c on a.color=c.color "
+                        + "where a.animalId=? and c.peopleId=?;";
+            return query (queryString, [ animalId, peopleId ]);
+        })
+        .then(result =>
+        {
+            if ((result.length == 0) || (!result[0].color))
+            {   reject ( { status: 401, message: ERROR_401_MESSAGE } );
+                throw ("break chain");
+            }
+
+            //  The user is allowed to walk with animals of this color.
+
+            //  But, does this animal have any testable AdditionalRestrictions?
+            //
+            //  Seems this can't be done with one query regardless of what the docs say...the second join IS ALWAYS TREATED
+            //  LIKE AN INNER JOIN, data must exist in all three tables or nothing is retrieved.  But a left join works when
+            //  there are just two tables, so it seems like I have to do this in steps...
+
+//  select ar.animalId, r.restriction, ap.peopleId from AnimalRestrictions ar 
+//  left outer join Restrictions r on ar.restrictId=r.restrictId 
+//  left outer join AdditionalPermissions ap on r.restrictId=ap.restrictId 
+//  where ar.animalId=23 and r.testable=true and ap.peopleId=2;
+
+            const queryString = "select ar.restrictId, r.restriction from AnimalRestrictions ar "
+                        + "left join Restrictions r on ar.restrictId=r.restrictId "
+                        + "where ar.animalId=? and r.testable=true;";
+            return query (queryString, animalId);
+        })
+        .then(result =>
+        {
+            //  No restrictions?  This user is permitted to walk this animal
+            if (result.length == 0)
+            {
+                resolve ("all good!");
+                throw ("break chain");
+            }
+
+            //  That's not enough.  The animal has restrictions, does the user have the cooresponding permission?
+
+            const queryString = "select restrictId from AdditionalPermissions "
+                        + "where peopleId=? and restrictId=?;";
+            return query (queryString, [ peopleId, result[0].restrictId ]);
+        })
+        .then(result =>
+        {
+            //  No restriction means no permission
+            if (result.length == 0)
+            {   reject ( { status: 401, message: ERROR_401_MESSAGE } );
+                throw ("break chain");
+            }
+
+            //  That's it...if we got this far the user is indeed permitted to walk with this animal.  Next we need to
+            //  insert a row in Interactions, but that seems easiest to do that from api.js as there is more than one
+            //  place in this function where we determined the user has the necessary permission
+
+            resolve ("good to go!  have fun!");
+        })
+        .catch(error =>
+        {
+            if (error != "break chain")
+            {   //  The "break chain" error is NOT AN ERROR.  Despite what Dustin and Trilogy told us, .then() DOES NOT HAVE
+                //  TO RETURN A VALUE to continue the chain.  .then() IMPLICITLY returns a value nad any value returned in
+                //  .then() is implicitly a Promise object.  That means the Promise chain will just continue to the end, as
+                //  long as there isn't' error.  There is no way to break of a Promise chain before all .then() block, short
+                //  of an error.  So I throw an error!
+
+                console.log(chalk.redBright("PAWS ERROR 102"));
+                console.log(chalk.redBright("module:   animals.js"));
+                console.log(chalk.redBright("function: verifyWalkPermission()"));
+                console.log(chalk.redBright(error));
+                reject(error);
+            }
+        })
+    })
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//  Following is the db object that is exported by this module.  It is a collection of "public" functions
+//  that are available to other modules.
 
 const db =
 {
@@ -45,7 +219,7 @@ const db =
         //  same page.  This function retrieves all active animals at the shelter of the indicated
         //  species.
 
-        select ("select a.animalId, name, a.color, cage_num, year(start), month(start), day(start), sum((time_to_sec(end) - time_to_sec(start)) / 60) as duration "
+        query ("select a.animalId, name, a.color, cage_num, year(start), month(start), day(start), sum((time_to_sec(end) - time_to_sec(start)) / 60) as duration "
                 + "from Animals a " 
                 + "left join Colors c on a.color=c.color "
                 + "left join Interactions i on a.animalId=i.animalId "
@@ -118,7 +292,7 @@ const db =
     getAnimal: (animalId, callback) =>
     {   //  Get all of the data on the animal indicated.
 
-        select ("select * from Animals a "
+        query ("select * from Animals a "
               + "left join AnimalRestrictions ar on a.animalId=ar.animalId "
               + "left join Restrictions r on ar.restrictId=r.restrictId "
               + "where a.animalId=?;", animalId)
@@ -135,7 +309,7 @@ const db =
     getInteraction: (params, callback) =>
     {   //  Get all of the data on the animal indicated.
 
-        select ("select a.name, year(start), month(start), day(start), hour(start), minute(start), (time_to_sec(i.end) - time_to_sec(i.start)) / 60 as duration, p.surname, p.given "
+        query ("select a.name, year(start), month(start), day(start), hour(start), minute(start), (time_to_sec(i.end) - time_to_sec(i.start)) / 60 as duration, p.surname, p.given "
               + "from Interactions i "
               + "left join Animals a on i.animalId=a.animalId "
               + "left join People p on i.peopleId=p.peopleId "
@@ -159,7 +333,7 @@ const db =
             let where = "where w.animalId=? ";
             if (!allNotes) where += "and w.public=true ";
 
-            const query = "select a.name, p.surname, p.given, w.created, w.note from WalkingNotes w "
+            const queryString = "select a.name, p.surname, p.given, w.created, w.note from WalkingNotes w "
                         + "left join Animals a "
 	                    + "on w.animalId=a.animalId "
                         + "left join People p "
@@ -167,7 +341,7 @@ const db =
                         + where
                         + "order by w.created desc;";
 
-            select (query, animal)
+            query (queryString, animal)
             .then(results =>
             {   //  ...and return the results of the query
 
@@ -195,8 +369,8 @@ const db =
             const public = data.public;
             const note = data.note;
 
-            const query = "insert into WalkingNotes (peopleId, animalId, color, public, created, note) values (?, ?, ?, ?, now(), ?);"
-            select (query, [ user, animal, color, public, note ])
+            const queryString = "insert into WalkingNotes (peopleId, animalId, color, public, created, note) values (?, ?, ?, ?, now(), ?);"
+            query (queryString, [ user, animal, color, public, note ])
             .then(results =>
             {   //  MySQL doesn't really return anything important if this operation was successful, but pass the result 
                 //  object back to the end-point handler any way.
@@ -212,7 +386,46 @@ const db =
                 reject(error);
             })
         })
+    },
+
+//  01  begins
+    startSession (peopleId, animalId)
+    {   //  Verify that the individual has authority to walk with this animal, and start a walking session is they do
+
+        return new Promise ((resolve, reject) =>
+        {
+            verifyWalkPermission (peopleId, animalId)
+            .then(result =>
+            {
+                resolve (result);
+            })
+            .catch(error =>
+            {
+//  console.log (JSON.stringify(error, null, 2));
+                if (error != "break chain")
+                {   //  The "break chain" error is NOT AN ERROR.  Despite what Dustin and Trilogy told us, .then() DOES NOT HAVE
+                    //  TO RETURN A VALUE to continue the chain.  .then() IMPLICITLY returns a value nad any value returned in
+                    //  .then() is implicitly a Promise object.  That means the Promise chain will just continue to the end, as
+                    //  long as there isn't' error.  There is no way to break out of a Promise chain before all .then() block,
+                    //  short of an error.  So I throw an error!
+
+                    if (!error.status)
+                    {
+                        console.log(chalk.redBright("PAWS ERROR 102"));
+                        console.log(chalk.redBright("module:   animals.js"));
+                        console.log(chalk.redBright("function: startWalking()"));
+                        console.log(chalk.redBright(error));
+                    }
+                    reject(error);
+                }
+            })
+        })
+    },
+
+    stopSession (peopleId, animalId)
+    {   //  Update InteractionLog with the time this session ended
     }
+//  01  ends
 }
 
 module.exports = db;
