@@ -31,3 +31,5 @@
 103     Required data was not passed to the server in POST data
 
 104     Password does not meet minimum requirements
+
+105     An unknown message was recieved from a child process

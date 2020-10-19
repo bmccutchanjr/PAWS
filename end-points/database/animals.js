@@ -416,7 +416,6 @@ const db =
         })
     },
 
-//  01  begins
     startSession (peopleId, animalId)
     {   //  Verify that the individual has authority to walk with this animal, and start a walking session is they do
 
@@ -431,43 +430,41 @@ const db =
                 const queryString = "insert into Interactions (peopleId, animalId, start) values (?, ?, now());";
                 return query (queryString, [ peopleId, animalId ]);
             })
-            .then(_ =>
-            {   //  The result returned by the Promise is not actually importent.  If this then-block is invoked it
-                //  simply means there were no errors.
+            .then(result =>
+            {   //  The result is actually vital...there's no user data in it but rather the status of the insert statement
+                //  with the primary key of the row just added.  It would be much simpler to resolve the value of the key
+                //  but that might be a 3-digit number, which ExpressJS interprets as a status code rather than data.  Which
+                //  is bad enough.  ExpressJS logs messages about a deprecated process (which I would be happy ignoring) but
+                //  if the value is not a status code ExpressJS understands, it blows up.
+                //
+                //  It's a brain-dead assumption on the part of the ExpressJS developers to assume my datais somehow integral
+                //  to their code and then run away with it.  But I guess that's what you get when you use a framework.
 
-                resolve ("You're good to go.  Have fun!");
+                resolve (result);
             })
             .catch(error =>
             {
-//  console.log (JSON.stringify(error, null, 2));
-//  04                  if (error != "break chain")
-//  04                  {   //  The "break chain" error is NOT AN ERROR.  Despite what Dustin and Trilogy told us, .then() DOES NOT HAVE
-//  04                      //  TO RETURN A VALUE to continue the chain.  .then() IMPLICITLY returns a value nad any value returned in
-//  04                      //  .then() is implicitly a Promise object.  That means the Promise chain will just continue to the end, as
-//  04                      //  long as there isn't' error.  There is no way to break out of a Promise chain before all .then() block,
-//  04                      //  short of an error.  So I throw an error!
-//  04  
-                    if (!error.status)
-                    {
-                        console.log(chalk.redBright("PAWS ERROR 102"));
-                        console.log(chalk.redBright("module:   animals.js"));
-                        console.log(chalk.redBright("function: startWalking()"));
-                        console.log(chalk.redBright(error));
-                    }
-                    reject(error);
-//  04                  }
+                if (!error.status)
+                {
+                    console.log(chalk.redBright("PAWS ERROR 102"));
+                    console.log(chalk.redBright("module:   animals.js"));
+                    console.log(chalk.redBright("function: startWalking()"));
+                    console.log(chalk.redBright(error));
+                }
+
+                reject(error);
             })
         })
     },
 
-    stopSession (peopleId, animalId)
+    stopSession (sessionId)
     {   //  Update Interactions with the time this session ended
 
         return new Promise ((resolve, reject) =>
         {
             const queryString = "update Interactions set end=now() "
-                              + "where peopleId=? and animalId=? and end is null;";
-            query (queryString, [ peopleId, animalId ])
+                              + "where id=? and end is null;";
+            query (queryString, sessionId)
             .then(_ =>
             {   //  The result returned by the Promise is not actually importent.  If this then-block is invoked it
                 //  simply means there were no errors.
@@ -484,7 +481,6 @@ const db =
             })
         })
     }
-//  01  ends
 }
 
 module.exports = db;

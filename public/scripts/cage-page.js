@@ -36,6 +36,28 @@ function enableOptions ()
         document.getElementById ("start-walking").style.display = "block";
         document.getElementById ("walk-separator").style.display = "block";
     }
+
+    AJAX_2 ("GET", "/api/people/hasOpenSession")
+    .then(result =>
+    {
+        if (result.data != "false")
+        {   //  If 'result' is the boolean value false, there is no open session and nothing to do.  But if
+            //  'result' is not false it is the primary key of the record in Interactions representing the
+            //  session.
+
+            const data = JSON.parse(result.data);
+
+            document.getElementById ("start-walking").style.display = "none";
+            const stop = document.getElementById ("stop-walking")
+            stop.setAttribute ("sessionId", data[0].id);
+            stop.style.display = "block";
+        }
+    })
+    .catch(error =>
+    {
+        if (error.status == 500)
+            modal (error.data);
+    })
 }
 
 function addMenu ()
@@ -180,14 +202,18 @@ function addWalkTimer ()
     {   //  Update the innerText property of the element "timer" with the number of hours, minutes and seconds since
         //  this walk began
 
-        let timeDiff = Date.now() - timer.startTime;
-        timeDiff = Math.floor (timeDiff / 1000);
-        const seconds = (timeDiff % 60).toString().padStart(2, "0");
-        const minutes = (Math.floor(timeDiff / 60) % 60).toString().padStart(2, "0");
-        const hours = (Math.floor(timeDiff / 3600)).toString().padStart(2, "0");
+        const timeDiv = document.getElementById("timer");
+        if (timeDiv)
+        {   //  The timer is not guaranteed to be in the DOM while this runs
 
-        document.getElementById("timer").innerText = hours + ":" + minutes + ":" + seconds;
+            let timeDiff = Date.now() - timer.startTime;
+            timeDiff = Math.floor (timeDiff / 1000);
+            const seconds = (timeDiff % 60).toString().padStart(2, "0");
+            const minutes = (Math.floor(timeDiff / 60) % 60).toString().padStart(2, "0");
+            const hours = (Math.floor(timeDiff / 3600)).toString().padStart(2, "0");
 
+            document.getElementById("timer").innerText = hours + ":" + minutes + ":" + seconds;
+        }
     }, 1000)
 }
 
@@ -197,29 +223,66 @@ function startWalk (event)
     const target = event.target;
     target.style.display = "none";
 
-    document.getElementById("stop-walking").style.display = "block";
+    AJAX_2 ("GET", "/api/animals/startSession/" + getCookie ("animalId"))
+    .then(result =>
+    {
+        //  add a timer to the DOM and setInterval() to time the session
 
-    //  Start a walk
+        addWalkTimer();
 
-    addWalkTimer();
+        //  hide/display walking menu items
+
+        const data = JSON.parse(result.data);
+
+        document.getElementById("start-walking").style.display = "none";
+        const stop = document.getElementById("stop-walking");
+        stop.setAttribute ("sessionId", data.insertId);
+        stop.style.display = "block";
+
+        //  and play audio
+
+        playAudio (ting);
+    })
+    .catch(error =>
+    {
+        modal (error.data);
+        playAudio (buzz);
+    })
 }
 
 function stopWalk (event)
 {   event.preventDefault();
-    
-    const target = event.target;
-    target.style.display = "none";
 
-    document.getElementById("start-walking").style.display = "block";
+    //  End a walking session...
 
-    //  Start a walk
+    AJAX_2 ("GET", "/api/animals/stopSession/" + document.getElementById("stop-walking").getAttribute("sessionId"))
+    .then(_ =>
+    {
+        const timeDiv = document.getElementById("timer");
+        if (timeDiv)
+        {   //  If the timer is in the DOM (and it may not be if the user reloaded the page or navigated away and then back)
+            //  remove the timer and clearInterval()
 
-    document.getElementById("timer").remove();
+            timeDiv.remove();
+            clearInterval(timer.interval);
+        }
 
-    //  Stop the interval...
-    clearInterval(timer.interval)
+        //  hide/display walking menu items
 
-    playAudio (ting);
+        document.getElementById("start-walking").style.display = "block";
+        const stop = document.getElementById("stop-walking");
+        stop.removeAttribute ("sessionId");
+        stop.style.display = "none";
+
+        //  and play audio
+
+        playAudio (ting);
+    })
+    .catch(error =>
+    {
+        modal (error);
+        playAudio (buzz);
+    })
 }
 //  01  ends
 
@@ -279,17 +342,15 @@ function buildPage ()
 function getAnimalData (animalId)
 {   //  Retrieve data from server for the selected animal
 
-    AJAX ("GET", "/api/animals/get/" + animalId, xml =>
+    AJAX_2 ("GET", "/api/animals/get/" + animalId)
+    .then(result =>
     {
-        if (xml.status == 200)
-        {
-            dataset = JSON.parse(xml.responseText);
-            buildPage();
-        }
-        else
-        {
-            modal (xml.responseText);
-        }
+        dataset = JSON.parse(result.data);
+        buildPage();
+    })
+    .catch(error =>
+    {
+        modal (error);
     });
 }
 
@@ -322,7 +383,7 @@ window.addEventListener ("message", event =>
             break;
         }
         default:
-        {   console.log ("PAWS ERROR 103");
+        {   console.log ("PAWS ERROR 105");
             console.log ("An unknown message was recieved from a child process");
             console.log (data);
             break;

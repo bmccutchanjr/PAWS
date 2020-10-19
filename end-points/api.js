@@ -147,14 +147,12 @@ if (request.user)
         })
     })
     
-    .get("/animals/stopSession/:animalId", (request, response) =>
+    .get("/animals/stopSession/:sessionId", (request, response) =>
     {
         if (!request.user)
             return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
 
-        const peopleId = request.user.peopleId;
-
-        animals.stopSession (peopleId, request.params.animalId)
+        animals.stopSession (request.params.sessionId)
         .then(results =>
         {   //  Any result stopSession() returns (actually resolves) are not important if it did not fail.  If this
             //  then-block is invoked, there were no errors
@@ -336,23 +334,25 @@ if (request.user)
     .get("/people/hasOpenSession", (request, response) =>
     {
         if (!request.user)
-            return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
+//              return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
+            return response.status(200).send(false);
 
         const peopleId = request.user.peopleId;
 
         people.hasOpenSession (peopleId)
         .then(results =>
-        {   
+        {
             response.status(200).send(results);
         })
         .catch (error =>
         {
+// console.log (JSON.stringify(error, null, 2));
             console.log (chalk.redBright("PAWS ERROR 102"));
             console.log (chalk.redBright("module: api.js"));
             console.log (chalk.redBright("route:  /people/hasOpenSession"));
             console.log (chalk.redBright(error));
             return response.status(500).send(error);
-        })
+       })
     })
 
     .get("/people/isAdmin", (request, response, next) =>

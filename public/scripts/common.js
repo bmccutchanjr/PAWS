@@ -85,6 +85,116 @@ function AJAX (method, route, result, data)
     })
 }
 
+//  01  begins
+//  01  function AJAX_2 (method, route, result, data)
+function AJAX_2 (method, route, data)
+{   //  Gosh, but I'm writing this code a lot!  And I'm going to need to write it a lot more!  That strongly
+    //  suggests a function call...
+
+    //  AJAX works just fine.  Passing a function to execute worked, but because API requests are asynchronous AJAX
+    //  needs to implement a Promise.  But that function obviated a need to handle the resolve() and reject() in my
+    //  code, and I was ignoring them.  AJAX function calls did not have .then() and .catch() blocks -- and that's a
+    //  syntax error.  It may not cause a parser/compiler to throw an error now, but it will someday.  I should just
+    //  get used to doing it right.
+    //
+    //  But AJAX() is invoked A LOT, in every front-end module I've written.  There are a dozen modules and each one
+    //  makes multiple calls to AJAX().  That's a lot of code to change...
+
+    //  Parameters 'method', 'route' and 'function' are required.
+    //
+    //      'method' is a string value containing the HTTP method to use.
+    //
+    //      'route' is a string value containing the route or end-point to request
+    //
+    //      'result is a function used to process the result returned from the server
+    //
+    //  Parameter 'data' is an optional parameter that contains the request data.  'data' is required if
+    //  method == 'POST'.
+
+    return new Promise ((resolve, reject) =>
+    {
+        //  Because the function call is expecting a Promise, it needs a reject or resolve, not a simple boolean
+        //  value.  Reject and resolve are only available in the Promise's callback and so the parameters must be
+        //  validated in callback.
+
+        if (typeof method != "string") reject ("'method' is not a string.");
+        method = method.toUpperCase ();
+        if ((method != "GET") && (method != "POST")) reject ("'method' is not a supported HTTP method.");
+
+        if (typeof route != "string") reject ("'route' is not a string.");
+
+//  01          if (typeof result != "function") reject ("'result' is not a function.");
+
+        let postData = "";
+
+        if (method == "POST")
+        {   if (data == undefined) reject ("'request data' is required for POST requests.");
+            if (typeof data != "object") reject ("'request data' is not JSON object.");
+
+            let post = [];
+
+            try
+            {   data.forEach (d =>
+                {
+                    Object.entries (d).forEach (entry =>
+                    {
+                        post.push (entry[0] + "=" + entry[1]);
+                    });
+                })
+            }
+            catch (error)
+            {   //  This is not actually an error.  The data passed to this function is either an array or an object.  I
+                //  can iterate an array with .forEach(), but JavaScript will throw an error if I try to use it on an object.
+                //  Use .forAll() with objects.
+                //
+                //  Simply put, if JavaScript throws an error when I try to use .forEach() I have an object and I
+                //  want to use this code.
+                
+                Object.entries (data).forEach (entry =>
+                {
+                    post.push (entry[0] + "=" + entry[1]);
+                });
+            }
+
+            postData = post.join ("&");
+        }
+
+        const xml = new XMLHttpRequest ();
+
+        xml.open (method, route);
+        if (method != "POST")
+            xml.send ();
+        else
+        {
+            xml.setRequestHeader ("Content-Type", "application/x-www-form-urlencoded");
+            xml.send (postData);
+        }
+
+        xml.onreadystatechange = () =>
+        {
+            if (xml.readyState == 4)
+            {   
+                switch (xml.status)
+                {
+                    case 200:
+                    case 204:
+                    case 205:
+                    {
+                        resolve ( { "status": xml.status, "data": xml.responseText } );
+                        break;
+                    }
+                    default:
+                    {
+                        reject ( { "status": xml.status, "data": xml.responseText } );
+                        break;
+                    }
+                }
+            }
+        }
+    })
+}
+//  01  ends
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

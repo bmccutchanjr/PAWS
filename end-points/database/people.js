@@ -647,19 +647,19 @@ const db =
         return new Promise ((resolve, reject) =>
         {
             const queryString = "select * from Interactions where peopleId=? and end is null;";
-            query (queryString, peopleId)
+            select (queryString, peopleId)
             .then(result =>
             {   //  The results are in...but what are they?
 
                 if (result.length == 0)
                     resolve (false);
                 else
-                    resolve (true);
+                    resolve (result);
             })
             .catch(error =>
             {
                 console.log(chalk.redBright("PAWS ERROR 102"));
-                console.log(chalk.redBright("module:   animals.js"));
+                console.log(chalk.redBright("module:   people.js"));
                 console.log(chalk.redBright("function: hasOpenSession()"));
                 console.log(chalk.redBright(error));
                 reject(error);
