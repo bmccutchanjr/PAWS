@@ -1,7 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function AJAX (method, route, result, data)
+//  02  function AJAX (method, route, result, data)
+function AJAX (method, route, success, data)
 {   //  Gosh, but I'm writing this code a lot!  And I'm going to need to write it a lot more!  That strongly
     //  suggests a function call...
 
@@ -16,8 +17,8 @@ function AJAX (method, route, result, data)
     //  Parameter 'data' is an optional parameter that contains the request data.  'data' is required if
     //  method == 'POST'.
 
-    return new Promise ((resolve, reject) =>
-    {
+//  02      return new Promise ((resolve, reject) =>
+//  02      {
         //  Because the function call is expecting a Promise, it needs a reject or resolve, not a simple boolean
         //  value.  Reject and resolve are only available in the Promise's callback and so the parameters must be
         //  validated in callback.
@@ -28,7 +29,8 @@ function AJAX (method, route, result, data)
 
         if (typeof route != "string") reject ("'route' is not a string.");
 
-        if (typeof result != "function") reject ("'result' is not a function.");
+//  02          if (typeof result != "function") reject ("'result' is not a function.");
+        if (typeof success != "function") reject ("parameter 'success()' is not a function.");
 
         let postData = "";
 
@@ -79,10 +81,16 @@ function AJAX (method, route, result, data)
         {
             if (xml.readyState == 4)
             {   
-                resolve (result (xml));
+//  02                  resolve (result (xml));
+                success(xml);
             }
         }
-    })
+
+        xml.onfailure = error =>
+        {
+            modal (error);
+        }
+//  02      })
 }
 
 //  01  begins

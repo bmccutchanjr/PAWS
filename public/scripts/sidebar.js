@@ -7,18 +7,51 @@
 
 //  The API requests used to configure menu options
 
-function checkAdmin ()
+//  02  function checkAdmin ()
+//  02  {   //  Ask the PAWS server if the user has admin privledges and return an appropriate boolean value
+
+//  02      return AJAX ("GET", "/api/people/isAdmin", xml =>
+//  02          {
+//  02              return (xml.responseText == "true") ? true : false;
+//  02          });
+//  02  }
+//  02  begins
+function checkAdmin (success, failure)
 {   //  Ask the PAWS server if the user has admin privledges and return an appropriate boolean value
 
-    return AJAX ("GET", "/api/people/isAdmin", xml =>
-        {
-            return (xml.responseText == "true") ? true : false;
-        });
+    AJAX ("GET", "/api/people/isAdmin", xml =>
+    {
+        if ((xml.status == 200) && (xml.responseText == "true"))
+            success();
+        else
+            failure(xml.responseText);
+    });
 }
+//  02  ends
 
 let isAuthenticated = undefined;
 
-function checkAuthenticated ()
+//  01  function checkAuthenticated ()
+//  01  {   //  Determines if the user is authenticated with the server and return an appropriate boolean value
+//  01  
+//  01       //  Apparently I have to ask the server, so another API request.  Deleting the session cookie is not an automatic
+//  01       //  process performed by the browser.  Maybe it can't, after all the browser doesn't know what the function of
+//  01       //  "cookie.sid" is.  In any case, the cookie persists after logging out so I can't use it's presence to determine
+//  01       //  if the user is authenticated.
+//  01       //
+//  01       //  And I can't just delete the cookie either.  The Logout function is a route and on success, redirects to "/log".
+//  01       //  The original page and its script will no longer exist and there's no way for me to know if "/log" was served because
+//  01       //  the user clicked on the Log Out option or if they hit the browser's back button.
+//  01  
+//  01       if (isAuthenticated != undefined) return isAuthentecated;
+//  01  
+//  01       return AJAX ("GET", "/api/people/isAuthenticated", xml =>
+//  01           {
+//  01               return ((xml.responseText == "true") ? true : false);
+//  01           });
+//  01   }
+//  01  begins
+function checkAuthenticated (success, failure)
 {   //  Determines if the user is authenticated with the server and return an appropriate boolean value
 
     //  Apparently I have to ask the server, so another API request.  Deleting the session cookie is not an automatic
@@ -30,13 +63,21 @@ function checkAuthenticated ()
     //  The original page and its script will no longer exist and there's no way for me to know if "/log" was served because
     //  the user clicked on the Log Out option or if they hit the browser's back button.
 
-    if (isAuthenticated != undefined) return isAuthentecated;
-
-    return AJAX ("GET", "/api/people/isAuthenticated", xml =>
+    if (isAuthenticated == undefined)
+        AJAX ("GET", "/api/people/isAuthenticated", xml =>
         {
-            return ((xml.responseText == "true") ? true : false);
+            if ((xml.status == 200) && (xml.responseText == "true"))
+                success();
+            else
+                failure(xml.responseText);
         });
+    else
+        if (isAuthenticated == true)
+            success();
+        else
+            failure();
 }
+//  01  ends
 
 function checkOptions (options)
 {
@@ -44,34 +85,62 @@ function checkOptions (options)
     //  admin privledges.  The conditions may be true when the page loads, so verify with the server if these
     //  options should be hidden or visible.
 
-    checkAuthenticated ()
-    .then (result =>
-    {
-        if (result)
+//  01      checkAuthenticated ()
+//  01       .then (result =>
+//  01       {
+//  01           if (result)
+//  01           {
+//  01               document.getElementById ("menu-login").style.display = "none";
+//  01               document.getElementById ("menu-logout").style.display = "inline-block";
+//  01  
+//  01               if (options.MyProfile != false)
+//  01                   document.getElementById ("menu-profile").style.display = "inline-block";
+//  01           }
+//  01       })
+//  01       .catch (error =>
+//  01       {
+//  01           console.log (error);
+//  01       });
+//  01  begins
+    checkAuthenticated (
+        () =>
         {
+            isAuthenticated = true;
+
             document.getElementById ("menu-login").style.display = "none";
             document.getElementById ("menu-logout").style.display = "inline-block";
 
             if (options.MyProfile != false)
                 document.getElementById ("menu-profile").style.display = "inline-block";
-        }
-    })
-    .catch (error =>
-    {
-        console.log (error);
-    });
-
-    if (options.AdminFunctions != false)
-        checkAdmin ()
-        .then (result =>
-        {
-            if (result)
-                document.getElementById ("menu-admin").style.display = "inline-block";
-        })
-        .catch (error =>
+        },
+        error =>
         {
             console.log (error);
         });
+//  01  ends
+
+//  02      if (options.AdminFunctions != false)
+//  02           checkAdmin ()
+//  02           .then (result =>
+//  02           {
+//  02               if (result)
+//  02                   document.getElementById ("menu-admin").style.display = "inline-block";
+//  02           })
+//  02           .catch (error =>
+//  02           {
+//  02               console.log (error);
+//  02           });
+//  02  begins
+        checkAdmin (
+        () =>
+        {
+            document.getElementById ("menu-admin").style.display = "inline-block";
+        },
+        error =>
+        {
+            console.log (error);
+        });
+//  02  ends
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
