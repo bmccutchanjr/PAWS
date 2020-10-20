@@ -25,10 +25,13 @@
 
 const express = require("express");
 const app = express();
-const http = require ("http");
-const server = http.createServer (app);
-const io = require("socket.io");
-const socket = io.listen(server);
+//  02  const http = require ("http");
+//  02  const server = http.createServer (app);
+//  02  const io = require("socket.io");
+//  02  const socket = io.listen(server);
+//  02  begins
+const WebSocket = require("ws");
+//  02  ends
 
 //  Require the remainder of NPM modules used in this application
 
@@ -59,7 +62,10 @@ app.use ("/", require("./end-points/html.js"));
 
 const PORT = process.env.PORT ? process.env.PORT : 80;
 
-server.listen (PORT, () =>
+//  02  server.listen (PORT, () =>
+//  02  begins
+const server = app.listen (PORT, () =>
+//  02  ends
 {   //  If this application is hosted on the cloud, we'll listen on whatever port is assigned to it,
     //  otherwise we'll listen to port 80 and any address configured on the host machine
 
@@ -71,6 +77,13 @@ server.listen (PORT, () =>
     }
 });
 
-socket.on ("connection", () =>
-{   //  Connection event is triggered when a new client connects
+//  02  socket.on ("connection", () =>
+//  02  {   //  Connection event is triggered when a new client connects
+//  02  });
+//  02  begins
+const socket = new WebSocket.Server ( { server } );
+socket.on ("connection", parm =>
+{
+
 });
+//  02  ends

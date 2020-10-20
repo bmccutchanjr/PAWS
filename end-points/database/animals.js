@@ -437,7 +437,7 @@ const db =
                 //  is bad enough.  ExpressJS logs messages about a deprecated process (which I would be happy ignoring) but
                 //  if the value is not a status code ExpressJS understands, it blows up.
                 //
-                //  It's a brain-dead assumption on the part of the ExpressJS developers to assume my datais somehow integral
+                //  It's a brain-dead assumption on the part of the ExpressJS developers to assume my data is somehow integral
                 //  to their code and then run away with it.  But I guess that's what you get when you use a framework.
 
                 resolve (result);

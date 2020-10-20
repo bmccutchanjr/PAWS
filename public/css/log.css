@@ -107,7 +107,7 @@
 .animal-name
 {   
     /* color: white; */
-    /* color: var(--light-gray); */
+    color: var(--light-gray);
     display: inline-block;
     flex-grow: 1;
     flex-shrink: 1;
@@ -121,8 +121,8 @@
 .animal-name:visited
 {
     /* color: white; */
-    /* color: var(--light-gray); */
-    color: lightgrey;
+    color: var(--light-gray);
+    /* color: lightgrey; */
 }
 
 .animal-name:hover

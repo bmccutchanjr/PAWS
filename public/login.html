@@ -23,9 +23,10 @@
                 <input id=password name=password onchange="validatePassword(event)" onfocus="select()" placeholder="password" type=password>
             </div>
             <div class=login-div id=submit-password>
-                <a class=modal-option href="#" onclick="handleLoginOption(event)">Log In</a>
+                <!-- <a class=modal-option href="#" onclick="handleLoginOption(event)">Log In</a> -->
+                <button onclick="handleLoginOption(event)">Log In</button>
                 <div class=spacer></div>
-                <button>I Forgot My Password</button>
+                <button class=disabled>I Forgot My Password</button>
             </div>
         </main>
         <div class="push"></div>
