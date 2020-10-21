@@ -31,7 +31,7 @@ function addFooter ()
 function enableOptions ()
 {   //  enable menu options if the current user is authenticatded with the server
 
-    checkAuthenticated( 
+    checkAuthenticated(
     {   200: xml =>    
         {
             document.getElementById ("post-comments").style.display = "block";
@@ -41,29 +41,15 @@ function enableOptions ()
     });
 
 
-//  01      AJAX_2 ("GET", "/api/people/hasOpenSession")
-//  01      .then(result =>
-//  01      {
-//  01          if (result.data != "false")
-//  01          {   //  If 'result' is the boolean value false, there is no open session and nothing to do.  But if
-//  01              //  'result' is not false it is the primary key of the record in Interactions representing the
-//  01              //  session.
-//  01  
-//  01              const data = JSON.parse(result.data);
-//  01  
-//  01              document.getElementById ("start-walking").style.display = "none";
-//  01              const stop = document.getElementById ("stop-walking")
-//  01              stop.setAttribute ("sessionId", data[0].id);
-//  01              stop.style.display = "block";
     AJAX ("GET", "/api/people/hasOpenSession", 
     {   200: xml =>
         {
-            if (xml.responseText.data != "false")
+            if (xml.responseText != "false")
             {   //  If 'result' is the boolean value false, there is no open session and nothing to do.  But if
                 //  'result' is not false it is the primary key of the record in Interactions representing the
                 //  session.
 
-                const data = JSON.parse(result.data);
+                const data = JSON.parse(xml.responseText);
 
                 document.getElementById ("start-walking").style.display = "none";
                 const stop = document.getElementById ("stop-walking")
@@ -72,14 +58,6 @@ function enableOptions ()
             }
         }
     })
-//  01      .then(result =>
-//  01      {
-//  01      })
-//  01      .catch(error =>
-//  01      {
-//  01          if (error.status == 500)
-//  01              modal (error.data);
-//  01      })
 }
 
 function addMenu ()
@@ -245,30 +223,6 @@ function startWalk (event)
     const target = event.target;
     target.style.display = "none";
 
-//  01      AJAX_2 ("GET", "/api/animals/startSession/" + getCookie ("animalId"))
-//  01      .then(result =>
-//  01      {
-//  01          //  add a timer to the DOM and setInterval() to time the session
-//  01  
-//  01          addWalkTimer();
-//  01  
-//  01          //  hide/display walking menu items
-//  01  
-//  01          const data = JSON.parse(result.data);
-//  01  
-//  01          document.getElementById("start-walking").style.display = "none";
-//  01          const stop = document.getElementById("stop-walking");
-//  01          stop.setAttribute ("sessionId", data.insertId);
-//  01          stop.style.display = "block";
-//  01  
-//  01          //  and play audio
-//  01  
-//  01          playAudio (ting);
-//  01      })
-//  01      .catch(error =>
-//  01      {
-//  01          modal (error.data);
-//  01          playAudio (buzz);
     AJAX ("GET", "/api/animals/startSession/" + getCookie ("animalId"),
     {   200: xml =>
         {
@@ -288,7 +242,8 @@ function startWalk (event)
             //  and play audio
 
             playAudio (ting);
-        }
+        },
+        default: xml => { modal (xml.responseText, buzz); }
     })
 }
 
@@ -297,34 +252,6 @@ function stopWalk (event)
 
     //  End a walking session...
 
-//  01      AJAX_2 ("GET", "/api/animals/stopSession/" + document.getElementById("stop-walking").getAttribute("sessionId"))
-//  01      .then(_ =>
-//  01      {
-//  01          const timeDiv = document.getElementById("timer");
-//  01          if (timeDiv)
-//  01          {   //  If the timer is in the DOM (and it may not be if the user reloaded the page or navigated away and then back)
-//  01              //  remove the timer and clearInterval()
-//  01  
-//  01              timeDiv.remove();
-//  01              clearInterval(timer.interval);
-//  01          }
-//  01  
-//  01          //  hide/display walking menu items
-//  01  
-//  01          document.getElementById("start-walking").style.display = "block";
-//  01          const stop = document.getElementById("stop-walking");
-//  01          stop.removeAttribute ("sessionId");
-//  01          stop.style.display = "none";
-//  01  
-//  01          //  and play audio
-//  01  
-//  01          playAudio (ting);
-//  01      })
-//  01      .catch(error =>
-//  01      {
-//  01          modal (error);
-//  01          playAudio (buzz);
-//  01      })
     AJAX ("GET", "/api/animals/stopSession/" + document.getElementById("stop-walking").getAttribute("sessionId"),
     {   200: xml =>
         {
@@ -350,7 +277,6 @@ function stopWalk (event)
         }
     })
 }
-//  01  ends
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -408,20 +334,10 @@ function buildPage ()
 function getAnimalData (animalId)
 {   //  Retrieve data from server for the selected animal
 
-//  01      AJAX_2 ("GET", "/api/animals/get/" + animalId)
-//  01      .then(result =>
-//  01      {
-//  01          dataset = JSON.parse(result.data);
-//  01          buildPage();
-//  01      })
-//  01      .catch(error =>
-//  01      {
-//  01          modal (error);
-//  01      });
     AJAX ("GET", "/api/animals/get/" + animalId, 
     {   200: xml =>
         {
-            dataset = JSON.parse(result.data);
+            dataset = JSON.parse(xml.responseText);
             buildPage();
         }
     })

@@ -1,7 +1,11 @@
+//  01  JavaScript throws a DOMException if you try to play audio before the user has interacted with the page,
+//      and many (maybe most) calls to AJAX() are retrieving data at page load...the user has't had a chance to
+//      interact with the page.  I would really like to have that audio though.
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function AJAX (method, route, status, data)
+function AJAX (method, route, switchHandlers, data)
 {   //  Gosh, but I'm writing this code a lot!  And I'm going to need to write it a lot more!  That strongly
     //  suggests a function call...
 
@@ -25,8 +29,6 @@ function AJAX (method, route, status, data)
     if ((method != "GET") && (method != "POST")) reject ("'method' is not a supported HTTP method.");
 
     if (typeof route != "string") reject ("'route' is not a string.");
-
-//  02      if (typeof status != "function") reject ("parameter 'status()' is not a function.");
 
     let postData = "";
 
@@ -77,150 +79,53 @@ function AJAX (method, route, status, data)
     {
         if (xml.readyState == 4)
         {   
-            switch (xml.status)
-            {
-                case 200:
+//  Error handling SUCKS!  When you catch errors, JavaScript won't expose all of the information that is available when
+//  you don't catch error -- it makes debugging very difficult.  So error handling is disabled during the development
+//  cycle.
+//              try
+//              {
+                switch (xml.status)
                 {
-//  alert (route);
-//  alert (typeof status[200]);
-//  alert (status[200]);
-                    status[200](xml);
-                    break;
-                }
-                case 204:
+                    case 200:
+                    {
+                        switchHandlers[200](xml);
+                        break;
+                    }
+                    case 204:
+                    {
+                        switchHandlers[204](xml);
+                        break;
+                    }
+                    case 205:
+                    {
+                        switchHandlers[205](xml);
+                        break;
+                    }
+                    default:
                 {
-                    status[204](xml);
-                    break;
+//  01                          playAudio (buzz);
+                        if (switchHandlers["default"])
+                            switchHandlers["default"](xml);
+                        else
+                            modal (xml.responseText);
+                        break;
+                    }
                 }
-                case 205:
-                {
-                    status[205](xml);
-                    break;
-                }
-                default:
-                {
-                    modal (xml.responseText);
-                    break;
-                }
-            }
+//              }
+//              catch(error)
+//              {
+//  //  01                  playAudio (buzz);
+//                  modal (error);
+//              }
         }
     }
 
     xml.onfailure = error =>
     {
+//  01          playAudio(buzz);
         modal (error);
     }
 }
-
-//  03  //  01  begins
-//  03  //  01  function AJAX_2 (method, route, result, data)
-//  03  function AJAX_2 (method, route, data)
-//  03  {   //  Gosh, but I'm writing this code a lot!  And I'm going to need to write it a lot more!  That strongly
-//  03      //  suggests a function call...
-//  03  
-//  03      //  AJAX works just fine.  Passing a function to execute worked, but because API requests are asynchronous AJAX
-//  03      //  needs to implement a Promise.  But that function obviated a need to handle the resolve() and reject() in my
-//  03      //  code, and I was ignoring them.  AJAX function calls did not have .then() and .catch() blocks -- and that's a
-//  03      //  syntax error.  It may not cause a parser/compiler to throw an error now, but it will someday.  I should just
-//  03      //  get used to doing it right.
-//  03      //
-//  03      //  But AJAX() is invoked A LOT, in every front-end module I've written.  There are a dozen modules and each one
-//  03      //  makes multiple calls to AJAX().  That's a lot of code to change...
-//  03  
-//  03      //  Parameters 'method', 'route' and 'function' are required.
-//  03      //
-//  03      //      'method' is a string value containing the HTTP method to use.
-//  03      //
-//  03      //      'route' is a string value containing the route or end-point to request
-//  03      //
-//  03      //      'result is a function used to process the result returned from the server
-//  03      //
-//  03      //  Parameter 'data' is an optional parameter that contains the request data.  'data' is required if
-//  03      //  method == 'POST'.
-//  03  
-//  03      return new Promise ((resolve, reject) =>
-//  03      {
-//  03          //  Because the function call is expecting a Promise, it needs a reject or resolve, not a simple boolean
-//  03          //  value.  Reject and resolve are only available in the Promise's callback and so the parameters must be
-//  03          //  validated in callback.
-//  03  
-//  03          if (typeof method != "string") reject ("'method' is not a string.");
-//  03          method = method.toUpperCase ();
-//  03          if ((method != "GET") && (method != "POST")) reject ("'method' is not a supported HTTP method.");
-//  03  
-//  03          if (typeof route != "string") reject ("'route' is not a string.");
-//  03  
-//  03  //  01          if (typeof result != "function") reject ("'result' is not a function.");
-//  03  
-//  03          let postData = "";
-//  03  
-//  03          if (method == "POST")
-//  03          {   if (data == undefined) reject ("'request data' is required for POST requests.");
-//  03              if (typeof data != "object") reject ("'request data' is not JSON object.");
-//  03  
-//  03              let post = [];
-//  03  
-//  03              try
-//  03              {   data.forEach (d =>
-//  03                  {
-//  03                      Object.entries (d).forEach (entry =>
-//  03                      {
-//  03                          post.push (entry[0] + "=" + entry[1]);
-//  03                      });
-//  03                  })
-//  03              }
-//  03              catch (error)
-//  03              {   //  This is not actually an error.  The data passed to this function is either an array or an object.  I
-//  03                  //  can iterate an array with .forEach(), but JavaScript will throw an error if I try to use it on an object.
-//  03                  //  Use .forAll() with objects.
-//  03                  //
-//  03                  //  Simply put, if JavaScript throws an error when I try to use .forEach() I have an object and I
-//  03                  //  want to use this code.
-//  03  
-//  03                  Object.entries (data).forEach (entry =>
-//  03                  {
-//  03                      post.push (entry[0] + "=" + entry[1]);
-//  03                  });
-//  03              }
-//  03  
-//  03              postData = post.join ("&");
-//  03          }
-//  03  
-//  03          const xml = new XMLHttpRequest ();
-//  03  
-//  03          xml.open (method, route);
-//  03          if (method != "POST")
-//  03              xml.send ();
-//  03          else
-//  03          {
-//  03              xml.setRequestHeader ("Content-Type", "application/x-www-form-urlencoded");
-//  03              xml.send (postData);
-//  03          }
-//  03  
-//  03          xml.onreadystatechange = () =>
-//  03          {
-//  03              if (xml.readyState == 4)
-//  03              {   
-//  03                  switch (xml.status)
-//  03                  {
-//  03                      case 200:
-//  03                      case 204:
-//  03                      case 205:
-//  03                      {
-//  03                          resolve ( { "status": xml.status, "data": xml.responseText } );
-//  03                          break;
-//  03                      }
-//  03                      default:
-//  03                      {
-//  03                          reject ( { "status": xml.status, "data": xml.responseText } );
-//  03                          break;
-//  03                      }
-//  03                  }
-//  03              }
-//  03          }
-//  03      })
-//  03  }
-//  03  //  01  ends
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -324,12 +229,15 @@ function removeModal (event)
     //  The modal element to be removed from the DOM is actually the grandparent of the element that triggers
     //  this event.
 
-    const modal = event.target.parentNode.parentNode;
-    modal.remove ();    
+    const modal = event.target.parentNode;
+    modal.remove ();
+    playAudio (ting);
 }
 
-function modal (message)
+function modal (message, audio=false)
 {   //  Create a modal message and add it to the DOM
+
+    if (audio) playAudio (audio);
 
     const modal = configureElement ("div",
         {   "class": "modal",
@@ -339,6 +247,7 @@ function modal (message)
 
     const msg = configureElement ("div",
         {   "class": "modal-message",
+            "onclick": "removeModal(event)"
         },
         modal);
 
@@ -348,19 +257,6 @@ function modal (message)
             "innerText": message
         },
         msg);
-
-    const div = configureElement ("div",
-        {   "class": "modal-options",
-        },
-        msg);
-
-    configureElement ("a",
-        {   "class": "modal-option",
-            "href": "#",
-            "innerText": "CLOSE",
-            "onclick": "removeModal(event)"
-        },
-        div)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
