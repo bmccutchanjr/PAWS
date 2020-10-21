@@ -41,27 +41,45 @@ function enableOptions ()
     });
 
 
-    AJAX_2 ("GET", "/api/people/hasOpenSession")
-    .then(result =>
-    {
-        if (result.data != "false")
-        {   //  If 'result' is the boolean value false, there is no open session and nothing to do.  But if
-            //  'result' is not false it is the primary key of the record in Interactions representing the
-            //  session.
+//  01      AJAX_2 ("GET", "/api/people/hasOpenSession")
+//  01      .then(result =>
+//  01      {
+//  01          if (result.data != "false")
+//  01          {   //  If 'result' is the boolean value false, there is no open session and nothing to do.  But if
+//  01              //  'result' is not false it is the primary key of the record in Interactions representing the
+//  01              //  session.
+//  01  
+//  01              const data = JSON.parse(result.data);
+//  01  
+//  01              document.getElementById ("start-walking").style.display = "none";
+//  01              const stop = document.getElementById ("stop-walking")
+//  01              stop.setAttribute ("sessionId", data[0].id);
+//  01              stop.style.display = "block";
+    AJAX ("GET", "/api/people/hasOpenSession", 
+    {   200: xml =>
+        {
+            if (xml.responseText.data != "false")
+            {   //  If 'result' is the boolean value false, there is no open session and nothing to do.  But if
+                //  'result' is not false it is the primary key of the record in Interactions representing the
+                //  session.
 
-            const data = JSON.parse(result.data);
+                const data = JSON.parse(result.data);
 
-            document.getElementById ("start-walking").style.display = "none";
-            const stop = document.getElementById ("stop-walking")
-            stop.setAttribute ("sessionId", data[0].id);
-            stop.style.display = "block";
+                document.getElementById ("start-walking").style.display = "none";
+                const stop = document.getElementById ("stop-walking")
+                stop.setAttribute ("sessionId", data[0].id);
+                stop.style.display = "block";
+            }
         }
     })
-    .catch(error =>
-    {
-        if (error.status == 500)
-            modal (error.data);
-    })
+//  01      .then(result =>
+//  01      {
+//  01      })
+//  01      .catch(error =>
+//  01      {
+//  01          if (error.status == 500)
+//  01              modal (error.data);
+//  01      })
 }
 
 function addMenu ()
@@ -227,30 +245,50 @@ function startWalk (event)
     const target = event.target;
     target.style.display = "none";
 
-    AJAX_2 ("GET", "/api/animals/startSession/" + getCookie ("animalId"))
-    .then(result =>
-    {
-        //  add a timer to the DOM and setInterval() to time the session
+//  01      AJAX_2 ("GET", "/api/animals/startSession/" + getCookie ("animalId"))
+//  01      .then(result =>
+//  01      {
+//  01          //  add a timer to the DOM and setInterval() to time the session
+//  01  
+//  01          addWalkTimer();
+//  01  
+//  01          //  hide/display walking menu items
+//  01  
+//  01          const data = JSON.parse(result.data);
+//  01  
+//  01          document.getElementById("start-walking").style.display = "none";
+//  01          const stop = document.getElementById("stop-walking");
+//  01          stop.setAttribute ("sessionId", data.insertId);
+//  01          stop.style.display = "block";
+//  01  
+//  01          //  and play audio
+//  01  
+//  01          playAudio (ting);
+//  01      })
+//  01      .catch(error =>
+//  01      {
+//  01          modal (error.data);
+//  01          playAudio (buzz);
+    AJAX ("GET", "/api/animals/startSession/" + getCookie ("animalId"),
+    {   200: xml =>
+        {
+            //  add a timer to the DOM and setInterval() to time the session
 
-        addWalkTimer();
+            addWalkTimer();
 
-        //  hide/display walking menu items
+            //  hide/display walking menu items
 
-        const data = JSON.parse(result.data);
+            const data = JSON.parse(result.data);
 
-        document.getElementById("start-walking").style.display = "none";
-        const stop = document.getElementById("stop-walking");
-        stop.setAttribute ("sessionId", data.insertId);
-        stop.style.display = "block";
+            document.getElementById("start-walking").style.display = "none";
+            const stop = document.getElementById("stop-walking");
+            stop.setAttribute ("sessionId", data.insertId);
+            stop.style.display = "block";
 
-        //  and play audio
+            //  and play audio
 
-        playAudio (ting);
-    })
-    .catch(error =>
-    {
-        modal (error.data);
-        playAudio (buzz);
+            playAudio (ting);
+        }
     })
 }
 
@@ -259,33 +297,57 @@ function stopWalk (event)
 
     //  End a walking session...
 
-    AJAX_2 ("GET", "/api/animals/stopSession/" + document.getElementById("stop-walking").getAttribute("sessionId"))
-    .then(_ =>
-    {
-        const timeDiv = document.getElementById("timer");
-        if (timeDiv)
-        {   //  If the timer is in the DOM (and it may not be if the user reloaded the page or navigated away and then back)
-            //  remove the timer and clearInterval()
+//  01      AJAX_2 ("GET", "/api/animals/stopSession/" + document.getElementById("stop-walking").getAttribute("sessionId"))
+//  01      .then(_ =>
+//  01      {
+//  01          const timeDiv = document.getElementById("timer");
+//  01          if (timeDiv)
+//  01          {   //  If the timer is in the DOM (and it may not be if the user reloaded the page or navigated away and then back)
+//  01              //  remove the timer and clearInterval()
+//  01  
+//  01              timeDiv.remove();
+//  01              clearInterval(timer.interval);
+//  01          }
+//  01  
+//  01          //  hide/display walking menu items
+//  01  
+//  01          document.getElementById("start-walking").style.display = "block";
+//  01          const stop = document.getElementById("stop-walking");
+//  01          stop.removeAttribute ("sessionId");
+//  01          stop.style.display = "none";
+//  01  
+//  01          //  and play audio
+//  01  
+//  01          playAudio (ting);
+//  01      })
+//  01      .catch(error =>
+//  01      {
+//  01          modal (error);
+//  01          playAudio (buzz);
+//  01      })
+    AJAX ("GET", "/api/animals/stopSession/" + document.getElementById("stop-walking").getAttribute("sessionId"),
+    {   200: xml =>
+        {
+            const timeDiv = document.getElementById("timer");
+            if (timeDiv)
+            {   //  If the timer is in the DOM (and it may not be if the user reloaded the page or navigated away and then back)
+                //  remove the timer and clearInterval()
 
-            timeDiv.remove();
-            clearInterval(timer.interval);
+                timeDiv.remove();
+                clearInterval(timer.interval);
+            }
+
+            //  hide/display walking menu items
+
+            document.getElementById("start-walking").style.display = "block";
+            const stop = document.getElementById("stop-walking");
+            stop.removeAttribute ("sessionId");
+            stop.style.display = "none";
+
+            //  and play audio
+
+            playAudio (ting);
         }
-
-        //  hide/display walking menu items
-
-        document.getElementById("start-walking").style.display = "block";
-        const stop = document.getElementById("stop-walking");
-        stop.removeAttribute ("sessionId");
-        stop.style.display = "none";
-
-        //  and play audio
-
-        playAudio (ting);
-    })
-    .catch(error =>
-    {
-        modal (error);
-        playAudio (buzz);
     })
 }
 //  01  ends
@@ -346,16 +408,23 @@ function buildPage ()
 function getAnimalData (animalId)
 {   //  Retrieve data from server for the selected animal
 
-    AJAX_2 ("GET", "/api/animals/get/" + animalId)
-    .then(result =>
-    {
-        dataset = JSON.parse(result.data);
-        buildPage();
+//  01      AJAX_2 ("GET", "/api/animals/get/" + animalId)
+//  01      .then(result =>
+//  01      {
+//  01          dataset = JSON.parse(result.data);
+//  01          buildPage();
+//  01      })
+//  01      .catch(error =>
+//  01      {
+//  01          modal (error);
+//  01      });
+    AJAX ("GET", "/api/animals/get/" + animalId, 
+    {   200: xml =>
+        {
+            dataset = JSON.parse(result.data);
+            buildPage();
+        }
     })
-    .catch(error =>
-    {
-        modal (error);
-    });
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
