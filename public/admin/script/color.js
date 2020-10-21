@@ -46,16 +46,22 @@ function postAdditionalPermissions (event)
     {
         const user = getCookie ("peopleId");
         const species = target.getAttribute ("species");
-        AJAX ("POST", "/api/people/updateAdditionalPermissions/" + user + "/" + species, xml =>
-        {
-            if (xml.status == 200)
+//  01          AJAX ("POST", "/api/people/updateAdditionalPermissions/" + user + "/" + species, xml =>
+//  01          {
+//  01              if (xml.status == 200)
+//  01              {   playAudio (ting);
+//  01                  alert ("Successfully updated additional permissions");
+//  01              }
+//  01              else
+//  01              {
+//  01                  playAudio (buzz);
+//  01                  alert (xml.responseText);
+//  01              }
+//  01          },
+        AJAX ("POST", "/api/people/updateAdditionalPermissions/" + user + "/" + species, 
+        {   200: xml =>
             {   playAudio (ting);
                 alert ("Successfully updated additional permissions");
-            }
-            else
-            {
-                playAudio (buzz);
-                alert (xml.responseText);
             }
         },
         postData);
@@ -101,16 +107,21 @@ function postColorUpdates (event)
     {
         const user = getCookie ("peopleId");
         const species = target.getAttribute ("species");
-        AJAX ("POST", "/api/people/updateColorPermissions/" + user + "/" + species, xml =>
-        {
-            if (xml.status == 200)
+//  01          AJAX ("POST", "/api/people/updateColorPermissions/" + user + "/" + species, xml =>
+//  01          {
+//  01              if (xml.status == 200)
+//  01              {   playAudio (ting);
+//  01                  alert ("Successfully updated color permissions");
+//  01              }
+//  01              else
+//  01              {
+//  01                  playAudio (buzz);
+//  01                  alert (xml.responseText);
+//  01              }
+        AJAX ("POST", "/api/people/updateColorPermissions/" + user + "/" + species,
+        {   200: xml =>
             {   playAudio (ting);
                 alert ("Successfully updated color permissions");
-            }
-            else
-            {
-                playAudio (buzz);
-                alert (xml.responseText);
             }
         },
         postData);
@@ -133,17 +144,25 @@ class ColorSection
         this.createMode = false;
         this.hasPrivledge = false;
     
-        AJAX ("GET", "/api/people/getAnimalPermissions/" + getCookie ("peopleId"), xml =>
-        {
-            if (xml.status == 200)
+//  01          AJAX ("GET", "/api/people/getAnimalPermissions/" + getCookie ("peopleId"), xml =>
+//  01          {
+//  01              if (xml.status == 200)
+//  01              {
+//  01                  const data = JSON.parse(xml.responseText);
+//  01                  this.hasPrivledge = data.allow;
+//  01                  this.initialize (data, "cat");
+//  01                  this.initialize (data, "dog");
+//  01              }
+//  01              else
+//  01              {   alert ("/getAnimalPermissions\n\n" + xml.responseText);
+//  01              }
+        AJAX ("GET", "/api/people/getAnimalPermissions/" + getCookie ("peopleId"),
+        {   200: xml =>
             {
                 const data = JSON.parse(xml.responseText);
                 this.hasPrivledge = data.allow;
                 this.initialize (data, "cat");
                 this.initialize (data, "dog");
-            }
-            else
-            {   alert ("/getAnimalPermissions\n\n" + xml.responseText);
             }
         });
     }

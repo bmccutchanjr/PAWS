@@ -43,16 +43,9 @@ function handleLoginOption (event)
     
     event.preventDefault ();
 
-    AJAX ("POST", "/api/people/login/", xml =>
-        {
-            switch (xml.status)
-            {   case 200:
-                {
-                    //  This shoould be supperflous -- the API is supposed to return a status of 205 on success
-                    break;
-                }
-                case 205:
-                {
+    AJAX ("POST", "/api/people/login/",
+        {   205: xml =>
+            {
 //  During this development cycle, I don't want to redirect the page so I don't have to keep loading the page everytime
 //  nodemon restarts the server.
                     if (window.location.href.indexOf("/login") > 0)
@@ -60,13 +53,6 @@ function handleLoginOption (event)
                             alert ("you're in!");
                     else
                         window.location.href.reload();
-                    break;
-                }
-                default:
-                {   
-                    alert (xml.responseText);
-                    break;
-                }
             }
         },
         {

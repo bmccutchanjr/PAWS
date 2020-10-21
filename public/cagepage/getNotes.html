@@ -102,12 +102,11 @@
 
     document.addEventListener ("DOMContentLoaded", event =>
     {
-        AJAX ("GET", "/api/animals/getWalkingNotes/" + getCookie("animalId"), xml =>
-        {
-            if (xml.status == 200)
+        AJAX ("GET", "/api/animals/getWalkingNotes/" + getCookie("animalId"), 
+        {   200: xml =>
+            {
                 page (JSON.parse(xml.responseText));
-            else
-                alert (xml.responseText);
+            }
         })
 
         const observer = new ResizeObserver (elements =>

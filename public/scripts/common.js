@@ -1,8 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  02  function AJAX (method, route, result, data)
-function AJAX (method, route, success, data)
+function AJAX (method, route, status, data)
 {   //  Gosh, but I'm writing this code a lot!  And I'm going to need to write it a lot more!  That strongly
     //  suggests a function call...
 
@@ -17,80 +16,100 @@ function AJAX (method, route, success, data)
     //  Parameter 'data' is an optional parameter that contains the request data.  'data' is required if
     //  method == 'POST'.
 
-//  02      return new Promise ((resolve, reject) =>
-//  02      {
-        //  Because the function call is expecting a Promise, it needs a reject or resolve, not a simple boolean
-        //  value.  Reject and resolve are only available in the Promise's callback and so the parameters must be
-        //  validated in callback.
+    //  Because the function call is expecting a Promise, it needs a reject or resolve, not a simple boolean
+    //  value.  Reject and resolve are only available in the Promise's callback and so the parameters must be
+    //  validated in callback.
 
-        if (typeof method != "string") reject ("'method' is not a string.");
-        method = method.toUpperCase ();
-        if ((method != "GET") && (method != "POST")) reject ("'method' is not a supported HTTP method.");
+    if (typeof method != "string") reject ("'method' is not a string.");
+    method = method.toUpperCase ();
+    if ((method != "GET") && (method != "POST")) reject ("'method' is not a supported HTTP method.");
 
-        if (typeof route != "string") reject ("'route' is not a string.");
+    if (typeof route != "string") reject ("'route' is not a string.");
 
-//  02          if (typeof result != "function") reject ("'result' is not a function.");
-        if (typeof success != "function") reject ("parameter 'success()' is not a function.");
+//  02      if (typeof status != "function") reject ("parameter 'status()' is not a function.");
 
-        let postData = "";
+    let postData = "";
 
-        if (method == "POST")
-        {   if (data == undefined) reject ("'request data' is required for POST requests.");
-            if (typeof data != "object") reject ("'request data' is not JSON object.");
+    if (method == "POST")
+    {   if (data == undefined) reject ("'request data' is required for POST requests.");
+        if (typeof data != "object") reject ("'request data' is not JSON object.");
 
-            let post = [];
+        let post = [];
 
-            try
-            {   data.forEach (d =>
-                {
-                    Object.entries (d).forEach (entry =>
-                    {
-                        post.push (entry[0] + "=" + entry[1]);
-                    });
-                })
-            }
-            catch (error)
-            {   //  This is not actually an error.  The data passed to this function is either an array or an object.  I
-                //  can iterate an array with .forEach(), but JavaScript will throw an error if I try to use it on an object.
-                //  Use .forAll() with objects.
-                //
-                //  Simply put, if JavaScript throws an error when I try to use .forEach() I have an object and I
-                //  want to use this code.
-                
-                Object.entries (data).forEach (entry =>
+        try
+        {   data.forEach (d =>
+            {
+                Object.entries (d).forEach (entry =>
                 {
                     post.push (entry[0] + "=" + entry[1]);
                 });
+            })
+        }
+        catch (error)
+        {   //  This is not actually an error.  The data passed to this function is either an array or an object.  I
+            //  can iterate an array with .forEach(), but JavaScript will throw an error if I try to use it on an object.
+            //  Use .forAll() with objects.
+            //
+            //  Simply put, if JavaScript throws an error when I try to use .forEach() I have an object and I
+            //  want to use this code.
+            
+            Object.entries (data).forEach (entry =>
+            {
+                post.push (entry[0] + "=" + entry[1]);
+            });
+        }
+
+        postData = post.join ("&");
+    }
+
+    const xml = new XMLHttpRequest ();
+
+    xml.open (method, route);
+    if (method != "POST")
+        xml.send ();
+    else
+    {
+        xml.setRequestHeader ("Content-Type", "application/x-www-form-urlencoded");
+        xml.send (postData);
+    }
+
+    xml.onreadystatechange = () =>
+    {
+        if (xml.readyState == 4)
+        {   
+            switch (xml.status)
+            {
+                case 200:
+                {
+//  alert (route);
+//  alert (typeof status[200]);
+//  alert (status[200]);
+                    status[200](xml);
+                    break;
+                }
+                case 204:
+                {
+                    status[204](xml);
+                    break;
+                }
+                case 205:
+                {
+                    status[205](xml);
+                    break;
+                }
+                default:
+                {
+                    modal (xml.responseText);
+                    break;
+                }
             }
-
-            postData = post.join ("&");
         }
+    }
 
-        const xml = new XMLHttpRequest ();
-
-        xml.open (method, route);
-        if (method != "POST")
-            xml.send ();
-        else
-        {
-            xml.setRequestHeader ("Content-Type", "application/x-www-form-urlencoded");
-            xml.send (postData);
-        }
-
-        xml.onreadystatechange = () =>
-        {
-            if (xml.readyState == 4)
-            {   
-//  02                  resolve (result (xml));
-                success(xml);
-            }
-        }
-
-        xml.onfailure = error =>
-        {
-            modal (error);
-        }
-//  02      })
+    xml.onfailure = error =>
+    {
+        modal (error);
+    }
 }
 
 //  01  begins

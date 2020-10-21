@@ -30,6 +30,30 @@ function addFooter ()
         inner);
 }
 
+function configureAnimalSelectors ()
+{
+    let group = getCookie ("species-group");
+    if (!group) group = "dog";
+
+    if (group == "cat")
+    {
+        document.getElementById ("cat-button").setAttribute("title", "Sort list by name");
+        document.getElementById ("cat-option").style.display = "none";
+
+        document.getElementById ("dog-button").setAttribute("title", "Switch to dog data");
+        document.getElementById ("dog-option").style.display = "inline-block";
+    }
+    else
+    {
+        document.getElementById ("cat-button").setAttribute("title", "Switch to cat data");
+        document.getElementById ("cat-option").style.display = "inline-block";
+
+        document.getElementById ("dog-button").setAttribute("title", "Sort list by name");
+        document.getElementById ("dog-option").style.display = "none";
+    }
+
+}
+
 function addMenu ()
 {   //  Create the side-bar menu
 
@@ -94,6 +118,8 @@ function addMenu ()
                 },
                 menu);
         });
+
+    configureAnimalSelectors ();
 }
 
 function addIconDiv (header)
@@ -362,6 +388,7 @@ function switchToGroup (group)
 
     //  Request data from the server
 
+    setCookie ("species-group", group);
     getAnimalData (group);
 
     //  That's an asynchronous operation and is almost certainly going to take longer than the next two statements,
@@ -373,22 +400,7 @@ function switchToGroup (group)
     status.animals = false;
     current.group = group;
 
-    if (group == "cat")
-    {
-        document.getElementById ("cat-button").setAttribute("title", "Sort list by name");
-        document.getElementById ("cat-option").style.display = "none";
-
-        document.getElementById ("dog-button").setAttribute("title", "Switch to dog data");
-        document.getElementById ("dog-option").style.display = "inline-block";
-    }
-    else
-    {
-        document.getElementById ("cat-button").setAttribute("title", "Switch to cat data");
-        document.getElementById ("cat-option").style.display = "inline-block";
-
-        document.getElementById ("dog-button").setAttribute("title", "Sort list by name");
-        document.getElementById ("dog-option").style.display = "none";
-    }
+    configureAnimalSelectors();
 }
 
 function animalHandler (event)
@@ -465,54 +477,44 @@ function getInteractionData (event)
     const month = target.getAttribute ("month");
     const year = target.getAttribute ("year");
 
-    AJAX ("GET", "/api/animals/getInteraction/" + animal + "/" + year + "/" +  month + "/" + day, xml =>
+    AJAX ("GET", "/api/animals/getInteraction/" + animal + "/" + year + "/" +  month + "/" + day, 
+    {   200: xml =>
         {
-            switch (xml.status)
-            {
-                case 200:
+            let div = configureElement ("div",
                 {
-                    let div = configureElement ("div",
-                        {
-                            "class": "modal"
-                        },
-                        document.body);
+                    "class": "modal"
+                },
+                document.body);
 
-                    const modal = configureElement ("div",
-                        {
-                            "class": "modal-message"
-                        },
-                        div);
-
-                    configureElement ("div",
-                        {
-                            "class": "modal-text",
-                            "innerHTML": formatInteraction (JSON.parse(xml.responseText))
-                        },
-                        modal);
-
-                    div = configureElement ("div",
-                        {
-                            "class": "modal-options"
-                        },
-                        modal);
-
-                    configureElement ("a",
-                        {
-                            "class": "modal-option",
-                            "href": "#",
-                            "innerText": "CLOSE",
-                            "onclick": "removeModal (event)"
-                        },
-                        div);
-                    break;
-                }
-                default:
+            const modal = configureElement ("div",
                 {
-                    alert (xml.responseText);
-                    break;
-                }
-            }
-        });
+                    "class": "modal-message"
+                },
+                div);
+
+            configureElement ("div",
+                {
+                    "class": "modal-text",
+                    "innerHTML": formatInteraction (JSON.parse(xml.responseText))
+                },
+                modal);
+
+            div = configureElement ("div",
+                {
+                    "class": "modal-options"
+                },
+                modal);
+
+            configureElement ("a",
+                {
+                    "class": "modal-option",
+                    "href": "#",
+                    "innerText": "CLOSE",
+                    "onclick": "removeModal (event)"
+                },
+                div);
+        }
+    });
 }
 
 function sortByColor (event)
@@ -696,33 +698,28 @@ window.addEventListener ("load", (event) =>
     status.page = true;
 
     showAnimals ();
+    addSortBar ();
     addFooter ();
     addMenu ();
-    addSortBar ();
 });
 
-function getAnimalData (group)
+function getAnimalData ()
 {
-    AJAX ("GET", "/api/animals/allactive/" + group, xml =>
+    let group = getCookie ("species-group");
+    if (!group) group = "dog";
+
+    AJAX ("GET", "/api/animals/allactive/" + group, 
+    {   200: xml =>
         {
-            switch (xml.status)
-            {   case 200:
-                {
-                    status.data = true;
-                    index = JSON.parse(xml.responseText)
-                    buildAnimals ();
-                    showAnimals ();
-                    break;
-                }
-                default:
-                {   alert (xml.responseText);
-                    break;
-                }
-            }
-        })
+            status.data = true;
+            index = JSON.parse(xml.responseText)
+            buildAnimals ();
+            showAnimals ();
+        }
+    })
 }
 
 //  There's no need to wait for the DOM in order to request data from the server, especially since
 //  it's far more likely that retrieving data from the server will take longer than rendering the DOM.
 
-getAnimalData ("dog");
+getAnimalData ();

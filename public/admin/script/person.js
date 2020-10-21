@@ -170,18 +170,25 @@ function nameValidation (event)
 function sendDeactivate (event)
 {   event.preventDefault ();
 
-    AJAX ("GET", "/api/people/deactivatePerson/" + getCookie ("peopleId"), xml =>
-    {
-        if (xml.status == 205)
+//  01      AJAX ("GET", "/api/people/deactivatePerson/" + getCookie ("peopleId"), xml =>
+//  01      {
+//  01          if (xml.status == 205)
+//  01          {
+//  01              playAudio (ting);
+//  01              alert (document.names.give.value + " " + document.names.surname.value + " has been deactivated.");
+//  01              window.location.href="/admin/people-picker";
+//  01          }
+//  01          else
+//  01          {
+//  01              playAudio (buzz);
+//  01              alert (xml.responseText);
+//  01          }
+    AJAX ("GET", "/api/people/deactivatePerson/" + getCookie ("peopleId"),
+    {   205: xml =>
         {
             playAudio (ting);
             alert (document.names.give.value + " " + document.names.surname.value + " has been deactivated.");
             window.location.href="/admin/people-picker";
-        }
-        else
-        {
-            playAudio (buzz);
-            alert (xml.responseText);
         }
     })
 }
@@ -193,19 +200,27 @@ function sendLock (event)
     let other = target.name == "lock" ? document.getElementById ("unlock-option") : document.getElementById ("lock-option");
         
     const api = "/api/people/lockPerson/" + getCookie ("peopleId") + "/" + (target.name == "lock" ? "true" : "false");
-    AJAX ("GET", api, xml =>
-    {
-        if (xml.status == 200)
+//  01      AJAX ("GET", api, xml =>
+//  01      {
+//  01          if (xml.status == 200)
+//  01          {
+//  01              playAudio (ting);
+//  01              target.style.display = "none";
+//  01              other.style.display = "inline-block";
+//  01              alert ("This user account is now " + (target.name == "lock" ? "locked out" : "unlocked"))
+//  01          }
+//  01          else
+//  01          {
+//  01              playAudio (buzz);
+//  01              alert (xml.responseText);
+//  01          }
+    AJAX ("GET", api,
+    {   200: xml =>
         {
             playAudio (ting);
             target.style.display = "none";
             other.style.display = "inline-block";
             alert ("This user account is now " + (target.name == "lock" ? "locked out" : "unlocked"))
-        }
-        else
-        {
-            playAudio (buzz);
-            alert (xml.responseText);
         }
     })
 }
@@ -221,16 +236,21 @@ function postNamesChange ()
         email: document.names.email.value,
     };
 
-    AJAX ("POST", "/api/people/updatePerson/" + getCookie ("peopleId"), xml =>
-    {
-        if (xml.status == 200)
+//  01      AJAX ("POST", "/api/people/updatePerson/" + getCookie ("peopleId"), xml =>
+//  01      {
+//  01          if (xml.status == 200)
+//  01          {
+//  01              playAudio (ting);
+//  01          }
+//  01          else
+//  01          {
+//  01              playAudio (buzz);
+//  01              alert (xml.responseText);
+//  01          }
+    AJAX ("POST", "/api/people/updatePerson/" + getCookie ("peopleId"),
+    {   200: xml =>
         {
             playAudio (ting);
-        }
-        else
-        {
-            playAudio (buzz);
-            alert (xml.responseText);
         }
     },
     postData);
@@ -246,9 +266,27 @@ function postNamesNew ()
         email: document.names.email.value,
     };
 
-    AJAX ("POST", "/api/people/createPerson", xml =>
-    {
-        if (xml.status == 200)
+//  01      AJAX ("POST", "/api/people/createPerson", xml =>
+//  01      {
+//  01          if (xml.status == 200)
+//  01          {
+//  01              playAudio (ting);
+//  01              peopleId = JSON.parse(xml.responseText).insertId;
+//  01              setCookie ("peopleId", peopleId, 3600);
+//  01              createMode = false;
+//  01              doPersonData (
+//  01                  {   add: false,
+//  01                      change: true,
+//  01                      results: [ postData ]
+//  01                  });
+//  01          }
+//  01          else
+//  01          {
+//  01              playAudio (buzz);
+//  01              alert (xml.responseText);
+//  01          }
+    AJAX ("POST", "/api/people/createPerson",
+    {   200: xml =>
         {
             playAudio (ting);
             peopleId = JSON.parse(xml.responseText).insertId;
@@ -259,11 +297,6 @@ function postNamesNew ()
                     change: true,
                     results: [ postData ]
                 });
-        }
-        else
-        {
-            playAudio (buzz);
-            alert (xml.responseText);
         }
     },
     postData);
@@ -408,9 +441,22 @@ class PersonSection
 
     retrievePersonData (peopleId)
     {
-        return AJAX ("GET", "/api/people/getPerson/" + peopleId, xml =>
-        {
-            if (xml.status == 200)
+//  01          return AJAX ("GET", "/api/people/getPerson/" + peopleId, xml =>
+//  01          {
+//  01              if (xml.status == 200)
+//  01              {
+//  01                  const data = JSON.parse(xml.responseText);
+//  01  console.log (JSON.stringify(data, null, 2));
+//  01                  this.setAddPermission (data.add);
+//  01                  this.setChangePermission (data.change);
+//  01                  this.initializeInputs (data);
+//  01                  this.setCreateMode (peopleId);
+//  01              }
+//  01              else
+//  01              {   alert ("PersonSection\n\n" + xml.responseText);
+//  01              }
+        return AJAX ("GET", "/api/people/getPerson/" + peopleId,
+        {   200: xml =>
             {
                 const data = JSON.parse(xml.responseText);
 console.log (JSON.stringify(data, null, 2));
@@ -418,9 +464,6 @@ console.log (JSON.stringify(data, null, 2));
                 this.setChangePermission (data.change);
                 this.initializeInputs (data);
                 this.setCreateMode (peopleId);
-            }
-            else
-            {   alert ("PersonSection\n\n" + xml.responseText);
             }
         });
     }

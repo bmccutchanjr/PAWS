@@ -234,12 +234,10 @@
     let colorTestMode = false;
     let dataset = [];
 
-    AJAX ("GET", "/api/animals/get/" + getCookie ("animalId"), xml =>
-    {
-        if (xml.status == 200)
+    AJAX ("GET", "/api/animals/get/" + getCookie ("animalId"), 
+    {   200: xml =>
         {
             dataset = JSON.parse(xml.responseText);
-//  console.log (JSON.stringify (dataset, null, 2))
             if (dataset[0].color == "black")
             {   //  set 'color test mode'
             
@@ -249,10 +247,6 @@
             }
             else
                 document.getElementById ("color-section").style.display = "none";
-        }
-        else
-        {
-            modal (xml.responseText);
         }
     });
 

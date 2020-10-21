@@ -55,18 +55,10 @@
 
     document.addEventListener ("DOMContentLoaded", event =>
     {
-        AJAX ("GET", "/api/people/allActivePeople", xml =>
-        {   switch (xml.status)
-            {   case 200:
-                {
-                    peopleList (JSON.parse(xml.responseText));
-                    break;
-                }
-                default:
-                {
-                    alert (xml.responseText);
-                    break;
-                }
+        AJAX ("GET", "/api/people/allActivePeople", 
+        {   200: xml =>
+            {
+                peopleList (JSON.parse(xml.responseText));
             }
         })
     });

@@ -25,16 +25,21 @@ function postPrivledges (event)
     }
     if (changed > 0)
     {
-        AJAX ("POST", "/api/people/changeAdminPrivledges/" + getCookie ("peopleId"), xml =>
-        {
-            if (xml.status == 200)
+//  01          AJAX ("POST", "/api/people/changeAdminPrivledges/" + getCookie ("peopleId"), xml =>
+//  01          {
+//  01              if (xml.status == 200)
+//  01              {   playAudio (ting);
+//  01                  alert ("Successfully updated admin privledges");
+//  01              }
+//  01              else
+//  01              {
+//  01                  playAudio (buzz);
+//  01                  alert (xml.responseText);
+//  01              }
+        AJAX ("POST", "/api/people/changeAdminPrivledges/" + getCookie ("peopleId"),
+        {   200: xml =>
             {   playAudio (ting);
                 alert ("Successfully updated admin privledges");
-            }
-            else
-            {
-                playAudio (buzz);
-                alert (xml.responseText);
             }
         },
         postData);
@@ -58,16 +63,23 @@ class PrivledgeSection
         this.createMode = false;
         this.hasPrivledge = false;
     
-        AJAX ("GET", "/api/people/getAdminPrivledges/" + getCookie ("peopleId"), xml =>
-        {
-            if (xml.status == 200)
+//  01          AJAX ("GET", "/api/people/getAdminPrivledges/" + getCookie ("peopleId"), xml =>
+//  01          {
+//  01              if (xml.status == 200)
+//  01              {
+//  01                  const data = JSON.parse(xml.responseText);
+//  01                  this.hasPrivledge = data.allow;
+//  01                  this.initialize (data);
+//  01              }
+//  01              else
+//  01                  alert ("PrivledgeSection: /getAdminPrivledges\n\n" + xml.responseText);
+        AJAX ("GET", "/api/people/getAdminPrivledges/" + getCookie ("peopleId"),
+        {   200: xml =>
             {
                 const data = JSON.parse(xml.responseText);
                 this.hasPrivledge = data.allow;
                 this.initialize (data);
             }
-            else
-                alert ("PrivledgeSection: /getAdminPrivledges\n\n" + xml.responseText);
         });
     }
 

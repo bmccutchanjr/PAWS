@@ -31,22 +31,14 @@ function addFooter ()
 function enableOptions ()
 {   //  enable menu options if the current user is authenticatded with the server
 
-//  02      if (checkAuthenticated ())
-//  02      {   document.getElementById ("post-comments").style.display = "block";
-//  02          document.getElementById ("start-walking").style.display = "block";
-//  02          document.getElementById ("walk-separator").style.display = "block";
-//  02      }
     checkAuthenticated( 
-        () =>    
+    {   200: xml =>    
         {
             document.getElementById ("post-comments").style.display = "block";
             document.getElementById ("start-walking").style.display = "block";
             document.getElementById ("walk-separator").style.display = "block";
-        },
-        error =>    
-        {
-            console.log (error);
-        }),
+        }
+    });
 
 
     AJAX_2 ("GET", "/api/people/hasOpenSession")

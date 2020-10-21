@@ -68,19 +68,27 @@ function postPassword (event)
 
     if (passwordValidation ())
     {
-        AJAX ("POST", "/api/people/changePassword/" + getCookie ("peopleId"), xml =>
-        {
-            if (xml.status == 200)
+//  02          AJAX ("POST", "/api/people/changePassword/" + getCookie ("peopleId"), xml =>
+//  02          {
+//  02              if (xml.status == 200)
+//  02              {
+//  02                  playAudio (ting);
+//  02                  const input = document.getElementById ("password");
+//  02                  input.value = null;
+//  02                  alert ("All good!");
+//  02              }
+//  02              else
+//  02              {
+//  02                  playAudio (buzz);
+//  02                  alert (xml.responseText);
+//  02              }
+        AJAX ("POST", "/api/people/changePassword/" + getCookie ("peopleId"),
+        {   200: xml =>
             {
                 playAudio (ting);
                 const input = document.getElementById ("password");
                 input.value = null;
                 alert ("All good!");
-            }
-            else
-            {
-                playAudio (buzz);
-                alert (xml.responseText);
             }
         },
         { "password": password } );
@@ -106,16 +114,22 @@ class PasswordSection
         this.createMode = false;
         this.hasPrivledge = false;
     
-        AJAX ("GET", "/api/people/hasPasswordPrivledge/" + getCookie ("peopleId"), xml =>
-        {
-            if (xml.status == 200)
+//  02          AJAX ("GET", "/api/people/hasPasswordPrivledge/" + getCookie ("peopleId"), xml =>
+//  02          {
+//  02              if (xml.status == 200)
+//  02              {
+//  02                  this.hasPrivledge = (xml.responseText == "true" ? true : false);
+//  02                  this.initialize (this.hasPrivledge);
+//  02              }
+//  02  //  01  This is not an error condition...it is normal and expected and there is nothing to do here
+//  02  //  01              else
+//  02  //  01                  alert ("/hasPasswordPrivledge\n\n" + xml.responseText);
+        AJAX ("GET", "/api/people/hasPasswordPrivledge/" + getCookie ("peopleId"),
+        {   200: xml =>
             {
                 this.hasPrivledge = (xml.responseText == "true" ? true : false);
                 this.initialize (this.hasPrivledge);
             }
-//  01  This is not an error condition...it is normal and expected and there is nothing to do here
-//  01              else
-//  01                  alert ("/hasPasswordPrivledge\n\n" + xml.responseText);
         });
     }
 
