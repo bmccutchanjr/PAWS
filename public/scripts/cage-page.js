@@ -34,9 +34,14 @@ function enableOptions ()
     checkAuthenticated(
     {   200: xml =>    
         {
-            document.getElementById ("post-comments").style.display = "block";
-            document.getElementById ("start-walking").style.display = "block";
-            document.getElementById ("walk-separator").style.display = "block";
+
+alert ("xml.responseText: " + xml.responseText);
+            if (xml.responseText == "true")
+            {
+                document.getElementById ("post-comments").style.display = "block";
+                document.getElementById ("start-walking").style.display = "block";
+                document.getElementById ("walk-section").style.display = "block";
+            }
         }
     });
 
@@ -68,14 +73,22 @@ function addMenu ()
     //  so we can put the appropriate menu option in it.
 
     configureSidebar ( { HomePage: false, MyProfile: true, AdminFunctions: true }, () =>
-        {   configureElement ("a",
+        {   
+            
+            const section = configureElement ("section",
+                {
+                    "id": "walk-section",
+                },
+                menu);
+
+            configureElement ("a",
                 {   "class": "menu-option",
                     "href": "#",
                     "id": "start-walking",
                     "innerText": "Start Walking",
                     "onclick": "closeSidebar();startWalk(event);"
                 },
-                menu);
+                section);
 
             configureElement ("a",
                 {   "class": "menu-option",
@@ -84,13 +97,13 @@ function addMenu ()
                     "innerText": "Stop Walking",
                     "onclick": "closeSidebar();stopWalk(event);"
                 },
-                menu);
+                section);
 
             configureElement ("hr",
                 {   "class": "menu-separator",
                     "id": "walk-separator",
                 },
-                menu);
+                section);
 
             configureElement ("a",
                 {   "class": "menu-option",
