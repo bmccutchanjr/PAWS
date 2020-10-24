@@ -77,9 +77,12 @@ create table if not exists Animals
                     not null
                     unique,
 
-    active          boolean
-                    not null
+    active          boolean                     --  Soft delete.  The animal is no longer at the shelter but the data is kept
+                    not null                    --  in the database to preserve the history and integrity.
                     default true,
+
+    available       boolean                     --  Indicates the animal is temporarilly not available.  Perhaps because someone
+                    default false,              --  is walking with it now?
 
     species         varchar (6)
                     not null

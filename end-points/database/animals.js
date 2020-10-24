@@ -219,7 +219,7 @@ const db =
         //  same page.  This function retrieves all active animals at the shelter of the indicated
         //  species.
 
-        query ("select a.animalId, name, a.color, cage_num, year(start), month(start), day(start), sum((time_to_sec(end) - time_to_sec(start)) / 60) as duration "
+        query ("select a.animalId, name, available, a.color, cage_num, year(start), month(start), day(start), sum((time_to_sec(end) - time_to_sec(start)) / 60) as duration "
                 + "from Animals a " 
                 + "left join Colors c on a.color=c.color "
                 + "left join Interactions i on a.animalId=i.animalId "
@@ -249,6 +249,7 @@ const db =
                     const c1 =
                     {   "animalId": data[x]["animalId"],
                         "name": data[x]["name"],
+                        "available": data[x]["available"],
                         "color": data[x]["color"],
                         "cage_num": data[x]["cage_num"],
                         "totalMinutes": 0,

@@ -34,8 +34,6 @@ function enableOptions ()
     checkAuthenticated(
     {   200: xml =>    
         {
-
-alert ("xml.responseText: " + xml.responseText);
             if (xml.responseText == "true")
             {
                 document.getElementById ("post-comments").style.display = "block";
@@ -75,6 +73,8 @@ function addMenu ()
     configureSidebar ( { HomePage: false, MyProfile: true, AdminFunctions: true }, () =>
         {   
             
+            //  Create and configure the options to start and end walks...
+
             const section = configureElement ("section",
                 {
                     "id": "walk-section",
@@ -104,6 +104,8 @@ function addMenu ()
                     "id": "walk-separator",
                 },
                 section);
+
+            //  Create and configure options for to enter and view comments...
 
             configureElement ("a",
                 {   "class": "menu-option",

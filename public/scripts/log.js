@@ -6,14 +6,14 @@
 function addFooter ()
 {   //  Populate the footer...
 
-    const div = document.body.getElementsByTagName ("footer")[0];
+    const footer = document.body.getElementsByTagName ("footer")[0];
 
     const inner = configureElement ("div",
         {
             "class": "inner-footer",
             "id": "inner-footer"
         },
-        div);
+        footer);
 
     configureElement ("div",
         {
@@ -249,7 +249,7 @@ function buildAnimals ()
 
         let animal = configureElement ("div",
             {
-                "class": "animal " + index[x].color,
+                "class": "animal " + index[x].color + (!index[x].available ? " unavailable" : ""),
                 "animalId": index[x].animalId
             });
 
