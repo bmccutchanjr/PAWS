@@ -38,23 +38,26 @@ function checkOptions (options)
     //  options should be hidden or visible.
 
     checkAuthenticated (
-    {   200: () =>
+    {   200: xml =>
         {
-            isAuthenticated = true;
+            if (xml.responseText == "true")
+            {   isAuthenticated = true;
 
-            document.getElementById ("menu-login").style.display = "none";
-            document.getElementById ("menu-logout").style.display = "inline-block";
+                document.getElementById ("menu-login").style.display = "none";
+                document.getElementById ("menu-logout").style.display = "inline-block";
 
-            if (options.MyProfile != false)
-                document.getElementById ("menu-profile").style.display = "inline-block";
+                if (options.MyProfile != false)
+                    document.getElementById ("menu-profile").style.display = "inline-block";
+            }
         }
     });
 
     if (options.AdminFunctions != false)
         checkAdmin (
-        {   200: () =>
+        {   200: xml =>
             {
-                document.getElementById ("menu-admin").style.display = "inline-block";
+                if (xml.responseText == "true")
+                    document.getElementById ("menu-admin").style.display = "inline-block";
             }
         });
 }

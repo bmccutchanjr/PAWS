@@ -245,14 +245,17 @@ function startWalk (event)
 
             addWalkTimer();
 
-            //  hide/display walking menu items
+            //  A walking session has been started
+            //  -   Hide the menu option "Start Walking"
+            //  -   Display the menu option "Stop Walking"
+            //  -   Set a sessionId attribute on the menu option so we can identify this sessions in stopWalk()
 
-            const data = JSON.parse(result.data);
+            const data = JSON.parse(xml.responseText);
 
             document.getElementById("start-walking").style.display = "none";
             const stop = document.getElementById("stop-walking");
             stop.setAttribute ("sessionId", data.insertId);
-            stop.style.display = "block";
+            stop.style.display = "inline-block";
 
             //  and play audio
 
@@ -270,25 +273,31 @@ function stopWalk (event)
     AJAX ("GET", "/api/animals/stopSession/" + document.getElementById("stop-walking").getAttribute("sessionId"),
     {   200: xml =>
         {
-            const timeDiv = document.getElementById("timer");
-            if (timeDiv)
-            {   //  If the timer is in the DOM (and it may not be if the user reloaded the page or navigated away and then back)
-                //  remove the timer and clearInterval()
+            if (xml.responseText == "true")
+            {
+                const timeDiv = document.getElementById("timer");
+                if (timeDiv)
+                {   //  If the timer is in the DOM (and it may not be if the user reloaded the page or navigated away and then back)
+                    //  remove the timer and clearInterval()
 
-                timeDiv.remove();
-                clearInterval(timer.interval);
+                    timeDiv.remove();
+                    clearInterval(timer.interval);
+                }
+
+                //  A walking session has ended
+                //  -   Hide the menu option "Stop Walking"
+                //  -   Remove the sessionId attribute from the menu option
+                //  -   Display the menu option "Start Walking"
+
+                document.getElementById("start-walking").style.display = "inline-block";
+                const stop = document.getElementById("stop-walking");
+                stop.removeAttribute ("sessionId");
+                stop.style.display = "none";
+
+                //  and play audio
+
+                playAudio (ting);
             }
-
-            //  hide/display walking menu items
-
-            document.getElementById("start-walking").style.display = "block";
-            const stop = document.getElementById("stop-walking");
-            stop.removeAttribute ("sessionId");
-            stop.style.display = "none";
-
-            //  and play audio
-
-            playAudio (ting);
         }
     })
 }

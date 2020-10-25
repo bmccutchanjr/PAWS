@@ -3,6 +3,10 @@
 const chalk = require("chalk");
 const connection = require("./connect.js");
 
+//  02  begins
+const socket = require("../sockets.js");
+//  02  ends
+
 //  Following are several functions used by the db object.  They are not exported by this module and as such are "private".
 //  They perform important functions for the module (some are invoked in multiple places) but should not be accessed directly
 //  by other modules.
@@ -359,34 +363,6 @@ const db =
         })
     },
 
-//  06  //  05  begins
-//  06      hasOpenSession (peopleId)
-//  06      {   //  Find out if this user has an open session and return a boolean 
-//  06  
-//  06          return new Promise ((resolve, reject) =>
-//  06          {
-//  06              const queryString = "select * from Interactions where peopleId=? and end is null;";
-//  06              query (queryString, peopleId)
-//  06              .then(result =>
-//  06              {   //  The results are in...but what are they?
-//  06  
-//  06                  if (result.length == 0)
-//  06                      resolve (false);
-//  06                  else
-//  06                      resolve (true);
-//  06              })
-//  06              .catch(error =>
-//  06              {
-//  06                  console.log(chalk.redBright("PAWS ERROR 102"));
-//  06                  console.log(chalk.redBright("module:   animals.js"));
-//  06                  console.log(chalk.redBright("function: hasOpenSession()"));
-//  06                  console.log(chalk.redBright(error));
-//  06                  reject(error);
-//  06              })
-//  06          })
-//  06      },
-//  06  //  05  ends
-
     insertWalkingNotes (user, animal, data)
     {   //  execute an SQL query to insert the notes into the database...
 
@@ -422,31 +398,67 @@ const db =
 
         return new Promise ((resolve, reject) =>
         {
+            let returnData = {};
+
             verifyWalkPermission (peopleId, animalId)
             .then(_ =>
             {   //  The result returned by the Promise is not actually important.  verifyWalkPermission() will invoke
                 //  a reject() if the user doesn't have permission, and only invoke a resolve() if they do.  If this
                 //  then-block is invoked, it simply means the user has permission.
+                //  
+                //  This function requires updating more than one table...and that means transaction tracking...
+
+                return query ("begin", [ peopleId, animalId ]);
+            })
+            .then(_ =>
+            {   //  Again, the result of the last transaction is unimportant.  It is enough to know no errors occured
+                //  and it is okay to perform this insert.
 
                 const queryString = "insert into Interactions (peopleId, animalId, start) values (?, ?, now());";
                 return query (queryString, [ peopleId, animalId ]);
             })
             .then(result =>
-            {   //  The result is actually vital...there's no user data in it but rather the status of the insert statement
-                //  with the primary key of the row just added.  It would be much simpler to resolve the value of the key
-                //  but that might be a 3-digit number, which ExpressJS interprets as a status code rather than data.  Which
-                //  is bad enough.  ExpressJS logs messages about a deprecated process (which I would be happy ignoring) but
-                //  if the value is not a status code ExpressJS understands, it blows up.
+            {   //  This result is the only result in this chain that actually has any meaning to the application, and it
+                //  is vital.  There's no user data in it but rather the status of the insert statement with the primary
+                //  key of the row just added.  It would be much simpler to resolve the value of the key but that might be
+                //  a 3-digit number, which ExpressJS interprets as a status code rather than data.  Which is bad enough.
+                //  ExpressJS logs messages about a deprecated process (which I would be happy ignoring) but if the value
+                //  is not a status code ExpressJS recognizes, ExpressJS will blow up.
                 //
                 //  It's a brain-dead assumption on the part of the ExpressJS developers to assume my data is somehow integral
                 //  to their code and then run away with it.  But I guess that's what you get when you use a framework.
 
-                resolve (result);
+                returnData = result;
+
+                const queryString = "update Animals set available=false where animalId=?;";
+                return query (queryString, animalId);
+            })
+            .then(result =>
+            {   //  And once again, the results of the last query are not all that important.
+
+                return query ("commit;");
+            })
+            .then(result =>
+            {   //  And yet again.  It is ebough that the 'commit' didn't fail.  So now I can resolve the results
+                //  from the above insert operation.
+
+                socket.sendToAll (
+                    JSON.stringify(
+                        {
+                            "message": "Availability Change",
+                            "animalId": animalId,
+                            "available": false
+                        })
+                )
+
+                resolve (returnData);
             })
             .catch(error =>
             {
                 if (!error.status)
                 {
+                    query ("rollback;");
+
                     console.log(chalk.redBright("PAWS ERROR 102"));
                     console.log(chalk.redBright("module:   animals.js"));
                     console.log(chalk.redBright("function: startWalking()"));
@@ -463,17 +475,54 @@ const db =
 
         return new Promise ((resolve, reject) =>
         {
-            const queryString = "update Interactions set end=now() "
-                              + "where id=? and end is null;";
-            query (queryString, sessionId)
+            let animalId = undefined;
+
+            query ("select animalId from Interactions where id=?;", sessionId)
+            .then(result =>
+            {   //  I need the animalId from Interactions to update any connected WebSocket clirnts
+
+                animalId = result[0].animalId;
+
+                return query ("begin;");
+            })
             .then(_ =>
-            {   //  The result returned by the Promise is not actually importent.  If this then-block is invoked it
+            {   //  The last query started a transaction.  There's no data returned from that.  It's enough to know
+                //  it didn't fail, which is why this block is executing.
+
+                const queryString = "update Interactions set end=now() "
+                                  + "where id=? and end is null;";
+                return query (queryString, sessionId);
+            })
+            .then(_ =>
+            {   //  The result returned by the Promise is not actually important.  If this then-block is invoked it
                 //  simply means there were no errors.
 
-                resolve ("all good");
+                const queryString = "update Animals set available=true where animalId=?;";
+                return query (queryString, animalId);
+            })
+            .then(result =>
+            {   //  And once again, the results of the last query are not all that important.
+
+                return query ("commit;");
+            })
+            .then(result =>
+            {   //  And once again, the results of the last query are not all that important.
+
+                socket.sendToAll (
+                    JSON.stringify(
+                        {
+                            "message": "Availability Change",
+                            "animalId": animalId,
+                            "available": true
+                        })
+                )
+
+                resolve ("true");
             })
             .catch(error =>
             {
+                query ("rollback;");
+
                 console.log(chalk.redBright("PAWS ERROR 102"));
                 console.log(chalk.redBright("module:   animals.js"));
                 console.log(chalk.redBright("function: stopWalking()"));

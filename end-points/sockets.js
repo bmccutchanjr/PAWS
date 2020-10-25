@@ -44,7 +44,7 @@ function checkConnections ()
 
 function createUniqueId ()
 {   //  Generate a random 10-digit id for each client that connects.  I guess it's not guaranteed to be unique, but with 100 billion
-    //  possible combinations it will be all but guaranteed.
+    //  possible combinations it is all but guaranteed.
     
     let id = "";
 
@@ -78,15 +78,21 @@ const socket =
             console.log (chalk.greenBright("current # connections: " + clientList.length));
 
 
-            socket.on ("message", event =>
-            {
+            client.on ("message", message =>
+            {   //  Listen for messages from this CLIENT
+
                 switch (message)
                 {
+                    case "Hello!":
+                    {   //  A client is trying to connect...and we've already handled that.  Ignore this message.
+
+                        break;
+                    }
                     case "pong":
                     {
                         clientList.forEach (client =>
                         {
-                            if (client.sId == request.sId) client.status = true;
+                            if (client.id == uniqueId) client.status = true;
                         })
                         break;
                     }
@@ -121,7 +127,7 @@ const socket =
 
     },
 
-    sendMessage: message =>
+    sendToAll: message =>
     {   //  Push the indicated message to all connected clients.
         //  
         //  This is invoked as a response to some event outside of the scope of the WebSocket server, and not as a response to
@@ -130,8 +136,8 @@ const socket =
         //
         //  There is no need, at this time, to be selective.  All messages will be pushed to all connected clients.
 
-        clientList.forEach (client =>
-        {   client.send(message);
+        clientList.forEach (cl =>
+        {   cl.client.send(message);
         })
     }
 }

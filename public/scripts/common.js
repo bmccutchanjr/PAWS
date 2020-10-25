@@ -229,7 +229,23 @@ function removeModal (event)
     //  The modal element to be removed from the DOM is actually the grandparent of the element that triggers
     //  this event.
 
-    const modal = event.target.parentNode;
+//  I thought since I put the onclick event on a <div> that <div> should be the target of the event.  A quick and efficient
+//  way to reference the <div> since this function received the event as a parameter.  Which would make the <div> with class
+//  "modal" the parent of event.target.  Nope!  It turns out I need the grandparent (even though the <div> I want is the
+//  container of the one with the event listener).
+//  
+//  But now I find that doesn't work consistently.  Sometimes the this function removed the <div> element with id = modal (the
+//  one I wanted) and sometimes it removes the <div> with class = modal-message (which is the <div> with the onclick event).
+//  Which means that sometimes the DOM event is triggered by the <div> and sometimes by some child of the <div>.   EVEN WHEN
+//  THE ELEMENTS ARE CREATED IN THE SAME FUNCTION.
+//  
+//  The event target can't be relied on, and it's not worth trying to figure it out.
+//      const modal = event.target.parentNode.parentNode;
+//
+//  Get a reference to the element I really want with an ID.  That will always work.  It also means I have a lot of code
+//  that is now suddenly suspect and fixing it may add unnecessary complications.  Not DRY -- but also not my fault.  I can't
+//  do what the browser doesn't do.
+    const modal = document.getElementById("modal");
     modal.remove ();
     playAudio (ting);
 }
@@ -254,6 +270,7 @@ function modal (message, audio=false)
     configureElement ("div",
         {
             "class": "modal-text",
+            "id": "modal-text",
             "innerText": message
         },
         msg);

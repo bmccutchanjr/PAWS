@@ -249,8 +249,9 @@ function buildAnimals ()
 
         let animal = configureElement ("div",
             {
-                "class": "animal " + index[x].color + (!index[x].available ? " unavailable" : ""),
-                "animalId": index[x].animalId
+                "animalId": index[x].animalId,
+                "class": "animal " + index[x].color + ((index[x].available == false) ? " unavailable" : " available"),
+                "id": index[x].animalId
             });
 
         configureElement ("a",
@@ -313,7 +314,7 @@ function buildAnimals ()
                             "class": "interaction-mark",
                             "day": index[x].day[(y * 7) + z].day,
                             "month": index[x].day[(y * 7) + z].month,
-                            "onclick": "getInteractionData (event)",
+                            "onclick": "getInteractionData(event)",
                             "title": index[x].day[(y * 7) + z].year + "-"
                                    + index[x].day[(y * 7) + z].month + "-" +
                                    + index[x].day[(y * 7) + z].day,
@@ -480,39 +481,8 @@ function getInteractionData (event)
     AJAX ("GET", "/api/animals/getInteraction/" + animal + "/" + year + "/" +  month + "/" + day, 
     {   200: xml =>
         {
-            let div = configureElement ("div",
-                {
-                    "class": "modal"
-                },
-                document.body);
-
-            const modal = configureElement ("div",
-                {
-                    "class": "modal-message"
-                },
-                div);
-
-            configureElement ("div",
-                {
-                    "class": "modal-text",
-                    "innerHTML": formatInteraction (JSON.parse(xml.responseText))
-                },
-                modal);
-
-            div = configureElement ("div",
-                {
-                    "class": "modal-options"
-                },
-                modal);
-
-            configureElement ("a",
-                {
-                    "class": "modal-option",
-                    "href": "#",
-                    "innerText": "CLOSE",
-                    "onclick": "removeModal (event)"
-                },
-                div);
+            modal ("");
+            document.getElementById("modal-text").innerHTML = formatInteraction (JSON.parse(xml.responseText));
         }
     });
 }
@@ -684,6 +654,26 @@ function cagePage (event)
     //  Except it doesn't work that way.  Both Chrome and Firefox treat all three methodologies
     //  the same, with Chrome ignoring page2 in all three cases and Firefox returning to page2 in
     //  all three cases.
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function changeAvailability (data)
+{   //  Bind CSS animation to the <div> with animalId = data.animalId
+
+    index.forEach (i =>
+    {
+        if (i.animalId == data.animalId)
+        {
+            const div = dataset[i.index];
+
+            if (data.available)
+                div.setAttribute("class", div.getAttribute("class").replace("unavailable", "available"));
+            else
+                div.setAttribute("class", div.getAttribute("class").replace("available", "unavailable"));
+        }
+    })
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
