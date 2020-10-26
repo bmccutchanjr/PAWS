@@ -168,7 +168,7 @@ input
 /* settings for the modal message                                                                     */
 /*                                                                                                    */
 
-.modal
+.modal-wrapper
 {   
     display: flex;
         flex-direction: column;
@@ -182,7 +182,7 @@ input
     z-index: 100;
 }
 
-.modal-message
+.modal-div
 {   
     background: var(--light-gray);
     border: var(--section-border);
@@ -196,12 +196,12 @@ input
         max-width: 500px;
 }
 
-.modal-message h1
+.modal-div h1
 {   margin: 0px;
     text-align: center;
 }
 
-.modal-message h2
+.modal-div h2
 {   margin: 0px;
         margin-bottom: 20px;
     text-align: center;

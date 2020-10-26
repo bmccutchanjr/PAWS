@@ -235,7 +235,7 @@ function removeModal (event, callback)
 //  "modal" the parent of event.target.  Nope!  It turns out I need the grandparent (even though the <div> I want is the
 //  container of the one with the event listener).
 //  
-//  But now I find that doesn't work consistently.  Sometimes the this function removed the <div> element with id = modal (the
+//  But now I find that doesn't work consistently.  Sometimes this function removed the <div> element with id = modal (the
 //  one I wanted) and sometimes it removes the <div> with class = modal-message (which is the <div> with the onclick event).
 //  Which means that sometimes the DOM event is triggered by the <div> and sometimes by some child of the <div>.   EVEN WHEN
 //  THE ELEMENTS ARE CREATED IN THE SAME FUNCTION.
@@ -246,30 +246,36 @@ function removeModal (event, callback)
 //  Get a reference to the element I really want with an ID.  That will always work.  It also means I have a lot of code
 //  that is now suddenly suspect and fixing it may add unnecessary complications.  Not DRY -- but also not my fault.  I can't
 //  do what the browser doesn't do.
-    const modal = document.getElementById("modal");
+    const modal = document.getElementById("modal-wrapper");
     modal.remove ();
     playAudio (ting);
 
     if (callback) callback();
 }
 
-function modal (message, audio=false, callback)
+function modal (message, audio=false, callback=undefined)
 {   //  Create a modal message and add it to the DOM
 
     if (audio) playAudio (audio);
 
-    const modal = configureElement ("div",
-        {   "class": "modal",
-            "id": "modal"
+    const wrapper = configureElement ("div",
+        {   "class": "modal-wrapper",
+            "id": "modal-wrapper"
         },
         document.body);
 
-    const msg = configureElement ("div",
-        {   "class": "modal-message",
-//  02              "onclick": "removeModal(event" + ((callback["final"] != undefined) ? ", " + callback["final"] : "") + ")"
-            "onclick": "removeModal(event)"
+    const modal = configureElement ("div",
+        {   "class": "modal-div",
         },
-        modal);
+        wrapper);
+
+    modal.addEventListener ("click", event =>
+    {
+        if (callback && callback["final"])
+            removeModal(event, callback["final"]);
+        else
+            removeModal(event);
+    });
 
     configureElement ("div",
         {
@@ -277,9 +283,13 @@ function modal (message, audio=false, callback)
             "id": "modal-text",
             "innerText": message
         },
-        msg);
+        modal);
 
-    if (callback["config"]) callback();
+    if (callback && callback["config"])
+    {
+        modal.removeEventListener ("click");
+        callback["config"]();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
