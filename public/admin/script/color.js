@@ -144,18 +144,6 @@ class ColorSection
         this.createMode = false;
         this.hasPrivledge = false;
     
-//  01          AJAX ("GET", "/api/people/getAnimalPermissions/" + getCookie ("peopleId"), xml =>
-//  01          {
-//  01              if (xml.status == 200)
-//  01              {
-//  01                  const data = JSON.parse(xml.responseText);
-//  01                  this.hasPrivledge = data.allow;
-//  01                  this.initialize (data, "cat");
-//  01                  this.initialize (data, "dog");
-//  01              }
-//  01              else
-//  01              {   alert ("/getAnimalPermissions\n\n" + xml.responseText);
-//  01              }
         AJAX ("GET", "/api/people/getAnimalPermissions/" + getCookie ("peopleId"),
         {   200: xml =>
             {
@@ -217,12 +205,6 @@ class ColorSection
                 },
                 box);
 
-//  01              if (p[species])
-//  01              {
-//  01                  input.setAttribute ("checked", "checked");
-//  01                  if (data.allow != true) input.setAttribute ("disabled", "true");
-//  01              }
-//  01  begins
             if (p[species])
             {
                 input.setAttribute ("checked", "checked");
@@ -243,10 +225,8 @@ class ColorSection
 
         if (this.hasPrivledge)
         {   
-            const button = configureElement ("a",
+            const button = configureElement ("button",
                 {
-                    "class": "menu-option",
-                    "href": "#",
                     "id": "post-color-permissions",
                     "innerText": "SUBMIT",
                     "onclick": "postColorUpdates(event);",
@@ -310,10 +290,8 @@ class ColorSection
 
         if (hr && this.hasPrivledge)
         {   
-            const button = configureElement ("a",
+            const button = configureElement ("button",
                 {
-                    "class": "menu-option",
-                    "href": "#",
                     "id": "post-additional-permissions",
                     "innerText": "Submit Changes",
                     "onclick": "postAdditionalPermissions(event);",

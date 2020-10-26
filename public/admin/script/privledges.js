@@ -62,17 +62,7 @@ class PrivledgeSection
         this.changeMode = false;
         this.createMode = false;
         this.hasPrivledge = false;
-    
-//  01          AJAX ("GET", "/api/people/getAdminPrivledges/" + getCookie ("peopleId"), xml =>
-//  01          {
-//  01              if (xml.status == 200)
-//  01              {
-//  01                  const data = JSON.parse(xml.responseText);
-//  01                  this.hasPrivledge = data.allow;
-//  01                  this.initialize (data);
-//  01              }
-//  01              else
-//  01                  alert ("PrivledgeSection: /getAdminPrivledges\n\n" + xml.responseText);
+
         AJAX ("GET", "/api/people/getAdminPrivledges/" + getCookie ("peopleId"),
         {   200: xml =>
             {
@@ -98,14 +88,6 @@ class PrivledgeSection
 
     initialize (data)
     {   
-//  01          const section = document.getElementById ("permissions");
-//  01  
-//  01          const div = configureElement ("div",
-//  01              {
-//  01                  "class": "permissions-div",
-//  01                  "id": "admin-privledges"
-//  01              },
-//  01              section);
         const div = document.getElementById ("admin-privledges");
 
         configureElement ("div",
@@ -142,10 +124,8 @@ class PrivledgeSection
         });
 
         if (data.allow == true)
-        {   configureElement ("a",
+        {   configureElement ("button",
                 {
-                    "class": "menu-option",
-                    "href": "#",
                     "id": "post-privledge-updates",
                     "innerText": "Submit Changes",
                     "onclick": "postPrivledges(event);"

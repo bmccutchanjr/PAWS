@@ -396,30 +396,6 @@ class PersonSection
     {
         this.lockMode = data.results.lock_code == undefined ? "unlocked" : "locked";
 
-//  01          if (data.results[0].given != "")
-//  01          {   
-//  01              document.names.given.value = data.results[0].given;
-//  01              document.getElementById ("name-given").setAttribute ("value", data.results[0].given);
-//  01          }
-//  01  
-//  01          if (data.results.middle != "")
-//  01          {   
-//  01              document.names.middle.value = data.results[0].middle;
-//  01              document.getElementById ("name-middle").setAttribute ("value", data.results[0].middle);
-//  01          }
-//  01  
-//  01          if (data.results.surname != "")
-//  01          {   
-//  01              document.names.surname.value = data.results[0].surname;
-//  01              document.getElementById ("name-surname").setAttribute ("value", data.results[0].surname);
-//  01          }
-//  01  
-//  01          if (data.results.email != "")
-//  01          {   
-//  01              document.names.email.value = data.results[0].email;
-//  01              document.getElementById ("email-input").setAttribute ("value", data.results[0].email);
-//  01          }
-//  01  begins
         if (data.results.length > 0)
         {
             document.names.given.value = data.results[0].given;
@@ -434,28 +410,13 @@ class PersonSection
             document.names.email.value = data.results[0].email;
             document.getElementById ("email-input").setAttribute ("value", data.results[0].email);
         }
-//  01  ends
 
         this.allowInputs ();
     }
 
-    retrievePersonData (peopleId)
+    retrievePersonData (peopleId, callback)
     {
-//  01          return AJAX ("GET", "/api/people/getPerson/" + peopleId, xml =>
-//  01          {
-//  01              if (xml.status == 200)
-//  01              {
-//  01                  const data = JSON.parse(xml.responseText);
-//  01  console.log (JSON.stringify(data, null, 2));
-//  01                  this.setAddPermission (data.add);
-//  01                  this.setChangePermission (data.change);
-//  01                  this.initializeInputs (data);
-//  01                  this.setCreateMode (peopleId);
-//  01              }
-//  01              else
-//  01              {   alert ("PersonSection\n\n" + xml.responseText);
-//  01              }
-        return AJAX ("GET", "/api/people/getPerson/" + peopleId,
+        AJAX ("GET", "/api/people/getPerson/" + peopleId,
         {   200: xml =>
             {
                 const data = JSON.parse(xml.responseText);
@@ -464,6 +425,8 @@ console.log (JSON.stringify(data, null, 2));
                 this.setChangePermission (data.change);
                 this.initializeInputs (data);
                 this.setCreateMode (peopleId);
+
+                callback ();
             }
         });
     }

@@ -46,11 +46,12 @@ function handleLoginOption (event)
     AJAX ("POST", "/api/people/login/",
         {   205: xml =>
             {
-//  During this development cycle, I don't want to redirect the page so I don't have to keep loading the page everytime
-//  nodemon restarts the server.
                     if (window.location.href.indexOf("/login") > 0)
+                    {
+//  During this development cycle, I don't want to redirect the page so I don't have to load the page everytime
+//  nodemon restarts the server.
 //                          window.location.href = "/";
-                            alert ("you're in!");
+                    }
                     else
                         window.location.href.reload();
             }

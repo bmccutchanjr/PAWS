@@ -114,16 +114,6 @@ class PasswordSection
         this.createMode = false;
         this.hasPrivledge = false;
     
-//  02          AJAX ("GET", "/api/people/hasPasswordPrivledge/" + getCookie ("peopleId"), xml =>
-//  02          {
-//  02              if (xml.status == 200)
-//  02              {
-//  02                  this.hasPrivledge = (xml.responseText == "true" ? true : false);
-//  02                  this.initialize (this.hasPrivledge);
-//  02              }
-//  02  //  01  This is not an error condition...it is normal and expected and there is nothing to do here
-//  02  //  01              else
-//  02  //  01                  alert ("/hasPasswordPrivledge\n\n" + xml.responseText);
         AJAX ("GET", "/api/people/hasPasswordPrivledge/" + getCookie ("peopleId"),
         {   200: xml =>
             {

@@ -62,8 +62,10 @@
         /*  application                                                                                       */
         /*                                                                                                    */
 
-        .menu-option
+        /* .menu-option */
+        button
         {   
+            color: grey;
             display: none;
             padding: 2px;
             width: auto;
@@ -106,21 +108,27 @@
             </div>
             <input class=email-input id=email-input name=email onchange="emailValidation(event);" onfocus="nameClearError(event)" placeholder="(email address is required)" readonly>
             <div>
-                <a class=menu-option href=# id=create-option onclick="postNames(event)" name=create>Submit</a>
-                <a class=menu-option href=# id=change-option onclick="postNames(event)" name=change>Submit Changes</a>
+                <!-- <a class=menu-option href=# id=create-option onclick="postNames(event)" name=create>Submit</a> -->
+                <!-- <a class=menu-option href=# id=change-option onclick="postNames(event)" name=change>Submit Changes</a> -->
+                <button id=create-option onclick="postNames(event)" name=create>Submit</button>
+                <button id=change-option onclick="postNames(event)" name=change>Submit Changes</button>
             </div>
         </form>
 
         <section class=frame-section id=lock-section>
-            <a class=menu-option href=# id=lock-option name=lock onclick="sendLock(event);">Lock This User</a>
-            <a class=menu-option href=# id=unlock-option name=unlock onclick="sendLock(event);">Unlock This User</a>
+            <!-- <a class=menu-option href=# id=lock-option name=lock onclick="sendLock(event);">Lock This User</a> -->
+            <!-- <a class=menu-option href=# id=unlock-option name=unlock onclick="sendLock(event);">Unlock This User</a> -->
+            <button id=lock-option name=lock onclick="sendLock(event);">Lock This User</button>
+            <button id=unlock-option name=unlock onclick="sendLock(event);">Unlock This User</button>
             <div class=spacer id=change-spacer></div>
-            <a class=menu-option href=# id=delete-option onclick="sendDeactivate(event)" name=delete>Delete/Deactivate</a>
+            <!-- <a class=menu-option href=# id=delete-option onclick="sendDeactivate(event)" name=delete>Delete/Deactivate</a> -->
+            <button id=delete-option onclick="sendDeactivate(event)" name=delete>Delete/Deactivate</button>
         </section>
 
         <section class="frame-section" id=password-section>
             <input id=password name=password onfocus="passwordClearError(event)" placeholder="(new password)">
-            <a class=menu-option href=# id=password-option name=password onclick="postPassword(event)">Change Password</a>
+            <!-- <a class=menu-option href=# id=password-option name=password onclick="postPassword(event)">Change Password</a> -->
+            <button id=password-option name=password onclick="postPassword(event)">Change Password</button>
         </section>
 
         <section class="frame-section" id=permissions>
@@ -199,18 +207,10 @@
         const passwordSection = new PasswordSection (getCookie ("peopleId"));
 
         const personSection = new PersonSection (getCookie ("peopleId"))
-        personSection.retrievePersonData (getCookie ("peopleId"))
-        .then (() =>
+        personSection.retrievePersonData (getCookie ("peopleId"), () =>
         {
-            if (personSection.getChangePermission ())
-            {
-                passwordSection.setChangeMode ();
-                // privledgeSection.setChangeMode ();
-            }
-        })
-        .catch (error =>
-        {
-            console.log (error);
+            passwordSection.setChangeMode ();
+            // privledgeSection.setChangeMode ();
         })
 
         const observer = new ResizeObserver (entries =>
