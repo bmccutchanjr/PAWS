@@ -167,28 +167,19 @@ function nameValidation (event)
 
 //  functions that request APIs for various functions involving people
 
+let createMode = undefined;
+
 function sendDeactivate (event)
 {   event.preventDefault ();
 
-//  01      AJAX ("GET", "/api/people/deactivatePerson/" + getCookie ("peopleId"), xml =>
-//  01      {
-//  01          if (xml.status == 205)
-//  01          {
-//  01              playAudio (ting);
-//  01              alert (document.names.give.value + " " + document.names.surname.value + " has been deactivated.");
-//  01              window.location.href="/admin/people-picker";
-//  01          }
-//  01          else
-//  01          {
-//  01              playAudio (buzz);
-//  01              alert (xml.responseText);
-//  01          }
     AJAX ("GET", "/api/people/deactivatePerson/" + getCookie ("peopleId"),
-    {   205: xml =>
+    {   204: xml =>
         {
-            playAudio (ting);
-            alert (document.names.give.value + " " + document.names.surname.value + " has been deactivated.");
-            window.location.href="/admin/people-picker";
+            modal (document.names.given.value + " " + document.names.surname.value + " has been deactivated.",
+                ting,
+                {
+                    final: () => { window.location.href="/admin/people-picker" }
+                });
         }
     })
 }
@@ -200,20 +191,6 @@ function sendLock (event)
     let other = target.name == "lock" ? document.getElementById ("unlock-option") : document.getElementById ("lock-option");
         
     const api = "/api/people/lockPerson/" + getCookie ("peopleId") + "/" + (target.name == "lock" ? "true" : "false");
-//  01      AJAX ("GET", api, xml =>
-//  01      {
-//  01          if (xml.status == 200)
-//  01          {
-//  01              playAudio (ting);
-//  01              target.style.display = "none";
-//  01              other.style.display = "inline-block";
-//  01              alert ("This user account is now " + (target.name == "lock" ? "locked out" : "unlocked"))
-//  01          }
-//  01          else
-//  01          {
-//  01              playAudio (buzz);
-//  01              alert (xml.responseText);
-//  01          }
     AJAX ("GET", api,
     {   200: xml =>
         {
@@ -236,21 +213,17 @@ function postNamesChange ()
         email: document.names.email.value,
     };
 
-//  01      AJAX ("POST", "/api/people/updatePerson/" + getCookie ("peopleId"), xml =>
-//  01      {
-//  01          if (xml.status == 200)
-//  01          {
-//  01              playAudio (ting);
-//  01          }
-//  01          else
-//  01          {
-//  01              playAudio (buzz);
-//  01              alert (xml.responseText);
-//  01          }
     AJAX ("POST", "/api/people/updatePerson/" + getCookie ("peopleId"),
     {   200: xml =>
         {
             playAudio (ting);
+
+    //  And reset the value attribute of the various <input> elements with the new data
+
+    document.getElementById ("name-given").setAttribute ("value", document.names.given.value);
+    document.getElementById ("name-middle").setAttribute ("value", document.names.middle.value);    
+    document.getElementById ("name-surname").setAttribute ("value", document.names.surname.value);
+    document.getElementById ("email-input").setAttribute ("value", document.names.email.value);
         }
     },
     postData);
@@ -266,25 +239,6 @@ function postNamesNew ()
         email: document.names.email.value,
     };
 
-//  01      AJAX ("POST", "/api/people/createPerson", xml =>
-//  01      {
-//  01          if (xml.status == 200)
-//  01          {
-//  01              playAudio (ting);
-//  01              peopleId = JSON.parse(xml.responseText).insertId;
-//  01              setCookie ("peopleId", peopleId, 3600);
-//  01              createMode = false;
-//  01              doPersonData (
-//  01                  {   add: false,
-//  01                      change: true,
-//  01                      results: [ postData ]
-//  01                  });
-//  01          }
-//  01          else
-//  01          {
-//  01              playAudio (buzz);
-//  01              alert (xml.responseText);
-//  01          }
     AJAX ("POST", "/api/people/createPerson",
     {   200: xml =>
         {
@@ -292,11 +246,8 @@ function postNamesNew ()
             peopleId = JSON.parse(xml.responseText).insertId;
             setCookie ("peopleId", peopleId, 3600);
             createMode = false;
-            doPersonData (
-                {   add: false,
-                    change: true,
-                    results: [ postData ]
-                });
+            personSection.setChangeMode();
+            passwordSection.setChangeMode();
         }
     },
     postData);
@@ -334,7 +285,7 @@ function postNames (event)
     
     if (!changed)
     {
-        playAudio (buzz);
+        modal ("You haven't made any changes", buzz);
         return false;
     }
 
@@ -426,7 +377,7 @@ console.log (JSON.stringify(data, null, 2));
                 this.initializeInputs (data);
                 this.setCreateMode (peopleId);
 
-                callback ();
+                if (callback) callback ();
             }
         });
     }
@@ -434,6 +385,8 @@ console.log (JSON.stringify(data, null, 2));
     setChangeMode ()
     {   //  Set the display properties of appropriate DOM elements to allow the administrator to submit changes to the
         //  server
+
+        createMode = false;
 
         document.getElementById ("create-option").remove();
 
@@ -464,6 +417,8 @@ console.log (JSON.stringify(data, null, 2));
     setCreateMode (peopleId)
     {   //  By default, the constructor sets up the page in "change mode".  If this is a new user, sections and options
         //  must be hidden.
+
+        createMode = true;
 
         if (peopleId != 0)
         {   //  peopleId represents the primary key of the row representing this user in the database.  If peopleId is not

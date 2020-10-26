@@ -188,6 +188,19 @@
 
     //  retrieve data from the server and initialize the page
 
+    //  It seems that I need these things to be global variables...there is a very real possibility that I don't even need
+    //  to instanitate them because there will only ever be one instance of each.  I just made them classes to collect the
+    //  functions and variables into one place to clean up the code.  I could treat everything as static methods...
+    //
+    //  Heck, in that case I might not even need classes...an object should suffice.  Classes are better because objects
+    //  don't provide encapsulation or allow variables and functions to be made private, but Classes do.  And there's less
+    //  code to change.
+
+    let privledgeSection = undefined;
+    let colorSection = undefined;
+    let passwordSection = undefined;
+    let personSection = undefined;
+
     document.addEventListener ("DOMContentLoaded", event =>
     {
         //  These classes are all dependent on asynchronous methods to retrieve data from the server.  Those APIs
@@ -200,18 +213,15 @@
         //
         //  So wait for the DOM before creating the classes.
 
-        const privledgeSection = new PrivledgeSection (getCookie ("peopleId"));
+        colorSection = new ColorSection (getCookie ("peopleId"));
+        passwordSection = new PasswordSection (getCookie ("peopleId"));
+        privledgeSection = new PrivledgeSection (getCookie ("peopleId"));
 
-        const colorSection = new ColorSection (getCookie ("peopleId"));
-
-        const passwordSection = new PasswordSection (getCookie ("peopleId"));
-
-        const personSection = new PersonSection (getCookie ("peopleId"))
+        personSection = new PersonSection (getCookie ("peopleId"));
         personSection.retrievePersonData (getCookie ("peopleId"), () =>
-        {
-            passwordSection.setChangeMode ();
-            // privledgeSection.setChangeMode ();
-        })
+            {   
+                passwordSection.setChangeMode();
+            });
 
         const observer = new ResizeObserver (entries =>
         {   for (const entry of entries)

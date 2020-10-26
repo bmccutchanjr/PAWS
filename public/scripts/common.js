@@ -223,7 +223,8 @@ function setCookie (name, value, maxAge=86400, path="/")
 
 //  functions and variables needed to implement the modal message element
 
-function removeModal (event)
+//  02  function removeModal (event)
+function removeModal (event, callback)
 {   event.preventDefault ();
 
     //  The modal element to be removed from the DOM is actually the grandparent of the element that triggers
@@ -248,9 +249,11 @@ function removeModal (event)
     const modal = document.getElementById("modal");
     modal.remove ();
     playAudio (ting);
+
+    if (callback) callback();
 }
 
-function modal (message, audio=false)
+function modal (message, audio=false, callback)
 {   //  Create a modal message and add it to the DOM
 
     if (audio) playAudio (audio);
@@ -263,6 +266,7 @@ function modal (message, audio=false)
 
     const msg = configureElement ("div",
         {   "class": "modal-message",
+//  02              "onclick": "removeModal(event" + ((callback["final"] != undefined) ? ", " + callback["final"] : "") + ")"
             "onclick": "removeModal(event)"
         },
         modal);
@@ -274,6 +278,8 @@ function modal (message, audio=false)
             "innerText": message
         },
         msg);
+
+    if (callback["config"]) callback();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

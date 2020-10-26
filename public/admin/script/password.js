@@ -68,20 +68,6 @@ function postPassword (event)
 
     if (passwordValidation ())
     {
-//  02          AJAX ("POST", "/api/people/changePassword/" + getCookie ("peopleId"), xml =>
-//  02          {
-//  02              if (xml.status == 200)
-//  02              {
-//  02                  playAudio (ting);
-//  02                  const input = document.getElementById ("password");
-//  02                  input.value = null;
-//  02                  alert ("All good!");
-//  02              }
-//  02              else
-//  02              {
-//  02                  playAudio (buzz);
-//  02                  alert (xml.responseText);
-//  02              }
         AJAX ("POST", "/api/people/changePassword/" + getCookie ("peopleId"),
         {   200: xml =>
             {

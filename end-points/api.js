@@ -319,8 +319,10 @@ if (request.user)
         })
         .then(result =>
         {
-            //  send a 205 status: completed successfully, no data is returned and requesting client reload
-            response.status(205).send();
+            //  Respond with a 204 status: completed successfully, no data is returned.  This is an API and can't redirect
+            //  the browser, but the browser can load a new page.
+
+            response.status(204).send("/admin/people-picker");
         })
         .catch (error =>
         {

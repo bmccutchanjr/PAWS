@@ -6,19 +6,14 @@
 //  The required npm modules
 const chalk = require("chalk");
 const express = require("express");
-//  02  const passport = require("./authenticate.js");
-//  01  Where is this crap coming from?
 const path = require("path");
-//  01  const { send } = require("process");
 
-//  02  begins
 const people = require ("./database/people.js");
-//  02  ends
 
 // Configure express
 const server = express();
 const router = express.Router ();
-// server.use (express.static(path.join(__dirname, "../public")));
+//  server.use (express.static(path.join(__dirname, "../public")));
 server.use ("/", router);
 
 router
@@ -27,7 +22,9 @@ router
         // I use it for is to debug routes, but it could be something more useful.
 
         // console.log(chalk.blue("html.js"));
-//  console.log (request.user.peopleId);
+//  if (request.user);
+//      console.log ("peopleId: " + request.user.peopleId);
+
         console.log(chalk.blue("html.js says client is requesting ", request.url));
         
         next();
@@ -131,6 +128,17 @@ router
     {   //  The various /admin "sub routes" still need the same CSS, script and image files used by the rest of
         //  the application.  express.static () won't find them because it's looking for a folder /admin in the
         //  file system.
+
+//  More and more I find that ExpressJS simply will not let me do what I want...These routes are for specific files
+//  that are directled to the wrong location because of the way ExpressJS interacts with the browser.  Actually, not
+//  an ExpressJS issue.  I told the browser it's getting files from the /admin folder so it thinks that everything
+//  is in that folder...I don't want to have to hard code the path for every link!
+
+        if (request.params.route == "buzz.mp3")
+            return response.status(200).sendFile(path.join(__dirname, "../public/audio/buzz.mp3"));
+
+        if (request.params.route == "ting.mp3")
+            return response.status(200).sendFile(path.join(__dirname, "../public/audio/ting.mp3"));
 
         response.redirect ("/" + request.params.folder + "/" + request.params.route);
     })

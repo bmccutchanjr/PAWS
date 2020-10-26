@@ -46,18 +46,7 @@ function postAdditionalPermissions (event)
     {
         const user = getCookie ("peopleId");
         const species = target.getAttribute ("species");
-//  01          AJAX ("POST", "/api/people/updateAdditionalPermissions/" + user + "/" + species, xml =>
-//  01          {
-//  01              if (xml.status == 200)
-//  01              {   playAudio (ting);
-//  01                  alert ("Successfully updated additional permissions");
-//  01              }
-//  01              else
-//  01              {
-//  01                  playAudio (buzz);
-//  01                  alert (xml.responseText);
-//  01              }
-//  01          },
+
         AJAX ("POST", "/api/people/updateAdditionalPermissions/" + user + "/" + species, 
         {   200: xml =>
             {   playAudio (ting);
@@ -107,17 +96,7 @@ function postColorUpdates (event)
     {
         const user = getCookie ("peopleId");
         const species = target.getAttribute ("species");
-//  01          AJAX ("POST", "/api/people/updateColorPermissions/" + user + "/" + species, xml =>
-//  01          {
-//  01              if (xml.status == 200)
-//  01              {   playAudio (ting);
-//  01                  alert ("Successfully updated color permissions");
-//  01              }
-//  01              else
-//  01              {
-//  01                  playAudio (buzz);
-//  01                  alert (xml.responseText);
-//  01              }
+
         AJAX ("POST", "/api/people/updateColorPermissions/" + user + "/" + species,
         {   200: xml =>
             {   playAudio (ting);

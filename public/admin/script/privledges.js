@@ -25,17 +25,6 @@ function postPrivledges (event)
     }
     if (changed > 0)
     {
-//  01          AJAX ("POST", "/api/people/changeAdminPrivledges/" + getCookie ("peopleId"), xml =>
-//  01          {
-//  01              if (xml.status == 200)
-//  01              {   playAudio (ting);
-//  01                  alert ("Successfully updated admin privledges");
-//  01              }
-//  01              else
-//  01              {
-//  01                  playAudio (buzz);
-//  01                  alert (xml.responseText);
-//  01              }
         AJAX ("POST", "/api/people/changeAdminPrivledges/" + getCookie ("peopleId"),
         {   200: xml =>
             {   playAudio (ting);
