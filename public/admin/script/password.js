@@ -1,115 +1,64 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//  functions used to validate and set the error class for the password <input>
-
-function passwordClearError (text)
-{   event.preventDefault ();
-
-    const input = event.target;
-    input.select();
-    const section = input.parentNode;
-    const errors = section.getElementsByClassName ("error-text");
-    const length = errors.length;
-    for (let x=0; x<length; x++)
-    {
-        errors[x].remove ();
-    }
-
-    setErrorClass (input, false);
-    errors.password = false;
-}
-
-function passwordSetError (input, text)
-{
-    const section = document.getElementById ("password-section");
-    configureElement ("div",
-        {
-            "class": "error-text",
-            "innerText": text
-        },
-        section);
-
-    setErrorClass (input, true);
-    errors.password = true;
-}
-
-function passwordValidation ()
-{   //  This function is called by the 'change password' event handler and not by an 'onchange' event on the
-    //  <input> element.  Both are equally effective and efficient, but this way may seem more intuitive to the
-    //  user.
-
-    const input = document.getElementById ("password");
-    const password = input.value;
-
-    if (password == "")
-    {   passwordSetError (input, "A password is required");
-        return false;
-    }
-
-    if (password.length < 8)
-    {   passwordSetError (input, "Password must be at least 8 characters in length");
-        return false;
-    }
-
-    return true;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function postPassword (event)
-{   event.preventDefault ();
-
-    if (errors.password)
-    {   playAudio (buzz);
-        return false;
-    }
-
-    if (passwordValidation ())
-    {
-        AJAX ("POST", "/api/people/changePassword/" + getCookie ("peopleId"),
-        {   200: xml =>
-            {
-                playAudio (ting);
-                const input = document.getElementById ("password");
-                input.value = null;
-                alert ("All good!");
-            }
-        },
-        { "password": password } );
-    }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 class PasswordSection
-{   //  PasswordSection collects all of the functions required to get the 'password-section' on the screen,
-    //  and switch between 'create' and 'change'.
-    //
-    //  This class was created because the inline script in person.html was getting very long, very complicated and
-    //  inflexible.  I was introducing bugs every time I had to make a change and I still had a lot of changes to make.
-    //
-    //  The class does not validate the input fields, as that seems like it would be complicating the code rather than
-    //  simplifying it.
+{   //  PasswordSection collects all of the functions directly associated with entering, validating and posting passwords
+    //  to the server.  It exists for organizational purposes and clarity.  It is not intended to be instantiated.
 
-    constructor (peopleId)
-    {
-        this.changeMode = false;
-        this.createMode = false;
-        this.hasPrivledge = false;
-    
-        AJAX ("GET", "/api/people/hasPasswordPrivledge/" + getCookie ("peopleId"),
+    //  The properties of the Class.
+    //
+    //  There are no associated getter functions because they are strictly used by the static methods of the Class, nothing
+    //  else in the application has need of them, nor could anything else make use of them.
+
+    static #button = undefined;
+    static #changeMode = false;
+    static #createMode = false;
+    static #errors = false;
+    static #hasPrivledge = false;
+    static #input = undefined;
+    static #section = undefined;
+
+    static clearError (event)
+    {   event.preventDefault();
+
+        clearError (this.#section, this.#input);
+    }
+
+    static initialize (allow)
+    {   AJAX ("GET", "/api/people/hasPasswordPrivledge/" + getCookie ("peopleId"),
         {   200: xml =>
             {
-                this.hasPrivledge = (xml.responseText == "true" ? true : false);
-                this.initialize (this.hasPrivledge);
+                this.#hasPrivledge = (xml.responseText == "true" ? true : false);
+
+                if (!this.#hasPrivledge)
+                    this.#section.remove ();
             }
         });
+
+        this.#button = document.getElementById ("password-button");
+        this.#input = document.getElementById ("password");
+        this.#section = document.getElementById ("password-section");
     }
 
-    setChangeMode ()
+    static post (event)
+    {   event.preventDefault ();
+
+        const password = this.#validate ();
+
+        if (!password)
+            playAudio (buzz);
+        else
+        {
+            AJAX ("POST", "/api/people/changePassword/" + getCookie ("peopleId"),
+            {   200: xml =>
+                {
+                    this.#input.value = null;
+                    modal ("Success!  The password has been reset.", ting);
+                }
+            },
+            { "password": password } );
+        }
+    }
+
+//      static setChangeMode ()
+    static displaySection ()
     {   //  Set the display properties of appropriate DOM elements to allow the administrator to submit changes to the
         //  server
 
@@ -122,14 +71,34 @@ class PasswordSection
         //  'Change password' privledge.  Using that flag here as a short hand to make sure the element still exists before
         //  trying to access it.
 
-        if (this.hasPrivledge)
-        {   document.getElementById ("password-section").style.display = "block";
-            document.getElementById ("password-option").style.display = "inline-block";
+        if (this.#hasPrivledge)
+        {   this.#section.style.display = "block";
+//              this.#button.style.display = "inline-block";
         }
     }
 
-    initialize (allow)
-    {   if (!this.hasPrivledge)
-            document.getElementById ("password-section").remove ();
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //  private methods
+
+    static #validate ()
+    {   //  This function is called by the 'change password' event handler and not by an 'onchange' event on the
+        //  <input> element.  Both are equally effective and efficient, but this way may seem more intuitive to the
+        //  user.
+
+        const password = this.#input.value;
+
+        if (password == "")
+        {   setError (this.#section, this.#input, "A password is required");
+            return false;
+        }
+
+        if (password.length < 8)
+        {   setError (this.#section, this.#input, "Password must be at least 8 characters in length");
+            return false;
+        }
+
+        return password;
     }
 }

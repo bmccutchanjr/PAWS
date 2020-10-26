@@ -508,9 +508,9 @@ if (request.user)
         people.hasPasswordPrivledge (admin)
         .then (result =>
         {
-            if (!result)
-                return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
-            else                
+//  01              if (!result)
+//  01                  return response.status(401).send(process.env.PAWS_401_STATUS_MESSAGE);
+//  01              else                
                 return response.status(200).send(result);
         })
         .catch (error =>

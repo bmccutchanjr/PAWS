@@ -126,9 +126,8 @@
         </section>
 
         <section class="frame-section" id=password-section>
-            <input id=password name=password onfocus="passwordClearError(event)" placeholder="(new password)">
-            <!-- <a class=menu-option href=# id=password-option name=password onclick="postPassword(event)">Change Password</a> -->
-            <button id=password-option name=password onclick="postPassword(event)">Change Password</button>
+            <input id=password name=password onfocus="PasswordSection.clearError(event)" placeholder="(new password)">
+            <button id=password-button name=password onclick="PasswordSection.post(event)">Change Password</button>
         </section>
 
         <section class="frame-section" id=permissions>
@@ -153,6 +152,32 @@
         email: false,
         names: false,
         password: false
+    }
+
+    function clearError (section, input)
+    {   
+        input.select();
+        const errors = section.getElementsByClassName ("error-text");
+        const length = errors.length;
+        for (let x=0; x<length; x++)
+        {
+            errors[x].remove ();
+        }
+
+        setErrorClass (input, false);
+        errors.password = false;
+    }
+
+    function setError (section, input, text)
+    {
+        configureElement ("div",
+            {
+                "class": "error-text",
+                "innerText": text
+            },
+            section);
+
+        setErrorClass (input, true);
     }
 
     function setErrorClass (div, error)
@@ -198,7 +223,7 @@
 
     let privledgeSection = undefined;
     let colorSection = undefined;
-    let passwordSection = undefined;
+//      let passwordSection = undefined;
     let personSection = undefined;
 
     document.addEventListener ("DOMContentLoaded", event =>
@@ -214,13 +239,15 @@
         //  So wait for the DOM before creating the classes.
 
         colorSection = new ColorSection (getCookie ("peopleId"));
-        passwordSection = new PasswordSection (getCookie ("peopleId"));
+        PasswordSection.initialize (getCookie ("peopleId"));
         privledgeSection = new PrivledgeSection (getCookie ("peopleId"));
 
         personSection = new PersonSection (getCookie ("peopleId"));
         personSection.retrievePersonData (getCookie ("peopleId"), () =>
             {   
-                passwordSection.setChangeMode();
+//                  passwordSection.setChangeMode();
+//                  PasswordSection.setChangeMode();
+                PasswordSection.displaySection();
             });
 
         const observer = new ResizeObserver (entries =>
