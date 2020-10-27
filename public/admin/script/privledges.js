@@ -1,97 +1,81 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function postPrivledges (event)
-{   event.preventDefault ();
-
-    let postData = [];
-
-    let changed = 0;
-
-    const admin = document.getElementById ("admin-privledges");
-    const privledges = admin.getElementsByTagName ("input");
-
-    const length = privledges.length;
-    for (let x=0; x<length; x++)
-    {
-        const checked = privledges[x].checked;
-        const selected = privledges[x].getAttribute ("selected") == "true" ? true : false;
-
-        if ((checked == selected) == false)
-        {   changed++;
-            let o = { [privledges[x].name] : checked }
-            postData.push (o);
-        }
-    }
-    if (changed > 0)
-    {
-        AJAX ("POST", "/api/people/changeAdminPrivledges/" + getCookie ("peopleId"),
-        {   200: xml =>
-            {   playAudio (ting);
-                alert ("Successfully updated admin privledges");
-            }
-        },
-        postData);
-    }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 class PrivledgeSection
-{   //  PrivledgeSection collects all of the functions required to get the 'privledges' on the screen,
-    //  and switch between 'create' and 'change'.
-    //
-    //  This class was created because the inline script in person.html was getting very long, very complicated and
-    //  inflexible.  I was introducing bugs every time I had to make a change and I still had a lot of changes to make.
-    //
+{   //  PrivledgeSection collects all of the functions directly associated with entering, validating and posting
+    //  administrative privledges to the server.  It exists for organizational purposes and clarity.  It is not
+    //  intended to be instantiated.
 
-    constructor (peopleId)
-    {
-        this.changeMode = false;
-        this.createMode = false;
-        this.hasPrivledge = false;
+    //  The properties of the Class.
+    //
+    //  There are no associated getter functions because they are strictly used by the static methods of the Class, nothing
+    //  else in the application has need of them, nor could anything else make use of them.
+
+    static #button = undefined;
+    static #changeMode = false;
+    static #createMode = false;
+    static #checkbox = [];
+    static #hasPrivledge = false;
+    static #section = undefined;
+
+    static initialize ()
+    {   
+        this.#section = document.getElementById ("admin-privledges");
 
         AJAX ("GET", "/api/people/getAdminPrivledges/" + getCookie ("peopleId"),
         {   200: xml =>
             {
                 const data = JSON.parse(xml.responseText);
-                this.hasPrivledge = data.allow;
-                this.initialize (data);
+                this.#hasPrivledge = data.allow;
+                this.#configure (data);
             }
         });
     }
 
-    setChangeMode ()
-    {   //  Set the display properties of appropriate DOM elements to allow the administrator to submit changes to the
-        //  server
+    static post (event)
+    {   event.preventDefault ();
 
-        //  By default this class sets up for create mode...the privledge section remains in the DOM but is hidden.
-        //
-        //  If we're setting change mode, the privledge section should always visible.  However, the submit button should
-        //  only be displayed if the administrator has the 'Grant admin privledges' privledge.
+        let postData = [];
 
-        if (this.hasPrivledge)
-            document.getElementById ("post-privledge-updates").style.display = "inline-block";
+        let changed = false;
+
+        this.#checkbox.forEach (check =>
+        {
+            const checked = check.checked;
+            const selected = check.getAttribute ("selected") == "true" ? true : false;
+
+            if ((checked == selected) == false)
+            {
+                changed = true;
+                postData.push ( { [check.name] : checked } );
+            }
+        })
+
+        if (changed)
+        {
+            AJAX ("POST", "/api/people/changeAdminPrivledges/" + getCookie ("peopleId"),
+            {   200: xml =>
+                {   playAudio (ting);
+                    alert ("Successfully updated admin privledges");
+                }
+            },
+            postData);
+        }
     }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    initialize (data)
-    {   
-        const div = document.getElementById ("admin-privledges");
+    //  private methods
 
+    static #configure (data)
+    {
         configureElement ("div",
             {
                 "class": "section-header",
                 "innerText": "Admin Privledges"
             },
-            div);
+            this.#section);
 
         data.privledges.forEach (p =>
         {
-            const check = configureElement ("div",
-                {
-                },
-                div);
+            const check = configureElement ("div", { }, this.#section);
 
             const input = configureElement ("input",
                 {
@@ -101,8 +85,10 @@ class PrivledgeSection
                 },
                 check);
 
+            this.#checkbox.push (input);
+
             if (p.allow == true) input.setAttribute ("checked", "checked");
-            if (data.allow != true) input.setAttribute ("disabled", "true");
+            if (this.#hasPrivledge != true) input.setAttribute ("disabled", "true");
 
             configureElement ("label",
                 {
@@ -112,16 +98,30 @@ class PrivledgeSection
                 check);
         });
 
-        if (data.allow == true)
-        {   configureElement ("button",
+        if (this.#hasPrivledge == true)
+        {
+            this.#button = configureElement ("button",
                 {
                     "id": "post-privledge-updates",
                     "innerText": "Submit Changes",
-                    "onclick": "postPrivledges(event);"
+                    "onclick": "PrivledgeSection.post(event);"
                 },
-                div);
+                this.#section);
         }
  
-        this.setChangeMode ();
+        this.#setChangeMode ();
+    }
+
+    static #setChangeMode ()
+    {   //  Set the display properties of appropriate DOM elements to allow the administrator to submit changes to the
+        //  server
+
+        //  By default this class sets up for create mode...the privledge section remains in the DOM but is hidden.
+        //
+        //  If we're setting change mode, the privledge section should always visible.  However, the submit button should
+        //  only be displayed if the administrator has the 'Grant admin privledges' privledge.
+
+        if (this.#hasPrivledge)
+            document.getElementById ("post-privledge-updates").style.display = "inline-block";
     }
 }

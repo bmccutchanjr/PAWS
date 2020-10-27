@@ -142,7 +142,7 @@
 <script language=JavaScript src="script/color.js"></script>
 <script language=JavaScript src="script/password.js"></script>
 <script language=JavaScript src="script/privledges.js"></script>
-<script language=JavaScript src="script/person.js"></script>
+<script language=JavaScript src="script/personal.js"></script>
 <script language=JavaScript>
 
     //  functions that are common to (or independent of) all of the modules
@@ -223,8 +223,6 @@
 
     let privledgeSection = undefined;
     let colorSection = undefined;
-//      let passwordSection = undefined;
-    let personSection = undefined;
 
     document.addEventListener ("DOMContentLoaded", event =>
     {
@@ -240,13 +238,11 @@
 
         colorSection = new ColorSection (getCookie ("peopleId"));
         PasswordSection.initialize (getCookie ("peopleId"));
-        privledgeSection = new PrivledgeSection (getCookie ("peopleId"));
+        PrivledgeSection.initialize (getCookie ("peopleId"));
 
         personSection = new PersonSection (getCookie ("peopleId"));
         personSection.retrievePersonData (getCookie ("peopleId"), () =>
             {   
-//                  passwordSection.setChangeMode();
-//                  PasswordSection.setChangeMode();
                 PasswordSection.displaySection();
             });
 
