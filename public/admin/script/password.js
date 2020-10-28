@@ -15,11 +15,11 @@ class PasswordSection
     static #input = undefined;
     static #section = undefined;
 
-    static clearError (event)
-    {   event.preventDefault();
-
-        clearError (this.#section, this.#input);
-    }
+//  01      static clearError (event)
+//  01       {   event.preventDefault();
+//  01  
+//  01           clearError (this.#section, this.#input);
+//  01       }
 
     static initialize (allow)
     {   AJAX ("GET", "/api/people/hasPasswordPrivledge/" + getCookie ("peopleId"),
@@ -57,7 +57,6 @@ class PasswordSection
         }
     }
 
-//      static setChangeMode ()
     static displaySection ()
     {   //  Set the display properties of appropriate DOM elements to allow the administrator to submit changes to the
         //  server
@@ -73,14 +72,8 @@ class PasswordSection
 
         if (this.#hasPrivledge)
         {   this.#section.style.display = "block";
-//              this.#button.style.display = "inline-block";
         }
     }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //  private methods
 
     static #validate ()
     {   //  This function is called by the 'change password' event handler and not by an 'onchange' event on the

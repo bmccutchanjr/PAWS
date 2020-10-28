@@ -15,6 +15,96 @@ class PrivledgeSection
     static #hasPrivledge = false;
     static #section = undefined;
 
+    static #configure (data)
+    {
+        configureElement ("div",
+            {
+                "class": "section-header",
+                "innerText": "Admin Privledges"
+            },
+            this.#section);
+
+        data.privledges.forEach ((p, index) =>
+        {
+//  02              const check = configureElement ("div", { }, this.#section);
+//  02  
+//  02              const input = configureElement ("input",
+//  02                  {
+//  02                      "name": p.adminId,
+//  02                      "selected": p.allow == true ? true : false,
+//  02                      "type": "checkbox",
+//  02                  },
+//  02                  check);
+//  02  
+//  02              this.#checkbox.push (input);
+//  02  
+//  02              if (p.allow == true) input.setAttribute ("checked", "checked");
+//  02              if (this.#hasPrivledge != true) input.setAttribute ("disabled", "true");
+//  02  
+//  02              configureElement ("label",
+//  02                  {
+//  02                      "for": p.adminId,
+//  02                      "innerText": p.privledge
+//  02                  },
+//  02                  check);
+            this.#createCheckbox (p, index);
+        });
+
+//  01          if (this.#hasPrivledge == true)
+//  01          {
+//  01              this.#button = configureElement ("button",
+//  01                  {
+//  01                      "id": "post-privledge-updates",
+//  01                      "innerText": "Submit Changes",
+//  01                      "onclick": "PrivledgeSection.post(event);"
+//  01                  },
+//  01                  this.#section);
+//  01          }
+//  01   
+        this.#createSubmitButton();
+        this.#setChangeMode ();
+    }
+
+    static #createCheckbox (privledge, index)
+    {   //  Create and configure an <input> element for the administrative privledge, and add it to the DOM.
+
+        const check = configureElement ("div", { }, this.#section);
+
+        const input = configureElement ("input",
+            {
+                "name": privledge.adminId,
+                "selected": privledge.allow == true ? true : false,
+                "type": "checkbox",
+            },
+            check);
+
+        this.#checkbox.push (input);
+
+        if (privledge.allow == true) input.setAttribute ("checked", "checked");
+        if (this.#hasPrivledge != true) input.setAttribute ("disabled", "true");
+
+        configureElement ("label",
+            {
+                "for": privledge.adminId,
+                "innerText": privledge.privledge
+            },
+            check);
+    }
+
+    static #createSubmitButton ()
+    {
+        if (this.#hasPrivledge == true)
+        {
+            this.#button = configureElement ("button",
+                {
+                    "id": "post-privledge-updates",
+                    "innerText": "Submit Changes",
+                    "onclick": "PrivledgeSection.post(event);"
+                },
+                this.#section);
+        }
+    }
+
     static initialize ()
     {   
         this.#section = document.getElementById ("admin-privledges");
@@ -58,58 +148,6 @@ class PrivledgeSection
             },
             postData);
         }
-    }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //  private methods
-
-    static #configure (data)
-    {
-        configureElement ("div",
-            {
-                "class": "section-header",
-                "innerText": "Admin Privledges"
-            },
-            this.#section);
-
-        data.privledges.forEach (p =>
-        {
-            const check = configureElement ("div", { }, this.#section);
-
-            const input = configureElement ("input",
-                {
-                    "name": p.adminId,
-                    "selected": p.allow == true ? true : false,
-                    "type": "checkbox",
-                },
-                check);
-
-            this.#checkbox.push (input);
-
-            if (p.allow == true) input.setAttribute ("checked", "checked");
-            if (this.#hasPrivledge != true) input.setAttribute ("disabled", "true");
-
-            configureElement ("label",
-                {
-                    "for": p.adminId,
-                    "innerText": p.privledge
-                },
-                check);
-        });
-
-        if (this.#hasPrivledge == true)
-        {
-            this.#button = configureElement ("button",
-                {
-                    "id": "post-privledge-updates",
-                    "innerText": "Submit Changes",
-                    "onclick": "PrivledgeSection.post(event);"
-                },
-                this.#section);
-        }
- 
-        this.#setChangeMode ();
     }
 
     static #setChangeMode ()

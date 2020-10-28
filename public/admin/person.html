@@ -221,8 +221,8 @@
     //  don't provide encapsulation or allow variables and functions to be made private, but Classes do.  And there's less
     //  code to change.
 
-    let privledgeSection = undefined;
-    let colorSection = undefined;
+//  01      let privledgeSection = undefined;
+//  01      let colorSection = undefined;
 
     document.addEventListener ("DOMContentLoaded", event =>
     {
@@ -236,7 +236,8 @@
         //
         //  So wait for the DOM before creating the classes.
 
-        colorSection = new ColorSection (getCookie ("peopleId"));
+//  01          colorSection = new ColorSection (getCookie ("peopleId"));
+        ColorPermissions.initialize (getCookie ("peopleId"));
         PasswordSection.initialize (getCookie ("peopleId"));
         PrivledgeSection.initialize (getCookie ("peopleId"));
 
