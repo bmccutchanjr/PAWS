@@ -231,7 +231,7 @@ const db =
     {   //  Compare the user credentials submitted to those in the database.  This function is invoked if the user entered
         //  an email address (as opposed to their Volgistics Id).
 
-        const query = "select peopleId, lock_code, surname, given, middle, password from People where active=true and email=?";
+        const query = "select peopleId, locked, surname, given, middle, password from People where active=true and email=?";
         return new Promise ((resolve, reject) =>
         {
             select (query, email)
@@ -363,15 +363,21 @@ const db =
         return new Promise ((resolve, reject) =>
         {
             hasAdminPrivledge (admin, "Add/remove people")
-            .then (result =>
+            .then (_ =>
             {   //  Okay, so the currently authenticated user has the appropriate privledge to do this...
 
                 const query = "update People set active=false where peopleId=?;";
                 return select (query, user);
             })
-            .then (result =>
+            .then (results =>
             {
-                resolve (result);
+                if (results.changedRows != 1)
+                {
+                    reject (results.message);
+                    return;
+                }
+
+                resolve (results);
             })
             .catch (error =>
             {
@@ -584,7 +590,7 @@ const db =
             {
                 if (hasPrivledge) returnData.change = true;
 
-                const query = "select peopleId, surname, given, middle, email, lock_code from People where peopleId=?;";
+                const query = "select peopleId, surname, given, middle, email, locked from People where peopleId=?;";
                 return select (query, user);
             })
             .then (results =>
@@ -706,12 +712,18 @@ const db =
             {
                 if (!hasPrivledge) return ("Don't have the necessary privledges");
 
-                const query = "update People set lock_code=? where peopleId=?;";
-                const code = lock == "true" ? 100 : 0;
-                return select (query, [code, user]);
+                const query = "update People set locked=? where peopleId=?;";
+                lock = (lock == "true") ? 1 : 0;
+                return select (query, [lock, user]);
             })
             .then (results =>
             {
+                if (results.changedRows != 1)
+                {
+                    reject (results.message);
+                    return;
+                }
+
                 resolve (results);
             })
             .catch (error =>

@@ -50,10 +50,11 @@ function handleLoginOption (event)
                     {
 //  During this development cycle, I don't want to redirect the page so I don't have to load the page everytime
 //  nodemon restarts the server.
-//                          window.location.href = "/";
+//  01  //                          window.location.href = "/";
+alert ("You're in!");
                     }
                     else
-                        window.location.href.reload();
+                         window.location.reload();
             }
         },
         {

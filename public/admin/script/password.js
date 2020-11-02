@@ -7,34 +7,61 @@ class PasswordSection
     //  There are no associated getter functions because they are strictly used by the static methods of the Class, nothing
     //  else in the application has need of them, nor could anything else make use of them.
 
-    static #button = undefined;
+    static #button = document.getElementById ("password-button");
     static #changeMode = false;
     static #createMode = false;
+    static #errorDiv = undefined;
     static #errors = false;
     static #hasPrivledge = false;
-    static #input = undefined;
-    static #section = undefined;
+    static #input = document.getElementById ("password");
+    static #section = document.getElementById ("password-section");
 
-//  01      static clearError (event)
-//  01       {   event.preventDefault();
-//  01  
-//  01           clearError (this.#section, this.#input);
-//  01       }
+    static clearError (event)
+    {   event.preventDefault();
 
-    static initialize (allow)
-    {   AJAX ("GET", "/api/people/hasPasswordPrivledge/" + getCookie ("peopleId"),
+        this.#input.select();
+        setErrorClass (this.#input, false);
+        this.#errors = false;
+
+        const errors = this.#section.getElementsByClassName ("error-text");
+        const length = errors.length;
+        for (let x=0; x<length; x++)
+        {
+            errors[x].remove ();
+        }
+    }
+
+    static display ()
+    {   //  Set the display properties of appropriate DOM elements to allow the administrator to submit changes to the
+        //  server
+
+        //  By default this class sets up for create mode...the password section remains in the DOM but is hidden.
+        //
+        //  If we're setting change mode, the password section should be visible but only if the administrator has the
+        //  'Change password' privledge.
+        //
+        //  When the page was set up, the password section was removed from the DOM if the administrator doesn't have the
+        //  'Change password' privledge.  Using that flag here as a short hand to make sure the element still exists before
+        //  trying to access it.
+
+        if (this.#hasPrivledge)
+        {   this.#section.style.display = "block";
+        }
+    }
+
+    static initialize (peopleId)
+    {
+        AJAX ("GET", "/api/people/hasPasswordPrivledge/" + peopleId,
         {   200: xml =>
             {
                 this.#hasPrivledge = (xml.responseText == "true" ? true : false);
 
-                if (!this.#hasPrivledge)
+                if (this.#hasPrivledge)
+                    this.#button.style.display = "inline-block";
+                else
                     this.#section.remove ();
             }
         });
-
-        this.#button = document.getElementById ("password-button");
-        this.#input = document.getElementById ("password");
-        this.#section = document.getElementById ("password-section");
     }
 
     static post (event)
@@ -57,24 +84,6 @@ class PasswordSection
         }
     }
 
-    static displaySection ()
-    {   //  Set the display properties of appropriate DOM elements to allow the administrator to submit changes to the
-        //  server
-
-        //  By default this class sets up for create mode...the password section remains in the DOM but is hidden.
-        //
-        //  If we're setting change mode, the password section should be visible but only if the administrator has the
-        //  'Change password' privledge.
-        //
-        //  When the page was set up, the password section was removed from the DOM if the administrator doesn't have the
-        //  'Change password' privledge.  Using that flag here as a short hand to make sure the element still exists before
-        //  trying to access it.
-
-        if (this.#hasPrivledge)
-        {   this.#section.style.display = "block";
-        }
-    }
-
     static #validate ()
     {   //  This function is called by the 'change password' event handler and not by an 'onchange' event on the
         //  <input> element.  Both are equally effective and efficient, but this way may seem more intuitive to the
@@ -83,7 +92,8 @@ class PasswordSection
         const password = this.#input.value;
 
         if (password == "")
-        {   setError (this.#section, this.#input, "A password is required");
+        {
+            this.#errorDiv = setError (this.#section, this.#input, "A password is required");
             return false;
         }
 

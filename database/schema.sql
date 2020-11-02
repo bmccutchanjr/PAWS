@@ -174,8 +174,9 @@ create table if not exists People
                     not null
                     default true,
 
-    lock_code       tinyint(3)
-                    default 0,
+    locked          boolean
+                    not null
+                    default false,
 
     type_of         enum("staff",
                          "volunteer")

@@ -37,6 +37,8 @@ body
 button
 {   background: none;
     border: none;
+    border: 1px solid none;
+    border-radius: 5px;
     color: var(--color);
     cursor: pointer;
     font-family: inherit;
@@ -46,6 +48,12 @@ button
 
 button:hover
 {   color: red;
+}
+
+button:active
+{   
+    background: lightblue;
+    color: white;
 }
 
 header
@@ -172,7 +180,7 @@ input
 {   
     display: flex;
         flex-direction: column;
-        justify-content: center;
+        /* justify-content: center; */
     height: 80vh;
         min-height: 80vh;
     position: fixed;
@@ -191,7 +199,10 @@ input
         flex-direction: column;
     max-height: 50vh;
         overflow: auto;
-    margin: 0px auto;
+    /* margin: 0px auto; */
+    /* margin: 25vh auto; */
+    margin: 150px auto;
+    padding: 15px;
     width: 90%;
         max-width: 500px;
 }
@@ -211,37 +222,38 @@ input
 {   display: block;
         flex-grow: 1;
         flex-shrink: 1;
-    padding: 15px;
+    /* padding: 15px; */
 }
 
-.modal-options
+.modal-buttons
 {   display: block;
         flex-grow: 0;
         flex-shrink: 0;
     height: 20px;
-    padding-left: 15px;
+    margin-top: 15px;
+    /* padding-left: 15px; */
 }
 
-.modal-option
-{   color: grey;
-    height: 20px;
-    text-decoration: none;
-}
-
-.modal-option:visited
-{   color: grey;
-    text-decoration: none;
-}
-
-.modal-option:hover
-{   color: red;
-    text-decoration: none;
-}
-
-.modal-option:active
-{   color: white;
-    text-decoration: none;
-}
+/* .modal-option */
+/* {   color: grey; */
+    /* height: 20px; */
+    /* text-decoration: none; */
+/* } */
+/*  */
+/* .modal-option:visited */
+/* {   color: grey; */
+    /* text-decoration: none; */
+/* } */
+/*  */
+/* .modal-option:hover */
+/* {   color: red; */
+    /* text-decoration: none; */
+/* } */
+/*  */
+/* .modal-option:active */
+/* {   color: white; */
+    /* text-decoration: none; */
+/* } */
 
 /******************************************************************************************************/
 /* settings for sticky footer                                                                         */

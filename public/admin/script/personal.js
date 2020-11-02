@@ -132,75 +132,38 @@ function nameSetError (field, text)
     errors.names = true;
 }
 
-function nameValidator (input)
-{   const name = input.value;
-
-    if ((input.name != "middle") && (name == ""))
-    {   nameSetError (input, input.name + " is required");
-        return false;
-    }
-
-    let length = name.length;
-    for (let x=0; x<length; x++)
-    {   //  Names can include titles which means names might also include periods.  Some names, like O'Neal, include
-        //  apostrophes ("'").  Other than that, names should only include alpha characters
-
-        if ((name.charAt (x) != "'") && (name.charAt (x) != "."))
-            if (name.charAt (x).toLowerCase () == name.charAt (x).toUpperCase ())
-            {   nameSetError (input, "This does not appear to be a real name");
-                return false;
-            }
-    }
-
-    return true;
-}
-
-function nameValidation (event)
-{   event.preventDefault ();
-
-    const input = event.target;
-    nameValidator (input);
-}
+//  function nameValidator (input)
+//  {   const name = input.value;
+//  
+//      if ((input.name != "middle") && (name == ""))
+//      {   nameSetError (input, input.name + " is required");
+//          return false;
+//      }
+//  
+//      let length = name.length;
+//      for (let x=0; x<length; x++)
+//      {   //  Names can include titles which means names might also include periods.  Some names, like O'Neal, include
+//          //  apostrophes ("'").  Other than that, names should only include alpha characters
+//  
+//          if ((name.charAt (x) != "'") && (name.charAt (x) != "."))
+//              if (name.charAt (x).toLowerCase () == name.charAt (x).toUpperCase ())
+//              {   nameSetError (input, "This does not appear to be a real name");
+//                  return false;
+//              }
+//      }
+//  
+//      return true;
+//  }
+//  
+//  function nameValidation (event)
+//  {   event.preventDefault ();
+//  
+//      const input = event.target;
+//      nameValidator (input);
+//  }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//  functions that request APIs for various functions involving people
-
-let createMode = undefined;
-
-function sendDeactivate (event)
-{   event.preventDefault ();
-
-    AJAX ("GET", "/api/people/deactivatePerson/" + getCookie ("peopleId"),
-    {   204: xml =>
-        {
-            modal (document.names.given.value + " " + document.names.surname.value + " has been deactivated.",
-                ting,
-                {
-                    final: () => { window.location.href="/admin/people-picker" }
-                });
-        }
-    })
-}
-
-function sendLock (event)
-{   event.preventDefault ();
-
-    const target = event.target;
-    let other = target.name == "lock" ? document.getElementById ("unlock-option") : document.getElementById ("lock-option");
-        
-    const api = "/api/people/lockPerson/" + getCookie ("peopleId") + "/" + (target.name == "lock" ? "true" : "false");
-    AJAX ("GET", api,
-    {   200: xml =>
-        {
-            playAudio (ting);
-            target.style.display = "none";
-            other.style.display = "inline-block";
-            alert ("This user account is now " + (target.name == "lock" ? "locked out" : "unlocked"))
-        }
-    })
-}
 
 function postNamesChange ()
 {
@@ -303,38 +266,318 @@ function postNames (event)
         postNamesChange ();
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class PersonSection
-{   //  PersonSection collects all of the functions required to acquire data for a user, get that data on the screen,
-    //  and switch between 'create' and 'change' modes for the personal information (made up of the 'names' form and
-    //  'lock section').
-    //
-    //  This class was created because the inline script in person.html was getting very long, very complicated and
-    //  inflexible.  I was introducing bugs every time I had to make a change and I still had a lot of changes to make.
-    //
-    //  The class does not validate the input fields, as that seems like it would be complicating the code rather than
-    //  simplifyingit.
+class DeleteButton
+{   //  DeleteButton collects all of the functions directly associated with entering, validating and posting
+    //  a request to delete a user account to the server.  It exists for organizational purposes and clarity.
+    //  It is not intended to be instantiated.
 
-    constructor ()
-    {
-        this.permission =
-        {   add: false,
-            change: false
-        }
+    //  The properties of the Class.
+    //
+    //  There are no associated getter functions because they are strictly used by the static methods of the Class, nothing
+    //  else in the application has need of them, nor could anything else make use of them.
 
-        this.lockMode = "unlocked";
+    static #buttonDelete = document.getElementById ("delete-button");
+    static #hasAddPrivledge; 
+
+    static post (event)
+    {   event.preventDefault ();
+
+        modal ("You are about to delete this user account.  This action is permanent and cannot be undone.  Do you want to continue?",
+            buzz,
+            {    config: modal =>
+                {
+                    const div = configureElement ("div",
+                        {
+                            "class": "modal-buttons"
+                        },
+                        modal);
+                        
+                    const okay = configureElement ("button",
+                        {
+                            "class": "modal-button",
+                            "innerText": "OK"
+                        },
+                        div);
+
+                    configureElement ("div",
+                        {
+                            "class": "spacer"
+                        },
+                        div);
+                        
+                    configureElement ("button",
+                        {
+                            "class": "modal-button",
+                            "innerText": "Cancel",
+                            "onclick": "removeModal(event);"
+                        },
+                        div);
+                
+                    okay.addEventListener ("click", event => { this.#postIt (event); } );
+                }
+            });
     }
 
-    allowInputs ()
+    static #postIt (event)
+    {   //  Send a GET request to the server to delete the selected user account.  This is a private method that is only called
+        //  from .post().  .post() is the event handler for the delete button.
+
+        removeModal (event);
+
+        AJAX ("GET", "/api/people/deactivatePerson/" + getCookie ("peopleId"),
+        {   204: xml =>
+            {
+                modal (document.names.given.value + " " + document.names.surname.value + " has been deactivated.", ting);
+                window.location.href="/admin/people-picker";
+            }
+        })
+    }
+
+    static setPrivledge (privledge)
+    {
+        this.#hasAddPrivledge = privledge;
+
+        if (privledge)
+        {
+            this.#buttonDelete.style.display = "inline-block";
+            this.#buttonDelete.addEventListener ("click", event => { this.post(event) } );
+        }
+        else
+            this.#buttonDelete.remove();
+    }
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class LockSection
+{   //  LockSection collects all of the functions directly associated with entering, validating and posting
+    //  the "lock" section to the server.  It exists for organizational purposes and clarity.  It is not
+    //  intended to be instantiated.
+
+    //  The properties of the Class.
+    //
+    //  There are no associated getter functions because they are strictly used by the static methods of the Class, nothing
+    //  else in the application has need of them, nor could anything else make use of them.
+
+    static #buttonLock = document.getElementById ("lock-button");
+    static #buttonUnLock = document.getElementById ("unlock-button");
+    static #lockMessage = document.getElementById ("lock-message");
+    static #lockStatus = undefined;
+    static #section = document.getElementById ("lock-section");
+
+    static #hasAddPrivledge; 
+    static #hasChangePrivledge; 
+
+    static display (changeMode)
+    {
+        if (changeMode)
+            this.#section.style.display = "block";
+    }
+
+    static initialize (data)
+    {
+        if (data.change) this.#hasChangePrivledge = true;
+
+        DeleteButton.setPrivledge (data.add)
+ 
+        this.#lockStatus = false;
+        if (data.results[0] && data.results[0].locked) this.#lockStatus = data.results[0].locked;
+
+        this.#buttonLock.addEventListener ("click", event => { this.post (event) } );
+        this.#buttonUnLock.addEventListener ("click", event =>  { this.post (event) } );
+
+        this.#setLockStatus (this.#lockStatus);
+    }
+
+    static post (event)
+    {   event.preventDefault ();
+
+        const api = "/api/people/lockPerson/" + getCookie ("peopleId") + "/" + (this.#lockStatus ? "false" : "true");
+        AJAX ("GET", api,
+        {   200: xml =>
+            {
+                modal ("This user account is now " + (this.#lockStatus ? "unlocked" : "locked out"), ting);
+                this.#setLockStatus(!this.#lockStatus);
+            }
+        })
+    }
+
+    static setAddPrivledge (privledge)
+    {
+        DeleteButton.setPrivledge (privledge);
+    }
+
+    static setChangePrivledge (privledge)
+    {
+        this.#hasChangePrivledge = privledge; 
+
+        if (!privledge)
+        {
+            this.#buttonLock.remove();
+            this.#buttonUnLock.remove();
+        }
+    }
+
+    static #setLockStatus (lockStatus)
+    {
+        this.#lockStatus = lockStatus;
+
+        if (lockStatus)
+        {
+            this.#lockMessage.innerText = "This account has been temporarilly disabled by an administrator.";
+
+            if (this.#hasChangePrivledge)
+            {
+                this.#buttonLock.style.display = "none";
+                this.#buttonUnLock.style.display = "inline-block";
+            }
+        }
+        else
+        {
+            this.#lockMessage.innerText = "This account is not disabled.";
+
+            if (this.#hasChangePrivledge)
+            {
+                this.#buttonLock.style.display = "inline-block";
+                this.#buttonUnLock.style.display = "none";
+            }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class NameInput
+{
+    #error = true;
+    #errorDiv = undefined;
+    #input = undefined;
+    #section = document.getElementById("personal-section");
+
+    constructor (id, value)
+    {
+        this.#input = document.getElementById (id);
+        this.#input.value = value;
+        this.#input.setAttribute ("value", value);
+
+        //  Add onchange and onfocus event handlers to the <input> element.
+        //  
+        //  If event listeners are added to the <input> elements in the HTML, I need a reference to each of the objects,
+        //  individually.  But by adding the event handlers to the elements here, I don't.  The code is cleaner.
+
+        this.#input.addEventListener ("focusout", event =>
+        {   this.validate (event);
+        });
+
+        this.#input.addEventListener ("focus", event =>
+        {   
+            this.#input.select();
+            
+            if (this.#errorDiv)
+            {
+                this.#errorDiv.remove();
+                clearError (PersonalSection.getSection(), this.#input);
+            }
+        });
+    }
+
+    readonly (readonly)
+    {
+        if (!readonly)
+            this.#input.removeAttribute ("readonly");
+    }
+
+    #getAttribute (attribute)
+    {
+        return this.#input.getAttribute(attribute);
+    }
+
+    getError ()
+    {
+        return this.#input.error;
+    }
+
+    validate (event)
+    {   if (event) event.preventDefault();
+        
+        this.#error = false;
+
+//          const name = input.value;
+        const name = this.#input.value;
+
+//          if ((input.name != "middle") && (name == ""))
+//          {   nameSetError (input, input.name + " is required");
+//              return false;
+//          }
+        if ((this.#getAttribute("name") != "middle") && (name == ""))
+        {
+            this.#error = true;
+            this.#errorDiv = setError (this.#section, this.#input, "A " + this.#getAttribute("name") + " name is required");
+            return false;
+        }
+
+        let length = name.length;
+        for (let x=0; x<length; x++)
+        {   //  Names can include titles which means names might also include periods.  Some names, like O'Neal, include
+            //  apostrophes ("'").  Other than that, names should only include alpha characters
+
+            if ((name.charAt (x) != "'") && (name.charAt (x) != "."))
+                if (name.charAt (x).toLowerCase () == name.charAt (x).toUpperCase ())
+//                  {   nameSetError (input, "This does not appear to be a real name");
+                {
+                    this.#error = true;
+                    this.#errorDiv = setError (this.#section, this.#input, "This does not appear to be a real name");
+                    return false;
+                }
+        }
+
+        return true;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class PersonalSection
+{   //  PersonalSection collects all of the functions directly associated with entering, validating and posting
+    //  personal information to the server.  It exists for organizational purposes and clarity.  It is not
+    //  intended to be instantiated.
+
+    //  The properties of the Class.
+    //
+    //  There are no associated getter functions because they are strictly used by the static methods of the Class, nothing
+    //  else in the application has need of them, nor could anything else make use of them.
+
+    static #buttonCreate = document.getElementById ("create-option");
+    static #buttonChange = document.getElementById ("change-option");
+    static #createMode = false;
+    static #hasAddPrivledge = false;
+    static #hasChangePrivledge = false;
+    static #section = document.getElementById ("personal-section");
+
+    static #input =
+    {
+        given: undefined,
+        middle: undefined,
+        surname: undefined
+    }
+
+    static #allowInputs (data)
     {   //  By default, all of the input fields are 'readonly'.  If this administrator is allowed to make changes to
         //  personal information (not all do) the 'readonly' attribute must be removed from the input fields
 
-        if (this.permission.add || this.permission.change)
-        {   document.getElementById ("name-given").removeAttribute ("readonly");
-            document.getElementById ("name-middle").removeAttribute ("readonly");
-            document.getElementById ("name-surname").removeAttribute ("readonly");
+        if (data.add || data.change)
+        {
+            this.#input["given"].readonly (false);
+            this.#input["middle"].readonly (false);
+            this.#input["surname"].readonly (false);
             document.getElementById ("email-input").removeAttribute ("readonly");
         }   
     }
@@ -343,99 +586,103 @@ class PersonSection
     {   return this.permission.change;
     }
 
-    initializeInputs (data)
+    static getSection ()
+    {   return this.#section;
+    }
+    
+    static #configure (data)
     {
-        this.lockMode = data.results.lock_code == undefined ? "unlocked" : "locked";
+        //  Configure <input> elements for PersonalSection
+        //  Set default values
 
         if (data.results.length > 0)
         {
-            document.names.given.value = data.results[0].given;
-            document.getElementById ("name-given").setAttribute ("value", data.results[0].given);
-
-            document.names.middle.value = data.results[0].middle;
-            document.getElementById ("name-middle").setAttribute ("value", data.results[0].middle);
-
-            document.names.surname.value = data.results[0].surname;
-            document.getElementById ("name-surname").setAttribute ("value", data.results[0].surname);
+            this.#input["given"] = new NameInput ("given", data.results[0].given),
+            this.#input["middle"] = new NameInput ("middle", data.results[0].middle),
+            this.#input["surname"] = new NameInput ("surname", data.results[0].surname)
 
             document.names.email.value = data.results[0].email;
             document.getElementById ("email-input").setAttribute ("value", data.results[0].email);
         }
+        else
+        {
+            this.#input["given"] = new NameInput ("given", ""),
+            this.#input["middle"] = new NameInput ("middle", ""),
+            this.#input["surname"] = new NameInput ("surname", "")
 
-        this.allowInputs ();
+            document.names.email.value = "";
+            document.getElementById ("email-input").setAttribute ("value", "");
+        }
+
+        //  And readonly property
+
+        this.#allowInputs (data);
+
+        //  Configure LockSection
+
+        LockSection.initialize (data);
+
+        //  Configure PermissionSection
+
+        PrivledgeSection.display (this.#createMode);
+        
     }
 
-    retrievePersonData (peopleId, callback)
+    static initialize (peopleId, callback)
     {
+        if (peopleId == 0) this.#createMode = true;
+
         AJAX ("GET", "/api/people/getPerson/" + peopleId,
         {   200: xml =>
             {
                 const data = JSON.parse(xml.responseText);
-console.log (JSON.stringify(data, null, 2));
-                this.setAddPermission (data.add);
-                this.setChangePermission (data.change);
-                this.initializeInputs (data);
-                this.setCreateMode (peopleId);
+                this.#setAddPermission (data.add);
+                this.#setChangePermission (data.change);
+                this.#configure (data);
+                this.#setCreateMode (peopleId);
 
-                if (callback) callback ();
             }
         });
     }
 
-    setChangeMode ()
+    static #setChangeMode ()
     {   //  Set the display properties of appropriate DOM elements to allow the administrator to submit changes to the
         //  server
 
-        createMode = false;
+        this.#createMode = false;
 
-        document.getElementById ("create-option").remove();
+        this.#buttonCreate.remove();
 
-        document.getElementById ("change-option").style.display = "inline-block";
-        document.getElementById ("change-spacer").style.display = "inline-block";
-        document.getElementById ("delete-option").style.display = "inline-block";
+        if (this.#hasChangePrivledge)
+            this.#buttonChange.style.display = "inline-block";
 
-        document.getElementById ("permissions").style.display = "block";
+        PasswordSection.display(this.#hasChangePrivledge);
+        PrivledgeSection.display(this.#hasChangePrivledge);
 
-        if (this.lockMode == "unlocked")
-            document.getElementById ("lock-option").style.display = "inline-block";
-        else
-            document.getElementById ("unlock-option").style.display = "inline-block";
-
-        if (this.permission.change)
-            document.getElementById ("lock-section").style.display = "block";
-        else
-        {   document.getElementById ("change-option").remove();
-            document.getElementById ("change-spacer").remove();
-            document.getElementById ("lock-section").remove();
-        }
-
-        if (!this.permission.add)
-            if (document.getElementById ("delete-option"))
-                document.getElementById ("delete-option").remove();
+        LockSection.display (!this.#createMode)
     }
 
-    setCreateMode (peopleId)
+    static #setCreateMode (peopleId)
     {   //  By default, the constructor sets up the page in "change mode".  If this is a new user, sections and options
         //  must be hidden.
-
-        createMode = true;
 
         if (peopleId != 0)
         {   //  peopleId represents the primary key of the row representing this user in the database.  If peopleId is not
             //  zero, we know this is not a new user
         
-            this.setChangeMode ()
+            this.#setChangeMode ()
             return;
         }
 
-        document.getElementById ("create-option").style.display = "inline-block";
+        this.#createMode = true;
+        this.#buttonCreate.style.display = "inline-block";
     }
 
-    setAddPermission (allow)
-    {   if (allow) this.permission.add = true;
+    static #setAddPermission (allow)
+    {   if (allow) this.#hasAddPrivledge = true;
     }
 
-    setChangePermission (allow)
-    {   if (allow) this.permission.change = true;
+    static #setChangePermission (allow)
+    {   if (allow) this.#hasChangePrivledge = true;
     }
 }

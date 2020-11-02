@@ -12,10 +12,11 @@ passport.use (new LocalStrategy ( { usernameField:  "email" }, (email, password,
 	people.authenticateByEmail (email, password)
 	.then (results =>
 	{
-		if (results.lock_code != 0)
+		if (results.locked)
 		{
 			console.log (chalk.redBright ("PAWS AUTHENTICATION ERROR 109"));
-			console.log (chalk.redBright ("Attempt to authenticate locked user account.  Lock code: " + results[0].lock_code));
+//				console.log (chalk.redBright ("Attempt to authenticate locked user account.  Lock code: " + results[0].lock_code));
+			console.log (chalk.redBright ("Attempt to authenticate locked user account."));
 			return done (null, false, { message: "PAWS AUTHENTICATION ERROR 109" });
 		}
 		

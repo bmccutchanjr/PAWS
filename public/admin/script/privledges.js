@@ -8,12 +8,13 @@ class PrivledgeSection
     //  There are no associated getter functions because they are strictly used by the static methods of the Class, nothing
     //  else in the application has need of them, nor could anything else make use of them.
 
-    static #button = undefined;
+    static #admin = document.getElementById ("admin-privledges");
+    static #button = document.getElementById ("admin-privledges");
     static #changeMode = false;
     static #createMode = false;
     static #checkbox = [];
     static #hasPrivledge = false;
-    static #section = undefined;
+    static #section = document.getElementById ("permissions");
 
     static #configure (data)
     {
@@ -22,53 +23,21 @@ class PrivledgeSection
                 "class": "section-header",
                 "innerText": "Admin Privledges"
             },
-            this.#section);
+            this.#admin);
 
         data.privledges.forEach ((p, index) =>
         {
-//  02              const check = configureElement ("div", { }, this.#section);
-//  02  
-//  02              const input = configureElement ("input",
-//  02                  {
-//  02                      "name": p.adminId,
-//  02                      "selected": p.allow == true ? true : false,
-//  02                      "type": "checkbox",
-//  02                  },
-//  02                  check);
-//  02  
-//  02              this.#checkbox.push (input);
-//  02  
-//  02              if (p.allow == true) input.setAttribute ("checked", "checked");
-//  02              if (this.#hasPrivledge != true) input.setAttribute ("disabled", "true");
-//  02  
-//  02              configureElement ("label",
-//  02                  {
-//  02                      "for": p.adminId,
-//  02                      "innerText": p.privledge
-//  02                  },
-//  02                  check);
             this.#createCheckbox (p, index);
         });
 
-//  01          if (this.#hasPrivledge == true)
-//  01          {
-//  01              this.#button = configureElement ("button",
-//  01                  {
-//  01                      "id": "post-privledge-updates",
-//  01                      "innerText": "Submit Changes",
-//  01                      "onclick": "PrivledgeSection.post(event);"
-//  01                  },
-//  01                  this.#section);
-//  01          }
-//  01   
-        this.#createSubmitButton();
+        this.#createSubmitButton(this.#admin);
         this.#setChangeMode ();
     }
 
     static #createCheckbox (privledge, index)
     {   //  Create and configure an <input> element for the administrative privledge, and add it to the DOM.
 
-        const check = configureElement ("div", { }, this.#section);
+        const check = configureElement ("div", { }, this.#admin);
 
         const input = configureElement ("input",
             {
@@ -91,7 +60,7 @@ class PrivledgeSection
             check);
     }
 
-    static #createSubmitButton ()
+    static #createSubmitButton (div)
     {
         if (this.#hasPrivledge == true)
         {
@@ -101,14 +70,21 @@ class PrivledgeSection
                     "innerText": "Submit Changes",
                     "onclick": "PrivledgeSection.post(event);"
                 },
-                this.#section);
+                div);
         }
+    }
+
+    static display (createMode)
+    {   
+        if (!createMode)
+            this.#section.style.display = "block";
+
+        if (this.#hasPrivledge)
+            this.#button.style.display = "inline-block";
     }
 
     static initialize ()
     {   
-        this.#section = document.getElementById ("admin-privledges");
-
         AJAX ("GET", "/api/people/getAdminPrivledges/" + getCookie ("peopleId"),
         {   200: xml =>
             {

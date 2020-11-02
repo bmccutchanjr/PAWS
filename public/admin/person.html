@@ -6,13 +6,19 @@
 
         .error
         {
+            background: red;
             border-color: red;
-            color: red;
+            color: white;
+            margin-top: 2px;
         }
 
         .error-text
         {
-            color: red;
+            background: red;
+            border: 1px solid red;
+            color: white;
+            margin-top: 2px;
+            padding: 2px;
         }
 
         /*  these are style settings that apply to the sections                                               */
@@ -62,13 +68,17 @@
         /*  application                                                                                       */
         /*                                                                                                    */
 
-        /* .menu-option */
         button
         {   
             color: grey;
             display: none;
             padding: 2px;
             width: auto;
+        }
+
+        .modal-button
+        {
+            display: inline-block;
         }
 
         .spacer
@@ -100,29 +110,30 @@
 </head>
 <body>
     <div id=frame-wrapper>
-        <form class=frame-section id=name-section name=names>
+        <form class=frame-section id=personal-section name=names>
+        <!-- <section class=frame-section id=personal-section name=names> -->
             <div class=name-div>
-                <input class=name-input id=name-given name=given onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(given name is required)" readonly>
-                <input class=name-input id=name-middle name=middle onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(middle name)" readonly>
-                <input class=name-input id=name-surname name=surname onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(surname is required)" readonly>
+                <!-- <input class=name-input id=given name=given onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(given name is required)" readonly> -->
+                <input class=name-input id=given name=given placeholder="(given name is required)" readonly>
+                <!-- <input class=name-input id=middle name=middle onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(middle name)" readonly> -->
+                <input class=name-input id=middle name=middle placeholder="(middle name)" readonly>
+                <!-- <input class=name-input id=surname name=surname onchange="nameValidation(event);" onfocus="nameClearError(event)" placeholder="(surname is required)" readonly> -->
+                <input class=name-input id=surname name=surname placeholder="(surname is required)" readonly>
             </div>
             <input class=email-input id=email-input name=email onchange="emailValidation(event);" onfocus="nameClearError(event)" placeholder="(email address is required)" readonly>
             <div>
-                <!-- <a class=menu-option href=# id=create-option onclick="postNames(event)" name=create>Submit</a> -->
-                <!-- <a class=menu-option href=# id=change-option onclick="postNames(event)" name=change>Submit Changes</a> -->
                 <button id=create-option onclick="postNames(event)" name=create>Submit</button>
                 <button id=change-option onclick="postNames(event)" name=change>Submit Changes</button>
             </div>
         </form>
+        <!-- </section> -->
 
         <section class=frame-section id=lock-section>
-            <!-- <a class=menu-option href=# id=lock-option name=lock onclick="sendLock(event);">Lock This User</a> -->
-            <!-- <a class=menu-option href=# id=unlock-option name=unlock onclick="sendLock(event);">Unlock This User</a> -->
-            <button id=lock-option name=lock onclick="sendLock(event);">Lock This User</button>
-            <button id=unlock-option name=unlock onclick="sendLock(event);">Unlock This User</button>
+            <div id=lock-message></div>
+            <button id=lock-button name=lock>Lock This User</button>
+            <button id=unlock-button name=unlock>Unlock This User</button>
             <div class=spacer id=change-spacer></div>
-            <!-- <a class=menu-option href=# id=delete-option onclick="sendDeactivate(event)" name=delete>Delete/Deactivate</a> -->
-            <button id=delete-option onclick="sendDeactivate(event)" name=delete>Delete/Deactivate</button>
+            <button id=delete-button name=delete>Delete/Deactivate</button>
         </section>
 
         <section class="frame-section" id=password-section>
@@ -157,27 +168,27 @@
     function clearError (section, input)
     {   
         input.select();
-        const errors = section.getElementsByClassName ("error-text");
-        const length = errors.length;
-        for (let x=0; x<length; x++)
-        {
-            errors[x].remove ();
-        }
-
         setErrorClass (input, false);
-        errors.password = false;
+//          errors.password = false;
+//  
+//          const errors = section.getElementsByClassName ("error-text");
+//          const length = errors.length;
+//          for (let x=0; x<length; x++)
+//          {
+//              errors[x].remove ();
+//          }
     }
 
     function setError (section, input, text)
     {
-        configureElement ("div",
+        setErrorClass (input, true);
+
+        return configureElement ("div",
             {
                 "class": "error-text",
                 "innerText": text
             },
             section);
-
-        setErrorClass (input, true);
     }
 
     function setErrorClass (div, error)
@@ -211,19 +222,6 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //  retrieve data from the server and initialize the page
-
-    //  It seems that I need these things to be global variables...there is a very real possibility that I don't even need
-    //  to instanitate them because there will only ever be one instance of each.  I just made them classes to collect the
-    //  functions and variables into one place to clean up the code.  I could treat everything as static methods...
-    //
-    //  Heck, in that case I might not even need classes...an object should suffice.  Classes are better because objects
-    //  don't provide encapsulation or allow variables and functions to be made private, but Classes do.  And there's less
-    //  code to change.
-
-//  01      let privledgeSection = undefined;
-//  01      let colorSection = undefined;
-
     document.addEventListener ("DOMContentLoaded", event =>
     {
         //  These classes are all dependent on asynchronous methods to retrieve data from the server.  Those APIs
@@ -236,16 +234,16 @@
         //
         //  So wait for the DOM before creating the classes.
 
-//  01          colorSection = new ColorSection (getCookie ("peopleId"));
         ColorPermissions.initialize (getCookie ("peopleId"));
         PasswordSection.initialize (getCookie ("peopleId"));
         PrivledgeSection.initialize (getCookie ("peopleId"));
 
-        personSection = new PersonSection (getCookie ("peopleId"));
-        personSection.retrievePersonData (getCookie ("peopleId"), () =>
-            {   
-                PasswordSection.displaySection();
-            });
+//          personSection = new PersonSection (getCookie ("peopleId"));
+//          personSection.retrievePersonData (getCookie ("peopleId"), () =>
+//              {   
+//                  PasswordSection.displaySection();
+//              });
+        PersonalSection.initialize (getCookie ("peopleId"));
 
         const observer = new ResizeObserver (entries =>
         {   for (const entry of entries)

@@ -223,7 +223,6 @@ function setCookie (name, value, maxAge=86400, path="/")
 
 //  functions and variables needed to implement the modal message element
 
-//  02  function removeModal (event)
 function removeModal (event, callback)
 {   event.preventDefault ();
 
@@ -269,14 +268,6 @@ function modal (message, audio=false, callback=undefined)
         },
         wrapper);
 
-    modal.addEventListener ("click", event =>
-    {
-        if (callback && callback["final"])
-            removeModal(event, callback["final"]);
-        else
-            removeModal(event);
-    });
-
     configureElement ("div",
         {
             "class": "modal-text",
@@ -285,10 +276,22 @@ function modal (message, audio=false, callback=undefined)
         },
         modal);
 
-    if (callback && callback["config"])
+    //  Add event listeners and configure optional confirmation buttons 
+
+    if (!callback)
+        modal.addEventListener ("click", event => { removeModal(event) });
+    else
     {
-        modal.removeEventListener ("click");
-        callback["config"]();
+        if (callback["config"]) callback["config"](modal);
+
+//  09  Apparently this just can't be done...
+//  09          if (callback["final"])
+//  09          {
+//  09  //  alert (JSON.stringify(callback, null, 2));
+//  09  alert (callback.toString());
+//  09  //              modal.addEventListener ("click", function (event, callback) { removeModal(event, callback["final"]); } );
+//  09              modal.addEventListener ("click", callback => { removeModal(false, callback["final"]); } );
+//  09          }
     }
 }
 
