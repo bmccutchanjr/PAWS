@@ -15,7 +15,7 @@
     "mysql": "^2.18.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "utf-8-validate": "^5.0.2",
     "ws": "^7.3.1"
   },
