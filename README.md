@@ -1,6 +1,6 @@
 # PAWS
 
-PAWS is inspired by the paperwork required of volunteer dog-walkers at the Humane Society of Summit County.  Volunteers are requested to note the time they interact with animals so the shelter can track the interaction and ensure that none of the animals are being neglected.  It's consistes of a simple log and a grid of daily activity allowing volunteers to see at a glance which animals are most in need of some quality time.
+PAWS is inspired by the paperwork required of volunteer dog-walkers at the Humane Society of Summit County (HSSC).  Volunteers are requested to note the time they interact with animals so the shelter can track the interaction and ensure that none of the animals are being neglected.  It's consistes of a simple log and a grid of daily activity allowing volunteers to see at a glance which animals are most in need of some quality time.
 
 PAWS brings tha log to the web, but adds some additional features the simple paper system can't do.
 
@@ -13,7 +13,7 @@ Please be aware that this is a demonstration application and is not intended to 
 
 <strike>You don't have to install PAWS to see it in action.  A demo of PAWS is online at:
 
-	(PAWS)[bmccutchanjr.heroku.com/PAWS]
+	(PAWS)[https://bmccutchanjr.heroku.com/PAWS]
 </strike>
 
 But if you want to install PAWS on your system, that's okay as well.  You'll need to follow (these instructions)[install] to create and confirure a PAWS server on your system.
@@ -22,9 +22,13 @@ I've tried to make PAWS as intuitive as possible, but there a few things you nee
 
 PAWS was written to replace the paperwork requested by the HSSC when volunteers interact with one of their animals.  That's two simple forms, one simply indicating that some volunteer has had some quality time with one of the animals on a given day (a simple grid of animals and days).  The other is a log of interaction time.  Volunteers indicate when they got an animal out of its cage and when they returned.
 
-PAWS' landing page is the daily grid.  It lists all of the animals and a rolling grid of the last 28 days (less on mobile devices).  Volunteers can see at a glance which animals are most in need of some quality time.
+The shelter uses this information to track interaction with the animals and make sure all are getting face time with people.  It's important for the mental well-being of the animals.
 
-It defaults to the dogs, but can display cats as well.
+But the log has to be compiled manually to serve that purpose.
+
+The PAWS landing page is the daily grid.  It lists all of the animals and a rolling grid of the last 28 days (fewer on mobile devices).  Volunteers can see at a glance which animals are most in need of some quality time.
+
+It defaults to the dogs, but can be changed to the cats by selecting the icon at the top of the grid.
 
 Animals are displayed with a color code corresponding to the animal's designated color.  This is simply a designation indicating how much experience a volunteer should have before interacting with the animal.
 
@@ -34,11 +38,11 @@ Clicking on any of the grid days will display more detail about the interaction 
 
 Clicking on an animal's name will link to another page with additional information about that animal.  A volunteer can log interaction time from this page with a few mouse clicks.
 
-You'll need a User ID and password to do that however.  Use 'volunteer' as both User ID and password.
+But you'll need a User ID and password to do that.  Use 'volunteer' as both User ID and password.
 
 As you might expect, volunteers don't have access to the administration pages.  Log in as 'admin' if you want to look at that.  The User ID and password are both 'admin'.
 
-'admin' can make changes to the animals, but not the people.  A page exists to manage people but it's just for demonstration purposes.  There are no cooresponding APIs on the server.
+'admin' can make changes to the animals, but not the people.  A page exists to manage people but it's just for demonstration purposes and there are no cooresponding APIs on the server.
 
 ---
 [#install]
