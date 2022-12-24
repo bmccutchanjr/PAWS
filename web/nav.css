@@ -1,0 +1,104 @@
+nav button
+{
+	background-color: white;
+	border: 1px solid black;
+	border-radius: 2px;
+	/* display: flex; */
+		/* flex-direction: column; */
+		/* align-content: center; */
+		/* justify-content: center; */
+	font-family: monospace;
+	font-size: 14px;
+	height: 20px;
+	margin: 0px;
+		margin-top: 5px;
+	padding: 2px;
+		padding-bottom: 4px;
+		padding-top: 0px;
+	text-align: center;
+	width: 20px;
+}
+
+nav button:first-of-type
+{
+	margin-top: 0px;
+}
+
+nav .close-button
+{
+	border: none;
+}
+
+#nav-buttons
+{
+	position: fixed;
+		left: 10px;
+		top: 10px;
+	width: 22px;
+}
+
+#nav-buttons button.profile-button
+{
+	border-radius: 50%;
+}
+
+#nav-buttons button:hover
+{
+	background-color: black;
+	color: white;
+}
+
+#nav-menu
+{
+	background-color: rgba(255, 255, 255, 0.75);
+	border: 2px solid black;
+	border-radius: 4px;
+	height: 90%;
+	position: fixed;
+		left: -250px;
+		top: 10px;
+	width: 75%;
+		max-width: 250px;
+}
+
+.nav-fade-in
+{
+	animation-duration: 0.5s;
+	animation-fill-mode: forwards;
+	animation-name: nav-fade-in;
+	animation-timing-function: linear;
+	animation-fill-mode: forwards;
+}
+
+@keyframes nav-fade-in
+{
+	from { left: -250px; }
+	to { left: 10px; }
+}
+
+.nav-fade-out
+{
+	animation-duration: 0.25s;
+	animation-fill-mode: forwards;
+	animation-name: nav-fade-out;
+	animation-timing-function: linear;
+	animation-fill-mode: forwards;
+}
+
+@keyframes nav-fade-out
+{
+	from { left: 10px; }
+	to { left: -250px; }
+}
+
+#nav-menu div:first-of-type
+{
+	background: white;
+	text-align: right;
+}
+
+#nav-menu button.close-button:hover
+{
+	background-color: red;
+	color: white;
+}

@@ -1,0 +1,42 @@
+/*	This CSS module has CSS rules that only apply to the <noscript> tag.											*/
+/*																													*/
+/*	Actually, it's not quite that simple...I want the sticky footer if for no other reason than branding (I use		*/
+/*	the <footer> rather than a <header> to identify the application).  So there's a bit more here, but it all still	*/
+/*	applies to the <noscript> tag.																					*/
+
+.noscript
+{
+	background-color: #800000;
+	color: white;
+}
+
+noscript
+{
+	display: flex;
+		flex-direction: column;
+		flex-wrap: wrap;
+		justify-content: center;
+	font-size: 24px;
+	height: 100vh;
+		min-height: 100%;
+	width: 100%;
+}
+
+noscript div
+{
+	margin: 0px auto;
+	width: 60%;
+}
+
+noscript h1
+{
+	font-size: 40px;
+	font-weight: normal;
+	margin-bottom: .5em;
+	margin-top: -10vh;
+}
+
+noscript p
+{
+	margin-top: .5em;
+}
