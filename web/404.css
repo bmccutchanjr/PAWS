@@ -50,12 +50,19 @@ section
 
 section div.img
 {
-	background-color: red;
-	height: 250px;
+	height: 35vh;
 	margin: 0px auto;
 		margin-bottom: 5%;
 		margin-top: 5%;
-	width: 50%;
-		max-width: 350px;
-		min-width: 200px;
+}
+
+section div.img img
+{
+	height: 100%;
+	width: auto;
+}
+
+.left-puppy
+{
+	transform: scaleX(-1);
 }
