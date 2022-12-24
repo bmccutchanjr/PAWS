@@ -1,3 +1,7 @@
+/*	This module collects the CSS rules that apply throughout the site.  It's general purpose is to enforce a		*/
+/*	consistant look and feel to the application.  You'll find CSS rules that set values for variables and for the	*/
+/*	sticky footer.																									*/
+
 @import url('https://fonts.googleapis.com/css?family=Fredoka+One');
 
 *
@@ -28,30 +32,27 @@ body, html
 
 header
 {
-	/* background: rgba(255, 0, 0, 0.5); */
-	/* font-family: "Fredoka One", sans-serif; */
 	font-size: 36px;
 	margin: 0px;
 	padding: 25px;
 	text-align: center;
 }
 
-m-a-i-n
-{   background: rgba(0, 255, 0, 0.5);
-}
-
 .hidden
-{
+{	/*	This class is used with classList to hide elements in the DOM.  There is a problem with CSS precedence,		*/
+	/*	though.  This class will not override the display property of elements if display is explicitly set in		*/
+	/*	in another rule (selectors that more specifically reference an element take precedence, and you can't get	*/
+	/*	much more generic than this.																				*/ 
+
 	display: none;
 }
 
-/*                                         */
-/* style specific to sticky footer         */
-/*                                         */
+/*																													*/
+/* style specific to sticky footer																					*/
+/*																													*/
 
 #sticky-wrapper
 {   
-	/* background: rgba(0, 255, 255, 0.5); */
 	height: 100;
 		min-height: 100%;
 	margin-bottom: -30px;
@@ -84,7 +85,7 @@ footer div
 	width: 45%;
 }
 
-footer div:first-child
+footer div:first-of-type
 {
 	text-align: left;
 }
