@@ -19,6 +19,17 @@ function profileButtonHandler (event)
 			}
 	}
 
+	setTimeout (_ =>
+	{	//	Set up a timeout to automatically hide the menu after 30 seconds.
+	
+		//	The menu will also be hidden if the user clicks any button in the menu before the timeout.  That would
+		//	cause the menu to reappear briefly  and roll off-screen again.  That's not good.
+		//
+		//	So make sure the menu is actually on the screen.
+
+		if (document.getElementById ("nav-menu").classList.contains ("nav-fade-in"))
+			document.getElementById ("hide-menu").click();
+	}, 30000);
 }
 
 function navMenuHandler (event)

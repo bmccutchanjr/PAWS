@@ -30,7 +30,7 @@ body, html
 		min-height: 100%;
 }
 
-header
+header.page
 {
 	font-size: 36px;
 	margin: 0px;
@@ -39,10 +39,11 @@ header
 }
 
 .hidden
-{	/*	This class is used with classList to hide elements in the DOM.  There is a problem with CSS precedence,		*/
-	/*	though.  This class will not override the display property of elements if display is explicitly set in		*/
-	/*	in another rule (selectors that more specifically reference an element take precedence, and you can't get	*/
-	/*	much more generic than this.																				*/ 
+{	/*	This class is used with classList to hide elements in the DOM.  Simply add the class to an elament to hide	*/
+	/*	it and remove the class to display the element.  There is an issue with CSS precedence, though.  This class	*/
+	/*	can't be used to override the display property of elements if display is explicitly set in in another rule	*/
+	/*	(selectors that more specifically reference an element take precedence, and you can't get much less			*/
+	/*	specific than this.																							*/ 
 
 	display: none;
 }
@@ -60,7 +61,7 @@ header
 }
 
 .sticky-pusher
-{   background: yellow;
+{   
 	height: 30px;
 }
 

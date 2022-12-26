@@ -1,35 +1,74 @@
-nav button
-{
+/*	This modules contains the CSS rules for the <nav> elements.														*/
+/*																													*/
+/*	Rules fall into three categories:																				*/
+/*		quick links that are always visible on the screen															*/
+/*		a context sensitive menu that is hidden (positioned off the screen)											*/
+/*		several buttons																								*/
+
+/*	Let's get started with the buttons...																			*/
+
+button
+{	/*	The default style for <buttons>																				*/
+
 	background-color: white;
 	border: 1px solid black;
 	border-radius: 2px;
-	/* display: flex; */
-		/* flex-direction: column; */
-		/* align-content: center; */
-		/* justify-content: center; */
 	font-family: monospace;
 	font-size: 14px;
-	height: 20px;
+	height: 22px;
+	line-height: 0;
 	margin: 0px;
 		margin-top: 5px;
-	padding: 2px;
-		padding-bottom: 4px;
-		padding-top: 0px;
+	padding: 4px;
 	text-align: center;
-	width: 20px;
+	/* width: 22px; */
 }
 
-nav button:first-of-type
-{
-	margin-top: 0px;
-}
-
-nav .close-button
+button.close
 {
 	border: none;
 }
 
-#nav-buttons
+button.short
+{
+	width: 22px;
+}
+
+button.medium
+{
+	width: auto;
+}
+
+button.long
+{
+	width: 100%;
+}
+
+button:hover
+{
+	background-color: black;
+	color: white;
+}
+
+button.red
+{
+	color: red;
+}
+
+button.red:hover
+{
+	background-color: red;
+	color: white;
+}
+
+/*	Configure the <nav> elements.																					*/
+
+nav *.first-child
+{
+	margin-top: 0px;
+}
+
+nav.quick-links
 {
 	position: fixed;
 		left: 10px;
@@ -37,22 +76,22 @@ nav .close-button
 	width: 22px;
 }
 
-#nav-buttons button.profile-button
+button.profile-button
 {
 	border-radius: 50%;
 }
 
-#nav-buttons button:hover
-{
-	background-color: black;
-	color: white;
-}
+/*	The <nav> that contains most of the links and buttons is the most complicated.  It has a few constituents each	*/
+/*	with it's own unique requiremnts.  And it uses several flex-boxes to position elements dynamically.				*/
 
-#nav-menu
+nav.menu
 {
 	background-color: rgba(255, 255, 255, 0.75);
 	border: 2px solid black;
 	border-radius: 4px;
+	display: flex;
+		flex-direction: column;
+		justify-content: space-between;
 	height: 90%;
 	position: fixed;
 		left: -250px;
@@ -91,14 +130,65 @@ nav .close-button
 	to { left: -250px; }
 }
 
-#nav-menu div:first-of-type
+header.menu
 {
 	background: white;
-	text-align: right;
+	display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	flex-grow: 0;
+	flex-shrink: 0;
+	font-size: inherit;
+	margin: 0px;
+	padding: 0px;
+	text-align: left;
 }
 
-#nav-menu button.close-button:hover
+header.menu div:first-child
 {
-	background-color: red;
-	color: white;
+	flex-grow: 1;
+	flex-shrink: 1;
+	padding: 3px;
+}
+
+header.menu button
+{
+	flex-grow: 0;
+	flex-shrink: 0;
+	margin-top: 0px;
+}
+
+section.menu
+{
+	display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	flex-grow: 1;
+	height: 50%;
+	padding: 3px;
+}
+
+section.menu hr
+{
+	background-color: none;
+	border: none;
+	height: 20px;
+	width: 100%;
+}
+
+section.menu *
+{
+	flex-grow: 0;
+	flex-shrink: 0;
+}
+
+section.menu div.flex-grow
+{
+	flex-grow: 1;
+	flex-shrink: 0;
+}
+
+#nav-menu section button:first-child
+{
+	margin-top: 0px;
 }

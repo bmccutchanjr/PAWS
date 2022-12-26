@@ -18,11 +18,18 @@ window.addEventListener ("load", event =>
 
 	//	Add some event handlers for the <nav> elements
 
-	document.getElementById ("nav-buttons").addEventListener ("click", event =>
-	{	profileButtonHandler (event)
-	});
+// 	document.getElementById ("nav-buttons").addEventListener ("click", event =>
+// 	{	profileButtonHandler (event)
+// 	});
+// 
+// 	document.getElementById ("nav-menu").addEventListener ("click", event =>
+// 	{	navMenuHandler (event)
+// 	});
+nav[0].addEventListener ("click", event =>
+{	profileButtonHandler (event)
+});
 
-	document.getElementById ("nav-menu").addEventListener ("click", event =>
-	{	navMenuHandler (event)
-	});
+nav[1].addEventListener ("click", event =>
+{	navMenuHandler (event)
+});
 })

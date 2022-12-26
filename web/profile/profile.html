@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		  content="width=device-width, initial-scale=1.0">
+	<title></title>
+
+	<link href="./../master.css" rel="stylesheet" type="text/css">
+	<link href="profile.css" rel="stylesheet" type="text/css">
+	<link href="./../nav.css" rel="stylesheet" type="text/css">
+	<link href="./../noscript.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+	<div id="sticky-wrapper" class="noscript">
+		<noscript>
+			<div>
+				<h1>Have you disabled JavaScript?</h1>
+				<p>This site makes extensive use of JavaScript to download data, format it for your screen and allow you to interact with the page.</p>
+				<p>But not to track you, or load annoying ads.</p>
+				<p>Please enable JavaScript...the site simply won't work without it.</p>
+			</div>
+		</noscript>
+		<header class="hidden"></header>
+		<main class="hidden">
+			<section id="public-section">
+				<div id="photo-div">
+					<div id="profile-photo"></div>
+					<button>Select an image</button>
+				</div>
+				<div id="name-div">
+					<input class="required" placeholder="Your given name">
+					<input placeholder="Your middle name">
+					<input class="required" placeholder="Your surname">
+					<input placeholder="Your prefered name (a nick name?)">
+				</div>
+				<div id="about-div">
+					<textarea>A little bit about yourself</textarea>
+				</div>
+			</section>
+			<section id="private-section">
+				<button>Change password</button>
+				<input class="required" placeholder="Your email address">
+				<input placeholder="Your phone number">
+			</section>
+			<section id="preference-section">
+				<input type="checkbox" name="green">Show green animals
+				<input type="checkbox" name="orange">Show orange animals
+				<input type="checkbox" name="blue">Show blue animals
+				<input type="checkbox" name="purple">Show purple animals
+				<input type="checkbox" name="black">Show black animals
+				<input type="checkbox" name="red">Show red animals
+			</section>
+			<section id="priveledges-section">
+				<p>This section will list the priveledges that have been assigned.  What kind of animals.  The colors authorized.</p>
+				<p>It will also show restrictions.</p>
+			</section>
+		</main>
+		<div id="sticky-pusher"></div>
+	</div>
+	<footer class="noscript">
+		<div>
+			PAWS Quality Time Log &copy;
+		</div>
+		<div>
+			All Rights Are Reserved
+		</div>
+	</footer>
+	<nav class="quick-links hidden">
+		<button class="short" id="show-menu" title="Show the menu">+</button>
+		<button class="short profile-button" id="show-notifications"  title="You have 0 new notifications">N</button>
+		<button class="short profile-button" id="show-messages"  title="You have 0 new messages">M</button>
+		<button class="short profile-button" id="show-profile" title="Your profile">P</button>
+	</nav>
+	<nav class="menu" id="nav-menu">
+		<header class="menu">
+			<div>Profile Menu</div>
+			<button id="hide-menu" class="close short red" title="Hide the menu">x</button>
+		</header>
+		<section class="menu">
+			<div>
+				<button class="short">H</button>
+				<button class="medium">Log in</button>
+				<button class="medium red">Log out</button>
+			</div>
+			<div class="flex-grow">
+				<hr>
+				<button class="long">Change password</button>
+				<button class="long">Edit mode</button>
+				<button class="long">Read notifications</button>
+				<button class="long">Read messages</button>
+				<hr>
+				<button class="long">View other profiles</button>
+				<button class="long">Send someone a message</button>
+			</div>
+			<div>
+				<button class="long">Suggect a name</button>
+				<hr>
+				<button class="long">About PAWS</button>
+				<button class="long">FAQ</button>
+				<button class="long">Help</button>
+			</div>
+		</section>
+	</nav>
+</body>
+<script src="./../nav.js" language="javascript"></script>
+<script src="./../master.js" language="javascript"></script>
+</html>

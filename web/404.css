@@ -51,18 +51,17 @@ section
 section div.img
 {
 	height: 35vh;
-	margin: 0px auto;
+	margin: 0px 50%;
 		margin-bottom: 5%;
 		margin-top: 5%;
 }
 
+
 section div.img img
 {
+	-webkit-box-reflect: left;
 	height: 100%;
-	width: auto;
-}
-
-.left-puppy
-{
-	transform: scaleX(-1);
+	padding: 0px;
+		padding-left: 5px;
+		padding-right: 5px;
 }
